@@ -477,7 +477,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
 // ─── Config ────────────────────────────────────────────────────────
 const LIFF_ID       = "YOUR_LIFF_ID";
 const MAKE_WEBHOOK  = "https://hook.us2.make.com/dekow8wjteotu1zbyi2p4kbxsu5phrrf";
-const ANTH_KEY      = "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";
+const WORKER_URL = "https://diamond-copper-proxy.dcoppertrade.workers.dev";
 
 const PRODUCT_TYPES = [
   "ปอกสวย","ปอกช็อต","สะพานไฟ","ท่อใหม่","ท่อเก่า",
@@ -826,11 +826,10 @@ function toB64(file) {
 }
 
 async function claude(b64, mediaType, prompt) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+  const resp = await fetch(WORKER_URL, {
     method: 'POST',
-    headers: { 'Content-Type':'application/json', 'x-api-key':ANTH_KEY, 'anthropic-version':'2023-06-01' },
+    headers: { 'Content-Type':'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514', max_tokens: 100,
       messages: [{ role:'user', content: [
         { type:'image', source:{ type:'base64', media_type:mediaType, data:b64 } },
         { type:'text', text:prompt }
