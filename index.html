@@ -294,22 +294,22 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
     <div class="photo-row">
       <!-- รูปทะเบียน -->
       <div>
-        <div class="photo-box" id="vBox1" onclick="document.getElementById('vPhoto1').click()">
+        <label class="photo-box" id="vBox1" for="vPhoto1">
           <div class="pi">🔢</div>
           <div class="pl">รูปทะเบียน</div>
           <div class="ps">AI อ่านเลข</div>
-          <input type="file" id="vPhoto1" accept="image/*" onchange="readVehicle(this)">
-        </div>
+        </label>
+        <input type="file" id="vPhoto1" accept="image/*" onchange="readVehicle(this)" style="display:none">
         <img class="photo-preview" id="vPrev1">
       </div>
       <!-- รูปตัวรถ -->
       <div>
-        <div class="photo-box" id="vBox2" onclick="document.getElementById('vPhoto2').click()">
+        <label class="photo-box" id="vBox2" for="vPhoto2">
           <div class="pi">🚛</div>
           <div class="pl">รูปตัวรถ</div>
           <div class="ps">หลักฐานเสริม</div>
-          <input type="file" id="vPhoto2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2')">
-        </div>
+        </label>
+        <input type="file" id="vPhoto2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2')" style="display:none">
         <img class="photo-preview" id="vPrev2">
       </div>
     </div>
@@ -377,21 +377,21 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
     <!-- 2 photos side by side -->
     <div class="photo-row">
       <div>
-        <div class="photo-box" id="sBox1" onclick="document.getElementById('sPhoto1').click()">
+        <label class="photo-box" id="sBox1" for="sPhoto1">
           <div class="pi">⚖️</div>
           <div class="pl">รูปตาชั่ง</div>
           <div class="ps">AI อ่านน้ำหนัก</div>
-          <input type="file" id="sPhoto1" accept="image/*" onchange="readScale(this)">
-        </div>
+        </label>
+        <input type="file" id="sPhoto1" accept="image/*" onchange="readScale(this)" style="display:none">
         <img class="photo-preview" id="sPrev1">
       </div>
       <div>
-        <div class="photo-box" id="sBox2" onclick="document.getElementById('sPhoto2').click()">
+        <label class="photo-box" id="sBox2" for="sPhoto2">
           <div class="pi">🔶</div>
           <div class="pl">รูปทองแดง</div>
           <div class="ps">หลักฐานในเต๊า</div>
-          <input type="file" id="sPhoto2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2')">
-        </div>
+        </label>
+        <input type="file" id="sPhoto2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2')" style="display:none">
         <img class="photo-preview" id="sPrev2">
       </div>
     </div>
