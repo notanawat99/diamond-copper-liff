@@ -325,6 +325,13 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
       </div>
       <div class="ai-edit" onclick="editVehicle()">✏️ แก้ไข</div>
     </div>
+    <div id="vEditBox" style="display:none; margin-top:10px">
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px">
+        <span style="font-size:13px;font-weight:700">แก้ไขทะเบียนรถ</span>
+        <span onclick="cancelEditVehicle()" style="margin-left:auto;font-size:12px;font-weight:700;color:#94A3B8;cursor:pointer;text-decoration:underline">✕ ยกเลิก</span>
+      </div>
+      <input class="ifield" id="vEditIn" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="confirmEditVehicle()">
+    </div>
     <div class="igroup" style="margin-top:10px">
       <label class="ilabel">ทะเบียนรถ <span style="font-weight:400;color:var(--muted)">— กรอกเองหรือถ่ายรูปก็ได้</span></label>
       <input class="ifield" id="vPlate" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="chk2()">
@@ -406,6 +413,13 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
         <div class="ai-lbl">น้ำหนักรวม Gross</div>
       </div>
       <div class="ai-edit" onclick="editGross()">✏️ แก้ไข</div>
+    </div>
+    <div id="grossEditBox" style="display:none; margin-top:10px">
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px">
+        <span style="font-size:13px;font-weight:700">แก้ไขน้ำหนัก Gross (กก.)</span>
+        <span onclick="cancelEditGross()" style="margin-left:auto;font-size:12px;font-weight:700;color:#94A3B8;cursor:pointer;text-decoration:underline">✕ ยกเลิก</span>
+      </div>
+      <input class="ifield" id="grossEditIn" type="number" step="0.1" placeholder="0.0" oninput="confirmEditGross()">
     </div>
     <div class="igroup" style="margin-top:10px">
       <label class="ilabel">น้ำหนักรวม Gross (กก.) <span style="font-weight:400;color:var(--muted)">— กรอกเองหรือถ่ายรูปก็ได้</span></label>
@@ -579,7 +593,23 @@ async function readVehicle(input) {
   hide('vLoading'); chk2();
 }
 
-function editVehicle() { hide('vResult'); document.getElementById('vPlate').focus(); }
+function editVehicle() {
+  const curVal = document.getElementById('vVal').textContent;
+  document.getElementById('vEditIn').value = curVal !== '-' ? curVal : '';
+  document.getElementById('vEditBox').style.display = 'block';
+}
+function cancelEditVehicle() {
+  document.getElementById('vEditBox').style.display = 'none';
+}
+function confirmEditVehicle() {
+  const val = document.getElementById('vEditIn').value.trim();
+  if (val) {
+    S.vehicle = val;
+    document.getElementById('vVal').textContent = val;
+    document.getElementById('vPlate').value = val;
+    chk2();
+  }
+}
 function showVManual() { document.getElementById('vPlate').focus(); }
 
 function chk2() {
@@ -640,7 +670,7 @@ async function readScale(input) {
   show('sLoading'); hide('sResult'); hide('netCard');
   try {
     const b64 = await toB64(file);
-    const txt = await claude(b64, file.type, 'อ่านตัวเลขน้ำหนักบนหน้าจอตาชั่งดิจิตอลในรูปนี้ ตอบเฉพาะตัวเลขเท่านั้น ไม่ต้องมีหน่วย ถ้ามีหลายตัวเลขให้อ่านตัวเลขหลักที่สว่างสุด');
+    const txt = await claude(b64, file.type, 'อ่านตัวเลขน้ำหนักบนหน้าจอตาชั่งดิจิตอลในรูปนี้ ตอบเฉพาะตัวเลขเท่านั้น รวมทศนิยมด้วยถ้ามี เช่น 802.0 หรือ 364.2 ไม่ต้องมีหน่วย ถ้ามีจุดทศนิยมบนหน้าจอให้ใส่ด้วย');
     const n = parseFloat(txt.trim());
     if (!isNaN(n)) {
       document.getElementById('grossVal').textContent = n + ' กก.';
@@ -652,7 +682,23 @@ async function readScale(input) {
   hide('sLoading');
 }
 
-function editGross() { hide('sResult'); document.getElementById('grossIn').focus(); }
+function editGross() {
+  const curVal = document.getElementById('grossVal').textContent.replace(' กก.','');
+  document.getElementById('grossEditIn').value = curVal;
+  document.getElementById('grossEditBox').style.display = 'block';
+}
+function cancelEditGross() {
+  document.getElementById('grossEditBox').style.display = 'none';
+}
+function confirmEditGross() {
+  const val = parseFloat(document.getElementById('grossEditIn').value);
+  if (!isNaN(val)) {
+    S.curGross = val;
+    document.getElementById('grossVal').textContent = val + ' กก.';
+    document.getElementById('grossIn').value = val;
+    calcNet();
+  }
+}
 function showGrossManual() { document.getElementById('grossIn').focus(); }
 
 function calcNet() {
