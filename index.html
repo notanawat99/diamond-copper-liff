@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Diamond Copper - บันทึกรับซื้อ</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+
+  :root {
+    --buy-color: #1565C0;
+    --sell-color: #2E7D32;
+    --accent: #E53935;
+    --bg: #F5F7FA;
+    --card: #FFFFFF;
+    --text: #1A1A2E;
+    --muted: #78909C;
+    --border: #E0E7EF;
+    --shadow: 0 2px 16px rgba(0,0,0,0.08);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+    padding: 20px 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header-brand {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .header-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .header-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+  }
+  .step-indicator {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .step-dot {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.2);
+    flex: 1;
+    transition: background 0.3s;
+  }
+  .step-dot.active { background: #fff; }
+  .step-dot.done { background: rgba(255,255,255,0.5); }
+
+  /* Content */
+  .content { padding: 20px 16px; }
+
+  /* Section */
+  .section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .section.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .card-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* Type selector */
+  .type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .type-btn {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+  }
+  .type-btn .icon { font-size: 32px; margin-bottom: 8px; }
+  .type-btn .label { font-size: 15px; font-weight: 700; color: var(--text); }
+  .type-btn .desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .type-btn.buy.selected { border-color: var(--buy-color); background: #E3F2FD; }
+  .type-btn.sell.selected { border-color: var(--sell-color); background: #E8F5E9; }
+
+  /* Doc type */
+  .doc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .doc-btn {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+  }
+  .doc-btn .icon { font-size: 28px; margin-bottom: 6px; }
+  .doc-btn .label { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .doc-btn .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+  .doc-btn.no-price .tag { background: #FFF3E0; color: #E65100; }
+  .doc-btn.has-price .tag { background: #E8F5E9; color: #1B5E20; }
+  .doc-btn.selected.buy { border-color: var(--buy-color); background: #E3F2FD; }
+  .doc-btn.selected.sell { border-color: var(--sell-color); background: #E8F5E9; }
+
+  /* Input */
+  .input-group { margin-bottom: 16px; }
+  .input-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .input-field {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: 'Sarabun', sans-serif;
+    color: var(--text);
+    background: #fff;
+    transition: border-color 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .input-field:focus { border-color: var(--buy-color); }
+  .input-field.filled { border-color: #4CAF50; background: #F1F8E9; }
+
+  /* Photo capture */
+  .photo-capture {
+    border: 2px dashed var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .photo-capture:active { background: #F5F7FA; }
+  .photo-capture .icon { font-size: 36px; margin-bottom: 8px; }
+  .photo-capture .label { font-size: 15px; font-weight: 600; color: var(--text); }
+  .photo-capture .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .photo-capture input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
+  .photo-preview {
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 12px;
+    display: none;
+    max-height: 200px;
+    object-fit: cover;
+  }
+
+  /* AI reading result */
+  .ai-result {
+    background: #E8F5E9;
+    border: 1.5px solid #A5D6A7;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 12px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .ai-result .ai-icon { font-size: 20px; }
+  .ai-result .ai-value { font-size: 22px; font-weight: 700; color: #1B5E20; }
+  .ai-result .ai-label { font-size: 12px; color: #388E3C; }
+  .ai-result .ai-edit {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--buy-color);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* Loading */
+  .loading {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #E3F2FD;
+    border-radius: 12px;
+    margin-top: 12px;
+  }
+  .spinner {
+    width: 20px; height: 20px;
+    border: 3px solid #BBDEFB;
+    border-top-color: var(--buy-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 13px; color: var(--buy-color); font-weight: 600; }
+
+  /* Grade selector */
+  .grade-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .grade-btn {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+  }
+  .grade-btn .grade-letter { font-size: 28px; font-weight: 700; color: var(--muted); }
+  .grade-btn .grade-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .grade-btn.selected {
+    border-color: var(--accent);
+    background: #FFF3E0;
+  }
+  .grade-btn.selected .grade-letter { color: var(--accent); }
+  .grade-btn.selected .grade-desc { color: #BF360C; }
+
+  /* Weight display */
+  .weight-display {
+    background: linear-gradient(135deg, #1A1A2E, #16213E);
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  .weight-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .weight-row:last-child { border-bottom: none; }
+  .weight-key { font-size: 13px; color: rgba(255,255,255,0.5); }
+  .weight-val { font-size: 16px; font-weight: 700; color: #fff; }
+  .weight-net { color: #69F0AE; font-size: 22px !important; }
+
+  /* Summary table */
+  .summary-table { width: 100%; border-collapse: collapse; }
+  .summary-table th {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .summary-table td {
+    font-size: 14px; padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #1A1A2E, #16213E);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-top: 12px;
+  }
+  .summary-total .total-label { font-size: 14px; color: rgba(255,255,255,0.6); }
+  .summary-total .total-val { font-size: 24px; font-weight: 700; color: #69F0AE; }
+
+  /* Buttons */
+  .btn {
+    width: 100%;
+    padding: 17px;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Sarabun', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 10px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #1565C0, #1976D2);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(21,101,192,0.3);
+  }
+  .btn-primary.sell-mode {
+    background: linear-gradient(135deg, #1B5E20, #2E7D32);
+    box-shadow: 0 4px 15px rgba(27,94,32,0.3);
+  }
+  .btn-secondary {
+    background: var(--bg);
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+  }
+  .btn-add {
+    background: #E3F2FD;
+    color: var(--buy-color);
+    border: 1.5px dashed var(--buy-color);
+  }
+  .btn-add.sell-mode { background: #E8F5E9; color: var(--sell-color); border-color: var(--sell-color); }
+  .btn:active { transform: scale(0.98); }
+
+  /* Bag list */
+  .bag-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .bag-number {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .bag-info { flex: 1; }
+  .bag-grade { font-size: 12px; font-weight: 700; color: var(--accent); }
+  .bag-weight { font-size: 15px; font-weight: 700; color: var(--text); }
+  .bag-sub { font-size: 11px; color: var(--muted); }
+  .bag-delete {
+    color: #EF5350;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+
+  /* Info badge */
+  .info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #E3F2FD;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--buy-color);
+    margin-bottom: 16px;
+  }
+  .info-badge.sell { background: #E8F5E9; color: var(--sell-color); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1A1A2E;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Success screen */
+  .success-screen {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .success-icon { font-size: 72px; margin-bottom: 16px; }
+  .success-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .success-sub { font-size: 15px; color: var(--muted); line-height: 1.6; }
+  .txn-id {
+    display: inline-block;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 20px 0;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand">Diamond Copper Trade</div>
+  <div class="header-title" id="headerTitle">บันทึกการชั่งสินค้า</div>
+  <div class="header-subtitle" id="headerSub">เลือกประเภทกิจกรรม</div>
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+    <div class="step-dot" id="dot4"></div>
+    <div class="step-dot" id="dot5"></div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- STEP 1: เลือกประเภท -->
+<div class="section active" id="step1">
+  <div class="card">
+    <div class="card-label">ประเภทกิจกรรม</div>
+    <div class="type-grid">
+      <div class="type-btn buy" onclick="selectType('buy')">
+        <div class="icon">📥</div>
+        <div class="label">ซื้อ / นำเข้า</div>
+        <div class="desc">รับสินค้าเข้าคลัง</div>
+      </div>
+      <div class="type-btn sell" onclick="selectType('sell')">
+        <div class="icon">📤</div>
+        <div class="label">ขาย / นำออก</div>
+        <div class="desc">ส่งสินค้าออกคลัง</div>
+      </div>
+    </div>
+  </div>
+  <div class="card" id="docTypeCard" style="display:none">
+    <div class="card-label">ประเภทเอกสาร</div>
+    <div class="doc-grid" id="docGrid"></div>
+  </div>
+  <button class="btn btn-primary" id="step1Next" onclick="goStep(2)" style="display:none">ถัดไป →</button>
+</div>
+
+<!-- STEP 2: ข้อมูลคู่ค้าและรถ -->
+<div class="section" id="step2">
+  <div class="info-badge" id="typeBadge">📥 ซื้อ / นำเข้า</div>
+  <div class="card">
+    <div class="card-label" id="partnerLabel">นามผู้ขาย</div>
+    <div class="input-group">
+      <input class="input-field" id="partnerName" type="text" placeholder="ชื่อผู้ขาย / บริษัท" oninput="checkStep2()">
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">ทะเบียนรถ</div>
+    <div class="photo-capture" onclick="document.getElementById('vehiclePhoto').click()">
+      <div class="icon">📸</div>
+      <div class="label">ถ่ายรูปทะเบียนรถ</div>
+      <div class="sub">กดเพื่อเปิดกล้อง หรือเลือกจากคลัง</div>
+      <input type="file" id="vehiclePhoto" accept="image/*" capture="environment" onchange="readVehicle(this)">
+    </div>
+    <img class="photo-preview" id="vehiclePreview">
+    <div class="loading" id="vehicleLoading">
+      <div class="spinner"></div>
+      <div class="loading-text">AI กำลังอ่านทะเบียน...</div>
+    </div>
+    <div class="ai-result" id="vehicleResult">
+      <div class="ai-icon">🤖</div>
+      <div>
+        <div class="ai-value" id="vehicleValue">-</div>
+        <div class="ai-label">อ่านได้จากรูป</div>
+      </div>
+      <div class="ai-edit" onclick="editVehicle()">แก้ไข</div>
+    </div>
+    <div class="input-group" id="vehicleManual" style="display:none; margin-top:12px">
+      <input class="input-field" id="vehiclePlate" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="checkStep2()">
+    </div>
+  </div>
+  <div style="display:flex; gap:10px">
+    <button class="btn btn-secondary" style="width:auto;padding:17px 24px" onclick="goStep(1)">← กลับ</button>
+    <button class="btn btn-primary" id="step2Next" onclick="goStep(3)" style="flex:1;margin-bottom:0" disabled>ถัดไป →</button>
+  </div>
+</div>
+
+<!-- STEP 3: ชั่งสินค้า -->
+<div class="section" id="step3">
+  <div class="info-badge" id="typeBadge3">📥 ซื้อ</div>
+  <div id="bagList"></div>
+
+  <!-- Add bag form -->
+  <div class="card" id="addBagForm">
+    <div class="card-label">เพิ่มเต๊า</div>
+    <div class="photo-capture" onclick="document.getElementById('scalePhoto').click()">
+      <div class="icon">⚖️</div>
+      <div class="label">ถ่ายรูปหน้าจอตาชั่ง</div>
+      <div class="sub">AI จะอ่านค่าน้ำหนักให้อัตโนมัติ</div>
+      <input type="file" id="scalePhoto" accept="image/*" capture="environment" onchange="readScale(this)">
+    </div>
+    <img class="photo-preview" id="scalePreview">
+    <div class="loading" id="scaleLoading">
+      <div class="spinner"></div>
+      <div class="loading-text">AI กำลังอ่านน้ำหนัก...</div>
+    </div>
+    <div class="ai-result" id="scaleResult">
+      <div class="ai-icon">🤖</div>
+      <div>
+        <div class="ai-value" id="grossValue">-</div>
+        <div class="ai-label">น้ำหนักรวม (Gross)</div>
+      </div>
+      <div class="ai-edit" onclick="editGross()">แก้ไข</div>
+    </div>
+    <div class="input-group" id="grossManual" style="display:none; margin-top:12px">
+      <label class="input-label">น้ำหนักรวม Gross (กก.)</label>
+      <input class="input-field" id="grossInput" type="number" step="0.1" placeholder="0.0" oninput="calcNet()">
+    </div>
+
+    <div class="input-group" style="margin-top:12px">
+      <label class="input-label">น้ำหนักเต๊า Tare (กก.)</label>
+      <input class="input-field" id="tareInput" type="number" step="0.1" placeholder="35.0" value="35.0" oninput="calcNet()">
+    </div>
+
+    <div class="weight-display" id="netDisplay" style="display:none">
+      <div class="weight-row">
+        <span class="weight-key">Gross</span>
+        <span class="weight-val" id="displayGross">-</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-key">Tare</span>
+        <span class="weight-val" id="displayTare">-</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-key">Net (สุทธิ)</span>
+        <span class="weight-val weight-net" id="displayNet">-</span>
+      </div>
+    </div>
+
+    <div class="card-label" style="margin-top:16px">เกรดสินค้า</div>
+    <div class="grade-grid">
+      <div class="grade-btn" onclick="selectGrade('A')">
+        <div class="grade-letter">A</div>
+        <div class="grade-desc">เกรดหนึ่ง</div>
+      </div>
+      <div class="grade-btn" onclick="selectGrade('B')">
+        <div class="grade-letter">B</div>
+        <div class="grade-desc">เกรดสอง</div>
+      </div>
+      <div class="grade-btn" onclick="selectGrade('C')">
+        <div class="grade-letter">C</div>
+        <div class="grade-desc">เกรดสาม</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="addBagBtn" onclick="addBag()" style="margin-top:16px;margin-bottom:0" disabled>
+      ✅ ยืนยันเต๊านี้
+    </button>
+  </div>
+
+  <div style="display:flex; gap:10px; margin-top:8px">
+    <button class="btn btn-secondary" style="width:auto;padding:17px 24px" onclick="goStep(2)">← กลับ</button>
+    <button class="btn btn-primary" id="step3Next" onclick="goStep(4)" style="flex:1;margin-bottom:0" disabled>สรุปรายการ →</button>
+  </div>
+</div>
+
+<!-- STEP 4: สรุปและยืนยัน -->
+<div class="section" id="step4">
+  <div class="info-badge" id="typeBadge4">📥 ซื้อ</div>
+  <div class="card">
+    <div class="card-label">ข้อมูลการทำรายการ</div>
+    <table class="summary-table">
+      <tr><td style="color:var(--muted);font-size:13px">ประเภท</td><td id="sumType" style="text-align:right;font-weight:700"></td></tr>
+      <tr><td style="color:var(--muted);font-size:13px">เอกสาร</td><td id="sumDoc" style="text-align:right;font-weight:700"></td></tr>
+      <tr><td style="color:var(--muted);font-size:13px" id="sumPartnerLabel">นามผู้ขาย</td><td id="sumPartner" style="text-align:right;font-weight:700"></td></tr>
+      <tr><td style="color:var(--muted);font-size:13px">ทะเบียนรถ</td><td id="sumVehicle" style="text-align:right;font-weight:700"></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-label">รายการเต๊าทั้งหมด</div>
+    <div id="summaryBags"></div>
+    <div class="summary-total">
+      <div>
+        <div class="total-label">รวมน้ำหนักทั้งหมด</div>
+      </div>
+      <div class="total-val" id="sumTotal">0.0 กก.</div>
+    </div>
+  </div>
+  <button class="btn btn-primary" id="confirmBtn" onclick="submitData()">✅ ยืนยันส่งข้อมูล</button>
+  <button class="btn btn-secondary" onclick="goStep(3)">← กลับแก้ไข</button>
+</div>
+
+<!-- STEP 5: สำเร็จ -->
+<div class="section" id="step5">
+  <div class="success-screen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">บันทึกสำเร็จ!</div>
+    <div class="txn-id" id="txnDisplay">TXN-0000</div>
+    <div class="success-sub">ข้อมูลถูกส่งเรียบร้อยแล้ว<br>เจ้าของจะได้รับการแจ้งเตือนทันที</div>
+    <button class="btn btn-primary" style="margin-top:32px" onclick="resetForm()">+ เริ่มรายการใหม่</button>
+  </div>
+</div>
+
+</div><!-- end content -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── State ─────────────────────────────────────────────────────
+const state = {
+  type: null,      // 'buy' | 'sell'
+  docType: null,   // 'grn' | 'pb' | 'do' | 'sb'
+  partner: '',
+  vehicle: '',
+  bags: [],
+  currentGrade: null,
+  currentGross: null,
+  currentTare: 35.0,
+};
+
+const DOC_TYPES = {
+  buy: [
+    { id: 'grn', icon: '📋', label: 'ใบนำส่งสินค้าเข้า', hasPrice: false },
+    { id: 'pb',  icon: '🧾', label: 'บิลซื้อสินค้า',     hasPrice: true  },
+  ],
+  sell: [
+    { id: 'do',  icon: '📋', label: 'ใบนำส่งสินค้าออก', hasPrice: false },
+    { id: 'sb',  icon: '💰', label: 'บิลขายสินค้า',     hasPrice: true  },
+  ],
+};
+
+// ─── LIFF Init ──────────────────────────────────────────────────
+// Replace with your LIFF ID
+const LIFF_ID = "YOUR_LIFF_ID";
+const MAKE_WEBHOOK = "YOUR_MAKE_WEBHOOK_URL";
+const ANTHROPIC_KEY = "YOUR_ANTHROPIC_API_KEY";
+
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+  } catch(e) {
+    console.log('LIFF init skipped (testing mode)');
+  }
+}
+initLiff();
+
+// ─── Step Navigation ────────────────────────────────────────────
+function goStep(n) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  document.querySelectorAll('.step-dot').forEach((d, i) => {
+    d.classList.remove('active', 'done');
+    if (i + 1 < n) d.classList.add('done');
+    if (i + 1 === n) d.classList.add('active');
+  });
+  window.scrollTo(0, 0);
+  if (n === 4) buildSummary();
+}
+
+// ─── Step 1: Type & Doc ─────────────────────────────────────────
+function selectType(type) {
+  state.type = type;
+  state.docType = null;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector('.type-btn.' + type).classList.add('selected');
+  document.getElementById('docTypeCard').style.display = 'block';
+  renderDocTypes(type);
+  document.getElementById('step1Next').style.display = 'none';
+}
+
+function renderDocTypes(type) {
+  const grid = document.getElementById('docGrid');
+  grid.innerHTML = '';
+  DOC_TYPES[type].forEach(doc => {
+    grid.innerHTML += `
+      <div class="doc-btn ${doc.hasPrice ? 'has-price' : 'no-price'}" id="doc_${doc.id}" onclick="selectDoc('${doc.id}','${type}')">
+        <div class="icon">${doc.icon}</div>
+        <div class="label">${doc.label}</div>
+        <div class="tag">${doc.hasPrice ? '💰 มีราคา' : '📦 ไม่มีราคา'}</div>
+      </div>`;
+  });
+}
+
+function selectDoc(docId, type) {
+  state.docType = docId;
+  document.querySelectorAll('.doc-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('doc_' + docId).classList.add('selected', type);
+  document.getElementById('step1Next').style.display = 'block';
+}
+
+// ─── Step 2: Partner & Vehicle ──────────────────────────────────
+function setupStep2() {
+  const isBuy = state.type === 'buy';
+  document.getElementById('typeBadge').textContent = isBuy ? '📥 ซื้อ / นำเข้า' : '📤 ขาย / นำออก';
+  document.getElementById('typeBadge').className = 'info-badge' + (isBuy ? '' : ' sell');
+  document.getElementById('partnerLabel').textContent = isBuy ? 'นามผู้ขาย' : 'นามผู้ซื้อ';
+  document.getElementById('partnerName').placeholder = isBuy ? 'ชื่อผู้ขาย / บริษัท' : 'ชื่อผู้ซื้อ / บริษัท';
+  const btn = document.getElementById('step2Next');
+  btn.className = 'btn btn-primary' + (isBuy ? '' : ' sell-mode');
+}
+
+document.getElementById('step1Next').addEventListener('click', () => { setupStep2(); });
+
+async function readVehicle(input) {
+  const file = input.files[0];
+  if (!file) return;
+  showPreview(file, 'vehiclePreview');
+  document.getElementById('vehicleLoading').style.display = 'flex';
+  document.getElementById('vehicleResult').style.display = 'none';
+  try {
+    const b64 = await toBase64(file);
+    const text = await callClaude(b64, file.type,
+      'อ่านเลขทะเบียนรถจากรูปนี้ ตอบเฉพาะเลขทะเบียนเท่านั้น เช่น "กข 1234 กรุงเทพ" ไม่ต้องมีข้อความอื่น');
+    document.getElementById('vehicleValue').textContent = text.trim();
+    document.getElementById('vehicleResult').style.display = 'flex';
+    state.vehicle = text.trim();
+  } catch(e) {
+    showManualVehicle();
+  }
+  document.getElementById('vehicleLoading').style.display = 'none';
+  checkStep2();
+}
+
+function editVehicle() {
+  document.getElementById('vehicleResult').style.display = 'none';
+  showManualVehicle();
+}
+function showManualVehicle() {
+  document.getElementById('vehicleManual').style.display = 'block';
+  document.getElementById('vehiclePlate').focus();
+}
+
+function checkStep2() {
+  const name = document.getElementById('partnerName').value.trim();
+  const plate = document.getElementById('vehiclePlate').value.trim();
+  const aiPlate = document.getElementById('vehicleValue').textContent;
+  state.partner = name;
+  state.vehicle = plate || aiPlate || '';
+  document.getElementById('step2Next').disabled = !(name && state.vehicle);
+}
+
+// ─── Step 3: Bags ───────────────────────────────────────────────
+function setupStep3() {
+  const isBuy = state.type === 'buy';
+  document.getElementById('typeBadge3').textContent = isBuy ? '📥 ซื้อ' : '📤 ขาย';
+  document.getElementById('typeBadge3').className = 'info-badge' + (isBuy ? '' : ' sell');
+  renderBagList();
+}
+
+document.getElementById('step2Next').addEventListener('click', () => { setupStep3(); });
+
+async function readScale(input) {
+  const file = input.files[0];
+  if (!file) return;
+  showPreview(file, 'scalePreview');
+  document.getElementById('scaleLoading').style.display = 'flex';
+  document.getElementById('scaleResult').style.display = 'none';
+  document.getElementById('netDisplay').style.display = 'none';
+  try {
+    const b64 = await toBase64(file);
+    const text = await callClaude(b64, file.type,
+      'อ่านตัวเลขน้ำหนักบนหน้าจอตาชั่งดิจิตอลในรูปนี้ ตอบเฉพาะตัวเลขเท่านั้น ไม่ต้องมีหน่วยหรือข้อความอื่น ถ้ามีหลายตัวเลขให้อ่านตัวเลขหลักที่สว่างสุด');
+    const num = parseFloat(text.trim());
+    if (!isNaN(num)) {
+      document.getElementById('grossValue').textContent = num + ' กก.';
+      document.getElementById('scaleResult').style.display = 'flex';
+      state.currentGross = num;
+      document.getElementById('grossInput').value = num;
+      calcNet();
+    } else { showGrossManual(); }
+  } catch(e) { showGrossManual(); }
+  document.getElementById('scaleLoading').style.display = 'none';
+}
+
+function editGross() {
+  document.getElementById('scaleResult').style.display = 'none';
+  showGrossManual();
+}
+function showGrossManual() {
+  document.getElementById('grossManual').style.display = 'block';
+  document.getElementById('grossInput').focus();
+}
+
+function calcNet() {
+  const gross = parseFloat(document.getElementById('grossInput').value) || state.currentGross;
+  const tare = parseFloat(document.getElementById('tareInput').value) || 35;
+  if (!gross) return;
+  state.currentGross = gross;
+  state.currentTare = tare;
+  const net = Math.round((gross - tare) * 10) / 10;
+  document.getElementById('displayGross').textContent = gross + ' กก.';
+  document.getElementById('displayTare').textContent = tare + ' กก.';
+  document.getElementById('displayNet').textContent = net + ' กก.';
+  document.getElementById('netDisplay').style.display = 'block';
+  checkAddBag();
+}
+
+function selectGrade(g) {
+  state.currentGrade = g;
+  document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  checkAddBag();
+}
+
+function checkAddBag() {
+  document.getElementById('addBagBtn').disabled = !(state.currentGross && state.currentGrade);
+}
+
+function addBag() {
+  const gross = state.currentGross;
+  const tare = state.currentTare;
+  const net = Math.round((gross - tare) * 10) / 10;
+  state.bags.push({ gross, tare, net, grade: state.currentGrade });
+  resetBagForm();
+  renderBagList();
+  document.getElementById('step3Next').disabled = false;
+  showToast('✅ เพิ่มเต๊าที่ ' + state.bags.length + ' เรียบร้อย');
+}
+
+function resetBagForm() {
+  state.currentGross = null;
+  state.currentGrade = null;
+  document.getElementById('scalePreview').style.display = 'none';
+  document.getElementById('scaleResult').style.display = 'none';
+  document.getElementById('grossManual').style.display = 'none';
+  document.getElementById('grossInput').value = '';
+  document.getElementById('netDisplay').style.display = 'none';
+  document.getElementById('scalePhoto').value = '';
+  document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('addBagBtn').disabled = true;
+}
+
+function deleteBag(i) {
+  state.bags.splice(i, 1);
+  renderBagList();
+  document.getElementById('step3Next').disabled = state.bags.length === 0;
+}
+
+function renderBagList() {
+  const el = document.getElementById('bagList');
+  if (state.bags.length === 0) { el.innerHTML = ''; return; }
+  const gradeColors = { A: '#E53935', B: '#1976D2', C: '#2E7D32' };
+  let html = '<div class="card">';
+  state.bags.forEach((b, i) => {
+    html += `<div class="bag-item">
+      <div class="bag-number">${i+1}</div>
+      <div class="bag-info">
+        <div class="bag-grade" style="color:${gradeColors[b.grade]}">เกรด ${b.grade}</div>
+        <div class="bag-weight">${b.net} กก. (สุทธิ)</div>
+        <div class="bag-sub">Gross ${b.gross} − Tare ${b.tare}</div>
+      </div>
+      <div class="bag-delete" onclick="deleteBag(${i})">🗑️</div>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ─── Step 4: Summary ────────────────────────────────────────────
+function buildSummary() {
+  const isBuy = state.type === 'buy';
+  const docNames = { grn:'ใบนำส่งสินค้าเข้า', pb:'บิลซื้อสินค้า', do:'ใบนำส่งสินค้าออก', sb:'บิลขายสินค้า' };
+  document.getElementById('typeBadge4').textContent = isBuy ? '📥 ซื้อ' : '📤 ขาย';
+  document.getElementById('typeBadge4').className = 'info-badge' + (isBuy ? '' : ' sell');
+  document.getElementById('sumType').textContent = isBuy ? 'ซื้อ / นำเข้า' : 'ขาย / นำออก';
+  document.getElementById('sumDoc').textContent = docNames[state.docType] || '-';
+  document.getElementById('sumPartnerLabel').textContent = isBuy ? 'นามผู้ขาย' : 'นามผู้ซื้อ';
+  document.getElementById('sumPartner').textContent = state.partner;
+  document.getElementById('sumVehicle').textContent = state.vehicle;
+  document.getElementById('confirmBtn').className = 'btn btn-primary' + (isBuy ? '' : ' sell-mode');
+
+  const grades = {};
+  state.bags.forEach(b => {
+    if (!grades[b.grade]) grades[b.grade] = 0;
+    grades[b.grade] += b.net;
+  });
+
+  let html = '';
+  let total = 0;
+  Object.entries(grades).forEach(([g, net]) => {
+    net = Math.round(net * 10) / 10;
+    total += net;
+    html += `<div class="bag-item">
+      <div class="bag-number" style="background:#FFF3E0;color:#E53935;font-weight:700">${g}</div>
+      <div class="bag-info">
+        <div style="font-size:13px;color:var(--muted)">เกรด ${g} (${state.bags.filter(b=>b.grade===g).length} เต๊า)</div>
+        <div style="font-size:17px;font-weight:700">${net} กก.</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('summaryBags').innerHTML = html;
+  document.getElementById('sumTotal').textContent = Math.round(total * 10) / 10 + ' กก.';
+}
+
+// ─── Submit ──────────────────────────────────────────────────────
+async function submitData() {
+  document.getElementById('confirmBtn').textContent = '⏳ กำลังส่งข้อมูล...';
+  document.getElementById('confirmBtn').disabled = true;
+
+  const txnId = 'TXN-' + Date.now().toString().slice(-6);
+  const payload = {
+    txnId,
+    type: state.type,
+    docType: state.docType,
+    partner: state.partner,
+    vehicle: state.vehicle,
+    bags: state.bags,
+    timestamp: new Date().toISOString(),
+  };
+
+  try {
+    await fetch(MAKE_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch(e) { console.log('Webhook error:', e); }
+
+  document.getElementById('txnDisplay').textContent = txnId;
+  goStep(5);
+}
+
+function resetForm() {
+  Object.assign(state, { type:null, docType:null, partner:'', vehicle:'', bags:[], currentGrade:null, currentGross:null });
+  document.getElementById('partnerName').value = '';
+  document.getElementById('vehiclePlate').value = '';
+  document.getElementById('vehiclePreview').style.display = 'none';
+  document.getElementById('vehicleResult').style.display = 'none';
+  document.getElementById('vehicleManual').style.display = 'none';
+  document.querySelectorAll('.type-btn,.doc-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('docTypeCard').style.display = 'none';
+  document.getElementById('step1Next').style.display = 'none';
+  goStep(1);
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────
+function showPreview(file, id) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById(id);
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function callClaude(b64, mediaType, prompt) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 100,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } },
+          { type: 'text', text: prompt },
+        ],
+      }],
+    }),
+  });
+  const data = await resp.json();
+  return data.content[0].text;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
