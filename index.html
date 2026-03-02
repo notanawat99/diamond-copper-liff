@@ -325,7 +325,8 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
       </div>
       <div class="ai-edit" onclick="editVehicle()">✏️ แก้ไข</div>
     </div>
-    <div class="igroup" id="vManual" style="display:none; margin-top:10px">
+    <div class="igroup" style="margin-top:10px">
+      <label class="ilabel">ทะเบียนรถ <span style="font-weight:400;color:var(--muted)">— กรอกเองหรือถ่ายรูปก็ได้</span></label>
       <input class="ifield" id="vPlate" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="chk2()">
     </div>
   </div>
@@ -578,14 +579,15 @@ async function readVehicle(input) {
   hide('vLoading'); chk2();
 }
 
-function editVehicle() { hide('vResult'); showVManual(); }
-function showVManual() { show('vManual'); document.getElementById('vPlate').focus(); }
+function editVehicle() { hide('vResult'); document.getElementById('vPlate').focus(); }
+function showVManual() { document.getElementById('vPlate').focus(); }
 
 function chk2() {
   const name = document.getElementById('partnerName').value.trim();
   const plate = document.getElementById('vPlate').value.trim();
+  const aiPlate = document.getElementById('vVal').textContent;
   S.partner = name;
-  if (plate) S.vehicle = plate;
+  S.vehicle = plate || (aiPlate !== '-' ? aiPlate : '');
   document.getElementById('s2Btn').disabled = !(name && S.vehicle);
 }
 
@@ -799,7 +801,7 @@ function reset() {
   document.getElementById('hBadge').className = 'hdr-badge';
   ['vPrev1','vPrev2'].forEach(id => { const el=document.getElementById(id); el.style.display='none'; el.src=''; });
   ['vBox1','vBox2'].forEach(id => document.getElementById(id).classList.remove('has-photo'));
-  hide('vResult'); hide('vManual'); hide('vLoading');
+  hide('vResult'); hide('vLoading');
   go(1);
 }
 
