@@ -406,8 +406,8 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
       </div>
       <div class="ai-edit" onclick="editGross()">✏️ แก้ไข</div>
     </div>
-    <div class="igroup" id="grossManual" style="display:none; margin-top:10px">
-      <label class="ilabel">น้ำหนักรวม Gross (กก.)</label>
+    <div class="igroup" style="margin-top:10px">
+      <label class="ilabel">น้ำหนักรวม Gross (กก.) <span style="font-weight:400;color:var(--muted)">— กรอกเองหรือถ่ายรูปก็ได้</span></label>
       <input class="ifield" id="grossIn" type="number" step="0.1" placeholder="0.0" oninput="calcNet()">
     </div>
 
@@ -650,8 +650,8 @@ async function readScale(input) {
   hide('sLoading');
 }
 
-function editGross() { hide('sResult'); showGrossManual(); }
-function showGrossManual() { show('grossManual'); document.getElementById('grossIn').focus(); }
+function editGross() { hide('sResult'); document.getElementById('grossIn').focus(); }
+function showGrossManual() { document.getElementById('grossIn').focus(); }
 
 function calcNet() {
   const g = parseFloat(document.getElementById('grossIn').value) || S.curGross;
@@ -698,7 +698,7 @@ function resetAddForm() {
   ['sPhoto1','sPhoto2'].forEach(id => document.getElementById(id).value = '');
   ['sPrev1','sPrev2'].forEach(id => { const el = document.getElementById(id); el.style.display='none'; el.src=''; });
   ['sBox1','sBox2'].forEach(id => document.getElementById(id).classList.remove('has-photo'));
-  hide('sResult'); hide('sLoading'); hide('netCard'); hide('grossManual');
+  hide('sResult'); hide('sLoading'); hide('netCard');
   document.getElementById('grossIn').value = '';
   document.getElementById('addBagBtn').disabled = true;
   document.getElementById('addFormTitle').textContent = S.bags.length > 0 ? `เพิ่มเต๊าที่ ${S.bags.length + 1}` : 'เพิ่มเต๊าใหม่';
