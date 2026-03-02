@@ -298,7 +298,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
           <div class="pi">🔢</div>
           <div class="pl">รูปทะเบียน</div>
           <div class="ps">AI อ่านเลข</div>
-          <input type="file" id="vPhoto1" accept="image/*" capture="environment" onchange="readVehicle(this)">
+          <input type="file" id="vPhoto1" accept="image/*" onchange="readVehicle(this)">
         </div>
         <img class="photo-preview" id="vPrev1">
       </div>
@@ -308,7 +308,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
           <div class="pi">🚛</div>
           <div class="pl">รูปตัวรถ</div>
           <div class="ps">หลักฐานเสริม</div>
-          <input type="file" id="vPhoto2" accept="image/*" capture="environment" onchange="previewOnly(this,'vPrev2','vBox2')">
+          <input type="file" id="vPhoto2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2')">
         </div>
         <img class="photo-preview" id="vPrev2">
       </div>
@@ -381,7 +381,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
           <div class="pi">⚖️</div>
           <div class="pl">รูปตาชั่ง</div>
           <div class="ps">AI อ่านน้ำหนัก</div>
-          <input type="file" id="sPhoto1" accept="image/*" capture="environment" onchange="readScale(this)">
+          <input type="file" id="sPhoto1" accept="image/*" onchange="readScale(this)">
         </div>
         <img class="photo-preview" id="sPrev1">
       </div>
@@ -390,7 +390,7 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
           <div class="pi">🔶</div>
           <div class="pl">รูปทองแดง</div>
           <div class="ps">หลักฐานในเต๊า</div>
-          <input type="file" id="sPhoto2" accept="image/*" capture="environment" onchange="previewOnly(this,'sPrev2','sBox2')">
+          <input type="file" id="sPhoto2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2')">
         </div>
         <img class="photo-preview" id="sPrev2">
       </div>
