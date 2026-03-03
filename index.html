@@ -190,7 +190,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="vPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <label class="photo-upload-btn" for="vP1">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="vP1" accept="image/*" onchange="readVehicle(this)" style="display:none">
+        <input type="file" id="vP1" accept="image/*" capture="environment" onchange="readVehicle(this)" style="display:none">
         <button type="button" class="btn-view" id="vView1" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
       <div class="photo-col">
@@ -201,7 +201,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="vPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <label class="photo-upload-btn" for="vP2">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="vP2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
+        <input type="file" id="vP2" accept="image/*" capture="environment" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
         <button type="button" class="btn-view" id="vView2" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
     </div>
@@ -259,7 +259,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="sPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <label class="photo-upload-btn" for="sP1">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="sP1" accept="image/*" onchange="readScale(this)" style="display:none">
+        <input type="file" id="sP1" accept="image/*" capture="environment" onchange="readScale(this)" style="display:none">
         <button type="button" class="btn-view" id="sView1" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
       <div class="photo-col">
@@ -270,7 +270,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="sPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <label class="photo-upload-btn" for="sP2">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="sP2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
+        <input type="file" id="sP2" accept="image/*" capture="environment" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
         <button type="button" class="btn-view" id="sView2" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
     </div>
