@@ -200,7 +200,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
         </div>
         <div class="photo-btn-row">
           <button type="button" class="photo-upload-btn cam" onclick="openCam('vP1',false)">📷 ถ่าย</button>
-          <label class="photo-upload-btn" for="vP1">🖼️ คลัง</label>
+          <button type="button" class="photo-upload-btn" onclick="document.getElementById('vP1').click()">🖼️ คลัง</button>
         </div>
         <input type="file" id="vP1" accept="image/*" onchange="readVehicle(this)" style="display:none">
         <button type="button" class="btn-view" id="vView1" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
@@ -214,7 +214,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
         </div>
         <div class="photo-btn-row">
           <button type="button" class="photo-upload-btn cam" onclick="openCam('vP2',false)">📷 ถ่าย</button>
-          <label class="photo-upload-btn" for="vP2">🖼️ คลัง</label>
+          <button type="button" class="photo-upload-btn" onclick="document.getElementById('vP2').click()">🖼️ คลัง</button>
         </div>
         <input type="file" id="vP2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
         <button type="button" class="btn-view" id="vView2" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
@@ -275,7 +275,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
         </div>
         <div class="photo-btn-row">
           <button type="button" class="photo-upload-btn cam" onclick="openCam('sP1',true)">📷 ถ่าย</button>
-          <label class="photo-upload-btn" for="sP1">🖼️ คลัง</label>
+          <button type="button" class="photo-upload-btn" onclick="document.getElementById('sP1').click()">🖼️ คลัง</button>
         </div>
         <input type="file" id="sP1" accept="image/*" onchange="readScale(this)" style="display:none">
         <button type="button" class="btn-view" id="sView1" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
@@ -289,7 +289,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
         </div>
         <div class="photo-btn-row">
           <button type="button" class="photo-upload-btn cam" onclick="openCam('sP2',false)">📷 ถ่าย</button>
-          <label class="photo-upload-btn" for="sP2">🖼️ คลัง</label>
+          <button type="button" class="photo-upload-btn" onclick="document.getElementById('sP2').click()">🖼️ คลัง</button>
         </div>
         <input type="file" id="sP2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
         <button type="button" class="btn-view" id="sView2" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
