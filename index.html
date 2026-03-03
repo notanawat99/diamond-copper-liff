@@ -466,27 +466,44 @@ function confirmEditGross(){const val=parseFloat(document.getElementById('grossE
 function calcNet(){
   const gRaw=parseFloat(document.getElementById('grossIn').value);const g=!isNaN(gRaw)?gRaw:S.curGross;
   const tRaw=parseFloat(document.getElementById('tareIn').value);const t=!isNaN(tRaw)?tRaw:S.curTare;
-  if(!g)return;S.curGross=g;S.curTare=t;const net=parseFloat((g-t).toFixed(1));
+  if(!g)return;
+  S.curGross=g;
+  // ไม่ update S.curTare ที่นี่ — จะ update ตอน addBag เท่านั้น
+  const net=parseFloat((g-t).toFixed(1));
   document.getElementById('dGross').textContent=fmt(g)+' กก.';document.getElementById('dTare').textContent=fmt(t)+' กก.';document.getElementById('dNet').textContent=fmt(net)+' กก.';
   show('netCard');chkAddBag();
 }
 function previewOnly(input,prevId,boxId,viewId){const file=input.files[0];if(!file)return;previewInBox(file,prevId,boxId,viewId);chkAddBag();}
 function chkAddBag(){document.getElementById('addBagBtn').disabled=!S.curGross;}
 function addBag(){
-  const gross=S.curGross,tare=S.curTare,net=parseFloat((gross-tare).toFixed(1));
+  const gross=S.curGross;
+  const tare=parseFloat(document.getElementById('tareIn').value)||S.curTare;
+  S.curTare=tare; // carry forward เต๊าถัดไป
+  const net=parseFloat((gross-tare).toFixed(1));
   S.bags.push({gross,tare,net,productType:S.productType,scaleImgUrl:document.getElementById('sPrev1').src||null,goodsImgUrl:document.getElementById('sPrev2').src||null});
   toast('✅ เต๊าที่ '+S.bags.length+' บันทึกแล้ว');document.getElementById('bagCount').textContent=S.bags.length;document.getElementById('s4Btn').disabled=false;renderBags();resetAddForm();
 }
 function resetAddForm(){
   S.curGross=null;S.gAiDone=false;
+  // ล้าง file inputs
   ['sP1c','sP1g','sP2c','sP2g'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  // ล้างรูป preview
   ['sPrev1','sPrev2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});
+  // reset photo box state
   ['sBox1','sBox2'].forEach(id=>document.getElementById(id).classList.remove('has-photo'));
+  // ซ่อนปุ่มดูรูป
   ['sView1','sView2'].forEach(id=>document.getElementById(id).style.display='none');
+  // ล้าง AI result, edit box, loading, net card
   hide('sResult');hideEl('grossEditBox');hide('sLoading');hide('netCard');
-  document.getElementById('grossIn').value='';document.getElementById('grossManualGroup').style.display='block';
-  document.getElementById('tareIn').value=fmt(S.curTare);document.getElementById('addBagBtn').disabled=true;
+  // ล้าง gross field + โชว์ manual group
+  document.getElementById('grossIn').value='';
+  document.getElementById('grossManualGroup').style.display='block';
+  // แสดง tare default ในช่อง input (carry forward จากเต๊าก่อนหน้า)
+  document.getElementById('tareIn').value=fmt(S.curTare);
+  document.getElementById('addBagBtn').disabled=true;
   document.getElementById('addFormTitle').textContent=S.bags.length>0?`เพิ่มเต๊าที่ ${S.bags.length+1}`:'เพิ่มเต๊าใหม่';
+  // scroll ขึ้นบน form ใหม่
+  document.getElementById('addForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function delBag(i){S.bags.splice(i,1);document.getElementById('bagCount').textContent=S.bags.length;document.getElementById('s4Btn').disabled=S.bags.length===0;renderBags();toast('🗑️ ลบเต๊าแล้ว');}
 function renderBags(){
