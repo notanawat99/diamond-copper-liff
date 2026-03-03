@@ -185,7 +185,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="vPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <div class="photo-btn-row">
-          <label class="photo-action-btn" for="vP1c">📷 ถ่าย</label>
+          <button type="button" class="photo-action-btn" onclick="openCamera('vP1c')">📷 ถ่าย</button>
           <input type="file" id="vP1c" accept="image/*" capture="environment" onchange="readVehicle(this)" style="display:none">
           <label class="photo-action-btn" for="vP1g">🖼️ คลัง</label>
           <input type="file" id="vP1g" accept="image/*" onchange="readVehicle(this)" style="display:none">
@@ -198,7 +198,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="vPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <div class="photo-btn-row">
-          <label class="photo-action-btn" for="vP2c">📷 ถ่าย</label>
+          <button type="button" class="photo-action-btn" onclick="openCamera('vP2c')">📷 ถ่าย</button>
           <input type="file" id="vP2c" accept="image/*" capture="environment" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
           <label class="photo-action-btn" for="vP2g">🖼️ คลัง</label>
           <input type="file" id="vP2g" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
@@ -258,7 +258,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="sPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <div class="photo-btn-row">
-          <label class="photo-action-btn" for="sP1c">📷 ถ่าย</label>
+          <button type="button" class="photo-action-btn" onclick="openCamera('sP1c')">📷 ถ่าย</button>
           <input type="file" id="sP1c" accept="image/*" capture="environment" onchange="readScale(this)" style="display:none">
           <label class="photo-action-btn" for="sP1g">🖼️ คลัง</label>
           <input type="file" id="sP1g" accept="image/*" onchange="readScale(this)" style="display:none">
@@ -271,7 +271,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="sPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <div class="photo-btn-row">
-          <label class="photo-action-btn" for="sP2c">📷 ถ่าย</label>
+          <button type="button" class="photo-action-btn" onclick="openCamera('sP2c')">📷 ถ่าย</button>
           <input type="file" id="sP2c" accept="image/*" capture="environment" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
           <label class="photo-action-btn" for="sP2g">🖼️ คลัง</label>
           <input type="file" id="sP2g" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
@@ -399,6 +399,9 @@ document.getElementById('s1Btn').addEventListener('click',()=>{
 
 async function readVehicle(input){
   const file=input.files[0];if(!file)return;
+  await readVehicleFile(file);
+}
+async function readVehicleFile(file){
   previewInBox(file,'vPrev1','vBox1','vView1');
   show('vLoading');hide('vResult');hideEl('vEditBox');
   try{
@@ -441,6 +444,9 @@ function setupStep4(){
 }
 async function readScale(input){
   const file=input.files[0];if(!file)return;
+  await readScaleFile(file);
+}
+async function readScaleFile(file){
   previewInBox(file,'sPrev1','sBox1','sView1');
   show('sLoading');hide('sResult');hideEl('grossEditBox');hide('netCard');
   try{
@@ -473,7 +479,8 @@ function calcNet(){
   document.getElementById('dGross').textContent=fmt(g)+' กก.';document.getElementById('dTare').textContent=fmt(t)+' กก.';document.getElementById('dNet').textContent=fmt(net)+' กก.';
   show('netCard');chkAddBag();
 }
-function previewOnly(input,prevId,boxId,viewId){const file=input.files[0];if(!file)return;previewInBox(file,prevId,boxId,viewId);chkAddBag();}
+function previewOnly(input,prevId,boxId,viewId){const file=input.files[0];if(!file)return;previewOnlyFile(file,prevId,boxId,viewId);}
+function previewOnlyFile(file,prevId,boxId,viewId){previewInBox(file,prevId,boxId,viewId);chkAddBag();}
 function chkAddBag(){document.getElementById('addBagBtn').disabled=!S.curGross;}
 function addBag(){
   const gross=S.curGross;
@@ -559,6 +566,25 @@ function toB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.o
 async function claude(b64,mediaType,prompt){
   const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mediaType,data:b64}},{type:'text',text:prompt}]}]})});
   const data=await resp.json();return data.content[0].text;
+}
+function openCamera(inputId){
+  const tmp = document.createElement('input');
+  tmp.type = 'file';
+  tmp.accept = 'image/*';
+  tmp.setAttribute('capture', 'environment');
+  tmp.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+  document.body.appendChild(tmp);
+  tmp.addEventListener('change', function(){
+    if(!tmp.files || !tmp.files[0]){ document.body.removeChild(tmp); return; }
+    const file = tmp.files[0];
+    // เรียก handler ตรงๆ ตาม inputId
+    if(inputId==='vP1c') readVehicleFile(file);
+    else if(inputId==='vP2c') previewOnlyFile(file,'vPrev2','vBox2','vView2');
+    else if(inputId==='sP1c') readScaleFile(file);
+    else if(inputId==='sP2c') previewOnlyFile(file,'sPrev2','sBox2','sView2');
+    document.body.removeChild(tmp);
+  });
+  tmp.click();
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 </script>
