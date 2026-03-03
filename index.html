@@ -531,7 +531,7 @@ async function readScaleFile(file){
   show('sLoading');hide('sResult');hideEl('grossEditBox');hide('netCard');
   try{
     const b64=await toB64(file);
-    const txt=await claude(b64,file.type,'อ่านตัวเลขน้ำหนักบนหน้าจอตาชั่งดิจิตอลในรูปนี้ ตอบเฉพาะตัวเลขเท่านั้น รวมทศนิยมด้วยถ้ามี เช่น 802.0 หรือ 364.2 ไม่ต้องมีหน่วย');
+    const txt=await claude(b64,file.type,'ในรูปนี้มีหน้าจอตาชั่งดิจิตอลแสดงตัวเลขสีแดง จงอ่านตัวเลขน้ำหนักที่แสดงอยู่ ตอบเป็นตัวเลขอย่างเดียวเท่านั้น ห้ามมีหน่วยหรือข้อความอื่น ถ้าเห็น 679.8 ให้ตอบ 679.8 ถ้าเห็น 802.0 ให้ตอบ 802.0');
     const n=parseFloat(txt.trim());
     if(!isNaN(n)){
       document.getElementById('grossVal').textContent=fmt(n)+' กก.';show('sResult');S.curGross=n;S.gAiDone=true;
