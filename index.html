@@ -109,7 +109,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .btn-primary{background:var(--buy);color:#fff;box-shadow:0 4px 12px rgba(21,101,192,0.25);}
 .btn-primary.sell{background:var(--sell);box-shadow:0 4px 12px rgba(46,125,50,0.25);}
 .btn-primary:disabled{background:#CBD5E1;box-shadow:none;color:#94A3B8;}
-.btn-secondary{background:var(--bg);color:var(--muted);border:1.5px solid var(--border);}
+.btn-secondary{background:#fff;color:var(--text);border:2px solid #94A3B8;font-weight:700;}
 .btn-outline{background:#fff;color:var(--buy);border:1.5px solid var(--buy);}
 .btn-outline.sell{color:var(--sell);border-color:var(--sell);}
 .btn-orange{background:#FFF7ED;color:var(--orange);border:1.5px solid #FED7AA;}
@@ -130,6 +130,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .lightbox img{max-width:100%;max-height:90vh;border-radius:12px;object-fit:contain;}
 .lightbox-close{position:absolute;top:16px;right:16px;color:#fff;font-size:32px;cursor:pointer;line-height:1;background:rgba(255,255,255,0.15);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;}
 .photo-preview{cursor:pointer;}
+.btn-view{display:none;width:100%;margin-top:6px;padding:8px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:12px;font-weight:700;color:var(--buy);cursor:pointer;font-family:'Sarabun',sans-serif;}
 </style>
 </head>
 <body>
@@ -187,6 +188,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="vPrev1">
         </label>
         <input type="file" id="vPhoto1" accept="image/*" onchange="readVehicle(this)" style="display:none">
+        <button class="btn-view" id="vView1" onclick="openLightbox(document.getElementById('vPrev1').src)" style="display:none">🔍 ดูรูป</button>
       </div>
       <div class="photo-col">
         <label class="photo-box" id="vBox2" for="vPhoto2">
@@ -194,6 +196,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="vPrev2">
         </label>
         <input type="file" id="vPhoto2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2')" style="display:none">
+        <button class="btn-view" id="vView2" onclick="openLightbox(document.getElementById('vPrev2').src)" style="display:none">🔍 ดูรูป</button>
       </div>
     </div>
     <div class="loading" id="vLoading"><div class="spinner"></div><div class="loading-txt">AI กำลังอ่านทะเบียน...</div></div>
@@ -244,18 +247,30 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div class="card-title" id="addFormTitle">เพิ่มเต๊าใหม่</div>
     <div class="photo-row">
       <div class="photo-col">
-        <label class="photo-box" id="sBox1" for="sPhoto1">
-          <div class="pi">⚖️</div><div class="pl">รูปตาชั่ง</div><div class="ps">AI อ่านน้ำหนัก</div>
-          <img class="photo-preview" id="sPrev1">
-        </label>
-        <input type="file" id="sPhoto1" accept="image/*" onchange="readScale(this)" style="display:none">
+        <div class="photo-box has-border" id="sBox1">
+          <div class="pi">⚖️</div><div class="pl" id="sLbl1">รูปตาชั่ง</div><div class="ps">AI อ่านน้ำหนัก</div>
+          <img class="photo-preview" id="sPrev1" onclick="openLightbox(this.src)">
+        </div>
+        <div class="photo-btn-row">
+          <label class="photo-action-btn" for="sPhoto1c">📷 ถ่าย</label>
+          <input type="file" id="sPhoto1c" accept="image/*" capture="environment" onchange="readScale(this)" style="display:none">
+          <label class="photo-action-btn" for="sPhoto1g">🖼️ คลัง</label>
+          <input type="file" id="sPhoto1g" accept="image/*" onchange="readScale(this)" style="display:none">
+        </div>
+        <button class="btn-view" id="sView1" style="display:none" onclick="openLightbox(document.getElementById('sPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
       <div class="photo-col">
-        <label class="photo-box" id="sBox2" for="sPhoto2">
-          <div class="pi">🔶</div><div class="pl">รูปทองแดง</div><div class="ps">หลักฐานในเต๊า</div>
-          <img class="photo-preview" id="sPrev2">
-        </label>
-        <input type="file" id="sPhoto2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2')" style="display:none">
+        <div class="photo-box" id="sBox2">
+          <div class="pi">🔶</div><div class="pl" id="sLbl2">รูปทองแดง</div><div class="ps">หลักฐานในเต๊า</div>
+          <img class="photo-preview" id="sPrev2" onclick="openLightbox(this.src)">
+        </div>
+        <div class="photo-btn-row">
+          <label class="photo-action-btn" for="sPhoto2c">📷 ถ่าย</label>
+          <input type="file" id="sPhoto2c" accept="image/*" capture="environment" onchange="previewOnly(this,'sPrev2','sBox2')" style="display:none">
+          <label class="photo-action-btn" for="sPhoto2g">🖼️ คลัง</label>
+          <input type="file" id="sPhoto2g" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2')" style="display:none">
+        </div>
+        <button class="btn-view" id="sView2" style="display:none" onclick="openLightbox(document.getElementById('sPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
     </div>
     <div class="loading" id="sLoading"><div class="spinner"></div><div class="loading-txt">AI กำลังอ่านน้ำหนัก...</div></div>
@@ -648,6 +663,10 @@ function previewInBox(file,imgId,boxId){
     img.src=e.target.result;img.style.display='block';
     img.onclick=()=>openLightbox(e.target.result);
     document.getElementById(boxId).classList.add('has-photo');
+    // โชว์ปุ่มดูรูป
+    const viewId=imgId.replace('Prev','View');
+    const vBtn=document.getElementById(viewId);
+    if(vBtn){vBtn.style.display='block';vBtn.onclick=()=>openLightbox(e.target.result);}
   };
   r.readAsDataURL(file);
 }
