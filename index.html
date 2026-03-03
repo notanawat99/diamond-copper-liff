@@ -105,13 +105,41 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .counter-info{color:rgba(255,255,255,0.5);font-size:12px;}
 .counter-num{font-size:22px;font-weight:800;color:#4ADE80;}
 .counter-type{font-size:13px;font-weight:700;color:#FCD34D;}
-.sum-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
-.sum-row:last-child{border:none;}
-.sum-key{font-size:13px;color:var(--muted);}
-.sum-val{font-size:14px;font-weight:700;}
-.total-box{background:var(--dark);border-radius:14px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
-.total-lbl{font-size:13px;color:rgba(255,255,255,0.5);}
-.total-val{font-size:26px;font-weight:800;color:#4ADE80;}
+/* Confirm Dialog */
+.dialog-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9997;align-items:center;justify-content:center;padding:24px;}
+.dialog-overlay.open{display:flex;}
+.dialog-box{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:320px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.2);}
+.dialog-icon{font-size:40px;margin-bottom:10px;}
+.dialog-title{font-size:17px;font-weight:800;margin-bottom:6px;}
+.dialog-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
+.dialog-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.dialog-cancel{padding:13px;border:2px solid var(--border);border-radius:12px;background:#fff;font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;color:var(--text);}
+.dialog-confirm{padding:13px;border:none;border-radius:12px;background:var(--red);font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;color:#fff;}
+/* Summary redesign */
+.sum-header{background:var(--dark);border-radius:14px;padding:16px 18px;margin-bottom:14px;}
+.sum-header-type{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;}
+.sum-header-main{font-size:20px;font-weight:800;color:#fff;margin:4px 0;}
+.sum-header-sub{font-size:12px;color:rgba(255,255,255,0.5);}
+.sum-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.sum-meta-item{background:#fff;border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);}
+.sum-meta-key{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.sum-meta-val{font-size:14px;font-weight:700;margin-top:3px;word-break:break-all;}
+.sum-bag-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.sum-bag-row:last-child{border:none;}
+.sum-bag-num{width:26px;height:26px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--muted);flex-shrink:0;margin-right:10px;}
+.sum-bag-type{font-size:11px;font-weight:700;color:var(--orange);}
+.sum-bag-w{font-size:15px;font-weight:800;}
+.sum-bag-detail{font-size:11px;color:var(--muted);}
+.sum-bag-net{font-size:16px;font-weight:800;color:var(--buy);margin-left:auto;flex-shrink:0;}
+.sum-total-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;}
+.sum-total-label{font-size:13px;color:var(--muted);font-weight:700;}
+.sum-total-val{font-size:28px;font-weight:800;color:var(--buy);}
+.sum-by-type{background:var(--bg);border-radius:12px;padding:12px 14px;margin-top:10px;}
+.sum-by-type-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.sum-by-type-row:last-child{border:none;}
+.sum-by-type-label{font-size:13px;font-weight:700;}
+.sum-by-type-val{font-size:13px;font-weight:800;color:var(--buy);}
+.sum-bags-count{font-size:11px;color:var(--muted);}
 .btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all .15s;margin-bottom:10px;}
 .btn:active{transform:scale(0.98);}
 .btn-primary{background:var(--buy);color:#fff;box-shadow:0 4px 12px rgba(21,101,192,0.25);}
@@ -328,17 +356,40 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 <!-- STEP 5 -->
 <div class="section" id="s5">
-  <div class="card">
-    <div class="card-title">ข้อมูลการทำรายการ</div>
-    <div class="sum-row"><span class="sum-key">ประเภท</span><span class="sum-val" id="sumType">-</span></div>
-    <div class="sum-row"><span class="sum-key">เอกสาร</span><span class="sum-val" id="sumDoc">-</span></div>
-    <div class="sum-row"><span class="sum-key" id="sumPartnerKey">นามผู้ขาย</span><span class="sum-val" id="sumPartner">-</span></div>
-    <div class="sum-row"><span class="sum-key">ทะเบียนรถ</span><span class="sum-val" id="sumVehicle">-</span></div>
+  <div class="sum-header">
+    <div class="sum-header-type" id="sumTypeLabel">-</div>
+    <div class="sum-header-main" id="sumDocMain">-</div>
+    <div class="sum-header-sub" id="sumDateSub">-</div>
+  </div>
+  <div class="sum-meta">
+    <div class="sum-meta-item">
+      <div class="sum-meta-key" id="sumPartnerKey">นามผู้ขาย</div>
+      <div class="sum-meta-val" id="sumPartner">-</div>
+    </div>
+    <div class="sum-meta-item">
+      <div class="sum-meta-key">ทะเบียนรถ</div>
+      <div class="sum-meta-val" id="sumVehicle">-</div>
+    </div>
+    <div class="sum-meta-item">
+      <div class="sum-meta-key">จำนวนเต๊า</div>
+      <div class="sum-meta-val" id="sumBagCount">-</div>
+    </div>
+    <div class="sum-meta-item">
+      <div class="sum-meta-key">รวมน้ำหนัก</div>
+      <div class="sum-meta-val" id="sumTotalSmall" style="color:var(--buy)">-</div>
+    </div>
   </div>
   <div class="card">
-    <div class="card-title">รายการเต๊าทั้งหมด</div>
+    <div class="card-title">สรุปตามประเภทสินค้า</div>
+    <div id="sumByType"></div>
+    <div class="sum-total-row">
+      <span class="sum-total-label">น้ำหนักสุทธิรวม</span>
+      <span class="sum-total-val" id="sumTotal">0.0 กก.</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">รายการทุกเต๊า</div>
     <div id="sumBags"></div>
-    <div class="total-box"><div><div class="total-lbl">รวมน้ำหนักทั้งหมด</div></div><div class="total-val" id="sumTotal">0.0 กก.</div></div>
   </div>
   <button class="btn btn-primary" id="confirmBtn" onclick="submit()">✅ ยืนยันส่งข้อมูล</button>
   <button class="btn btn-outline" onclick="go(4)">↩️ กลับเพิ่ม / แก้ไขเต๊า</button>
@@ -357,6 +408,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 </div>
 <div class="toast" id="toast"></div>
+<div class="dialog-overlay" id="delDialog">
+  <div class="dialog-box">
+    <div class="dialog-icon">🗑️</div>
+    <div class="dialog-title">ลบเต๊านี้?</div>
+    <div class="dialog-sub" id="delDialogSub">ต้องการลบรายการนี้ใช่ไหม<br>ไม่สามารถกู้คืนได้</div>
+    <div class="dialog-btns">
+      <button class="dialog-cancel" onclick="closeDelDialog()">ยกเลิก</button>
+      <button class="dialog-confirm" onclick="confirmDel()">ลบเลย</button>
+    </div>
+  </div>
+</div>
 <div class="cam-overlay" id="camOverlay">
   <video class="cam-video" id="camVideo" autoplay playsinline muted></video>
   <div class="cam-bar">
@@ -519,7 +581,21 @@ function resetAddForm(){
   document.getElementById('addFormTitle').textContent=S.bags.length>0?`เพิ่มเต๊าที่ ${S.bags.length+1}`:'เพิ่มเต๊าใหม่';
   document.getElementById('addForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
-function delBag(i){S.bags.splice(i,1);document.getElementById('bagCount').textContent=S.bags.length;document.getElementById('s4Btn').disabled=S.bags.length===0;renderBags();toast('🗑️ ลบเต๊าแล้ว');}
+let pendingDelIdx = null;
+function delBag(i){
+  pendingDelIdx=i;
+  const b=S.bags[i];
+  document.getElementById('delDialogSub').innerHTML=`เต๊าที่ ${i+1} — ${b.productType}<br><strong>${fmt(b.net)} กก.</strong><br><span style="color:var(--muted);font-size:12px">ไม่สามารถกู้คืนได้</span>`;
+  document.getElementById('delDialog').classList.add('open');
+}
+function closeDelDialog(){document.getElementById('delDialog').classList.remove('open');pendingDelIdx=null;}
+function confirmDel(){
+  if(pendingDelIdx===null)return;
+  S.bags.splice(pendingDelIdx,1);
+  document.getElementById('bagCount').textContent=S.bags.length;
+  document.getElementById('s4Btn').disabled=S.bags.length===0;
+  renderBags();toast('🗑️ ลบเต๊าแล้ว');closeDelDialog();
+}
 function renderBags(){
   const el=document.getElementById('bagList');if(!S.bags.length){el.innerHTML='';return;}
   let html='<div class="card">';
@@ -529,13 +605,56 @@ function renderBags(){
   html+='</div>';el.innerHTML=html;
 }
 function buildSummary(){
-  document.getElementById('sumType').textContent=S.type==='buy'?'ซื้อ / นำเข้า':'ขาย / นำออก';document.getElementById('sumDoc').textContent=DOC_NAMES[S.docType]||'-';
-  document.getElementById('sumPartnerKey').textContent=S.type==='buy'?'นามผู้ขาย':'นามผู้ซื้อ';document.getElementById('sumPartner').textContent=S.partner;document.getElementById('sumVehicle').textContent=S.vehicle;
-  document.getElementById('confirmBtn').className='btn btn-primary'+(S.type==='sell'?' sell':'');
-  const groups={};S.bags.forEach(b=>{if(!groups[b.productType])groups[b.productType]={count:0,net:0};groups[b.productType].count++;groups[b.productType].net+=b.net;});
-  let html='',total=0;
-  Object.entries(groups).forEach(([type,data])=>{const net=parseFloat(data.net.toFixed(1));total+=net;html+=`<div class="bag-item"><div class="bag-num" style="background:#FFF7ED;color:#F97316;font-weight:800">${data.count}</div><div class="bag-info"><div class="bag-type">${type}</div><div class="bag-w">${fmt(net)} กก.</div><div class="bag-sub">${data.count} เต๊า</div></div></div>`;});
-  document.getElementById('sumBags').innerHTML=html;document.getElementById('sumTotal').textContent=fmt(parseFloat(total.toFixed(1)))+' กก.';
+  const isBuy=S.type==='buy';
+  const DOC_NAMES={grn:'ใบนำส่งสินค้าเข้า',pb:'บิลซื้อสินค้า',do:'ใบนำส่งสินค้าออก',sb:'บิลขายสินค้า'};
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'})+' '+now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+
+  document.getElementById('sumTypeLabel').textContent=isBuy?'📥 ซื้อ / นำเข้า':'📤 ขาย / นำออก';
+  document.getElementById('sumDocMain').textContent=DOC_NAMES[S.docType]||'-';
+  document.getElementById('sumDateSub').textContent=dateStr;
+  document.getElementById('sumPartnerKey').textContent=isBuy?'นามผู้ขาย':'นามผู้ซื้อ';
+  document.getElementById('sumPartner').textContent=S.partner;
+  document.getElementById('sumVehicle').textContent=S.vehicle;
+  document.getElementById('sumBagCount').textContent=S.bags.length+' เต๊า';
+  document.getElementById('confirmBtn').className='btn btn-primary'+(isBuy?'':' sell');
+
+  // คำนวณ total และ group by type
+  const groups={};
+  let total=0;
+  S.bags.forEach(b=>{
+    if(!groups[b.productType])groups[b.productType]={count:0,net:0};
+    groups[b.productType].count++;
+    groups[b.productType].net=parseFloat((groups[b.productType].net+b.net).toFixed(1));
+    total=parseFloat((total+b.net).toFixed(1));
+  });
+
+  document.getElementById('sumTotalSmall').textContent=fmt(total)+' กก.';
+  document.getElementById('sumTotal').textContent=fmt(total)+' กก.';
+
+  // สรุปตามประเภท
+  let typeHtml='';
+  Object.entries(groups).forEach(([type,data])=>{
+    typeHtml+=`<div class="sum-by-type-row">
+      <div><div class="sum-by-type-label">${type}</div><div class="sum-bags-count">${data.count} เต๊า</div></div>
+      <div class="sum-by-type-val">${fmt(data.net)} กก.</div>
+    </div>`;
+  });
+  document.getElementById('sumByType').innerHTML=typeHtml;
+
+  // รายการทุกเต๊า
+  let bagsHtml='';
+  S.bags.forEach((b,i)=>{
+    bagsHtml+=`<div class="sum-bag-row">
+      <div class="sum-bag-num">${i+1}</div>
+      <div style="flex:1;min-width:0">
+        <div class="sum-bag-type">${b.productType}</div>
+        <div class="sum-bag-detail">Gross ${fmt(b.gross)} − Tare ${fmt(b.tare)} กก.</div>
+      </div>
+      <div class="sum-bag-net">${fmt(b.net)} กก.</div>
+    </div>`;
+  });
+  document.getElementById('sumBags').innerHTML=bagsHtml;
 }
 async function submit(){
   const btn=document.getElementById('confirmBtn');btn.textContent='⏳ กำลังส่งข้อมูล...';btn.disabled=true;
