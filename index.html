@@ -50,18 +50,16 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .ifield:focus{border-color:var(--accent);}
 .photo-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
 .photo-col{display:flex;flex-direction:column;gap:6px;}
-.photo-box{border:2px dashed var(--border);border-radius:14px;padding:14px 10px 10px;text-align:center;overflow:hidden;transition:all .2s;background:#FAFAFA;display:flex;flex-direction:column;align-items:center;}
+.photo-box{border:2px dashed var(--border);border-radius:14px;padding:14px 10px 10px;text-align:center;overflow:hidden;background:#FAFAFA;display:flex;flex-direction:column;align-items:center;}
 .photo-box .pi{font-size:26px;margin-bottom:3px;}
 .photo-box .pl{font-size:12px;font-weight:700;color:var(--text);}
 .photo-box .ps{font-size:10px;color:var(--muted);margin-top:1px;}
 .photo-box.has-photo{border-style:solid;border-color:var(--green);background:#F0FDF4;}
 .photo-box.has-photo .pl{color:var(--green);}
 .photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;height:80px;object-fit:cover;object-position:center;cursor:pointer;}
-.photo-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
-.photo-action-single{display:block;text-align:center;padding:10px;border:1.5px solid var(--buy);border-radius:10px;background:#EFF6FF;font-size:12px;font-weight:700;color:var(--buy);cursor:pointer;font-family:'Sarabun',sans-serif;}
-.photo-action-btn{display:block;text-align:center;padding:9px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Sarabun',sans-serif;}
-.photo-action-btn:active{background:var(--bg);}
-.btn-view{width:100%;padding:8px;border:1.5px solid #86EFAC;border-radius:10px;background:#F0FDF4;font-size:12px;font-weight:700;color:#15803D;cursor:pointer;font-family:'Sarabun',sans-serif;display:none;text-align:center;-webkit-appearance:none;type:button;}
+.photo-upload-btn{display:block;width:100%;text-align:center;padding:10px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:12px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Sarabun',sans-serif;}
+.photo-upload-btn:active{background:var(--bg);}
+.btn-view{width:100%;padding:8px;border:1.5px solid #86EFAC;border-radius:10px;background:#F0FDF4;font-size:12px;font-weight:700;color:#15803D;cursor:pointer;font-family:'Sarabun',sans-serif;display:none;text-align:center;}
 .ai-result{display:none;align-items:center;gap:10px;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:12px 14px;margin-top:10px;}
 .ai-val{font-size:22px;font-weight:800;color:#15803D;}
 .ai-lbl{font-size:11px;color:#16A34A;}
@@ -158,8 +156,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   <div class="card">
     <div class="card-title">ประเภทกิจกรรม</div>
     <div class="type-grid">
-      <div class="type-btn buy" onclick="selType('buy',this)"><div class="ti">📥</div><div class="tl">ซื้อ / นำเข้า</div><div class="td">รับสินค้าเข้าคลัง</div></div>
-      <div class="type-btn sell" onclick="selType('sell',this)"><div class="ti">📤</div><div class="tl">ขาย / นำออก</div><div class="td">ส่งสินค้าออกคลัง</div></div>
+      <div class="type-btn buy" onclick="selType('buy',this)">
+        <div class="ti">📥</div><div class="tl">ซื้อ / นำเข้า</div><div class="td">รับสินค้าเข้าคลัง</div>
+      </div>
+      <div class="type-btn sell" onclick="selType('sell',this)">
+        <div class="ti">📤</div><div class="tl">ขาย / นำออก</div><div class="td">ส่งสินค้าออกคลัง</div>
+      </div>
     </div>
   </div>
   <div class="card" id="docCard" style="display:none">
@@ -182,21 +184,24 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div class="photo-row">
       <div class="photo-col">
         <div class="photo-box" id="vBox1">
-          <div class="pi">🔢</div><div class="pl">รูปทะเบียน</div><div class="ps">AI อ่านเลข</div>
+          <div class="pi">🔢</div>
+          <div class="pl">รูปทะเบียน</div>
+          <div class="ps">AI อ่านเลข</div>
           <img class="photo-preview" id="vPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <label class="photo-action-btn photo-action-single" for="vP1g">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="vP1g" accept="image/*" onchange="readVehicle(this)" style="display:none">
+        <label class="photo-upload-btn" for="vP1">📷 ถ่าย / เลือกรูป</label>
+        <input type="file" id="vP1" accept="image/*" onchange="readVehicle(this)" style="display:none">
         <button type="button" class="btn-view" id="vView1" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
       <div class="photo-col">
         <div class="photo-box" id="vBox2">
-          <div class="pi">🚛</div><div class="pl">รูปตัวรถ</div><div class="ps">หลักฐานเสริม</div>
+          <div class="pi">🚛</div>
+          <div class="pl">รูปตัวรถ</div>
+          <div class="ps">หลักฐานเสริม</div>
           <img class="photo-preview" id="vPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <label class="photo-action-btn photo-action-single" for="vP2g">📷 ถ่าย / เลือกรูป</label>
-          <input type="file" id="vP2g" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
-        </div>
+        <label class="photo-upload-btn" for="vP2">📷 ถ่าย / เลือกรูป</label>
+        <input type="file" id="vP2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
         <button type="button" class="btn-view" id="vView2" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
     </div>
@@ -248,21 +253,24 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div class="photo-row">
       <div class="photo-col">
         <div class="photo-box" id="sBox1">
-          <div class="pi">⚖️</div><div class="pl">รูปตาชั่ง</div><div class="ps">AI อ่านน้ำหนัก</div>
+          <div class="pi">⚖️</div>
+          <div class="pl">รูปตาชั่ง</div>
+          <div class="ps">AI อ่านน้ำหนัก</div>
           <img class="photo-preview" id="sPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <label class="photo-action-btn photo-action-single" for="sP1g">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="sP1g" accept="image/*" onchange="readScale(this)" style="display:none">
+        <label class="photo-upload-btn" for="sP1">📷 ถ่าย / เลือกรูป</label>
+        <input type="file" id="sP1" accept="image/*" onchange="readScale(this)" style="display:none">
         <button type="button" class="btn-view" id="sView1" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
       <div class="photo-col">
         <div class="photo-box" id="sBox2">
-          <div class="pi">🔶</div><div class="pl">รูปทองแดง</div><div class="ps">หลักฐานในเต๊า</div>
+          <div class="pi">🔶</div>
+          <div class="pl">รูปทองแดง</div>
+          <div class="ps">หลักฐานในเต๊า</div>
           <img class="photo-preview" id="sPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <label class="photo-action-btn photo-action-single" for="sP2g">📷 ถ่าย / เลือกรูป</label>
-          <input type="file" id="sP2g" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
-        </div>
+        <label class="photo-upload-btn" for="sP2">📷 ถ่าย / เลือกรูป</label>
+        <input type="file" id="sP2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
         <button type="button" class="btn-view" id="sView2" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
     </div>
@@ -347,7 +355,6 @@ const TARE_DEFAULT = {buy:3.0,sell:2.0};
 const S = {type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,vAiDone:false,gAiDone:false};
 
 liff.init({liffId:LIFF_ID}).catch(()=>console.log('LIFF test mode'));
-
 function fmt(n){return parseFloat(n).toFixed(1);}
 
 function go(n){
@@ -386,9 +393,6 @@ document.getElementById('s1Btn').addEventListener('click',()=>{
 
 async function readVehicle(input){
   const file=input.files[0];if(!file)return;
-  await readVehicleFile(file);
-}
-async function readVehicleFile(file){
   previewInBox(file,'vPrev1','vBox1','vView1');
   show('vLoading');hide('vResult');hideEl('vEditBox');
   try{
@@ -397,7 +401,7 @@ async function readVehicleFile(file){
     const plate=txt.trim();document.getElementById('vVal').textContent=plate;S.vehicle=plate;S.vAiDone=true;
     show('vResult');document.getElementById('vManualGroup').style.display='none';document.getElementById('vPlate').value=plate;
   }catch{
-    S.vAiDone=false;document.getElementById('vManualGroup').style.display='block';document.getElementById('vPlate').focus();
+    S.vAiDone=false;document.getElementById('vManualGroup').style.display='block';
   }
   hide('vLoading');chk2();
 }
@@ -431,9 +435,6 @@ function setupStep4(){
 }
 async function readScale(input){
   const file=input.files[0];if(!file)return;
-  await readScaleFile(file);
-}
-async function readScaleFile(file){
   previewInBox(file,'sPrev1','sBox1','sView1');
   show('sLoading');hide('sResult');hideEl('grossEditBox');hide('netCard');
   try{
@@ -459,44 +460,33 @@ function confirmEditGross(){const val=parseFloat(document.getElementById('grossE
 function calcNet(){
   const gRaw=parseFloat(document.getElementById('grossIn').value);const g=!isNaN(gRaw)?gRaw:S.curGross;
   const tRaw=parseFloat(document.getElementById('tareIn').value);const t=!isNaN(tRaw)?tRaw:S.curTare;
-  if(!g)return;
-  S.curGross=g;
-  // ไม่ update S.curTare ที่นี่ — จะ update ตอน addBag เท่านั้น
+  if(!g)return;S.curGross=g;
   const net=parseFloat((g-t).toFixed(1));
   document.getElementById('dGross').textContent=fmt(g)+' กก.';document.getElementById('dTare').textContent=fmt(t)+' กก.';document.getElementById('dNet').textContent=fmt(net)+' กก.';
   show('netCard');chkAddBag();
 }
-function previewOnly(input,prevId,boxId,viewId){const file=input.files[0];if(!file)return;previewOnlyFile(file,prevId,boxId,viewId);}
-function previewOnlyFile(file,prevId,boxId,viewId){previewInBox(file,prevId,boxId,viewId);chkAddBag();}
+function previewOnly(input,prevId,boxId,viewId){const file=input.files[0];if(!file)return;previewInBox(file,prevId,boxId,viewId);chkAddBag();}
 function chkAddBag(){document.getElementById('addBagBtn').disabled=!S.curGross;}
 function addBag(){
   const gross=S.curGross;
   const tare=parseFloat(document.getElementById('tareIn').value)||S.curTare;
-  S.curTare=tare; // carry forward เต๊าถัดไป
+  S.curTare=tare;
   const net=parseFloat((gross-tare).toFixed(1));
   S.bags.push({gross,tare,net,productType:S.productType,scaleImgUrl:document.getElementById('sPrev1').src||null,goodsImgUrl:document.getElementById('sPrev2').src||null});
-  toast('✅ เต๊าที่ '+S.bags.length+' บันทึกแล้ว');document.getElementById('bagCount').textContent=S.bags.length;document.getElementById('s4Btn').disabled=false;renderBags();resetAddForm();
+  toast('✅ เต๊าที่ '+S.bags.length+' บันทึกแล้ว');
+  document.getElementById('bagCount').textContent=S.bags.length;document.getElementById('s4Btn').disabled=false;
+  renderBags();resetAddForm();
 }
 function resetAddForm(){
   S.curGross=null;S.gAiDone=false;
-  // ล้าง file inputs
-  ['sP1g','sP2g'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  // ล้างรูป preview
+  ['sP1','sP2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['sPrev1','sPrev2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});
-  // reset photo box state
   ['sBox1','sBox2'].forEach(id=>document.getElementById(id).classList.remove('has-photo'));
-  // ซ่อนปุ่มดูรูป
   ['sView1','sView2'].forEach(id=>document.getElementById(id).style.display='none');
-  // ล้าง AI result, edit box, loading, net card
   hide('sResult');hideEl('grossEditBox');hide('sLoading');hide('netCard');
-  // ล้าง gross field + โชว์ manual group
-  document.getElementById('grossIn').value='';
-  document.getElementById('grossManualGroup').style.display='block';
-  // แสดง tare default ในช่อง input (carry forward จากเต๊าก่อนหน้า)
-  document.getElementById('tareIn').value=fmt(S.curTare);
-  document.getElementById('addBagBtn').disabled=true;
+  document.getElementById('grossIn').value='';document.getElementById('grossManualGroup').style.display='block';
+  document.getElementById('tareIn').value=fmt(S.curTare);document.getElementById('addBagBtn').disabled=true;
   document.getElementById('addFormTitle').textContent=S.bags.length>0?`เพิ่มเต๊าที่ ${S.bags.length+1}`:'เพิ่มเต๊าใหม่';
-  // scroll ขึ้นบน form ใหม่
   document.getElementById('addForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function delBag(i){S.bags.splice(i,1);document.getElementById('bagCount').textContent=S.bags.length;document.getElementById('s4Btn').disabled=S.bags.length===0;renderBags();toast('🗑️ ลบเต๊าแล้ว');}
@@ -504,7 +494,7 @@ function renderBags(){
   const el=document.getElementById('bagList');if(!S.bags.length){el.innerHTML='';return;}
   let html='<div class="card">';
   S.bags.forEach((b,i)=>{
-    html+=`<div class="bag-item"><div class="bag-num">${i+1}</div><div class="bag-info"><div class="bag-type">${b.productType}</div><div class="bag-w">${fmt(b.net)} กก.</div><div class="bag-sub">Gross ${fmt(b.gross)} − Tare ${fmt(b.tare)}</div><div class="bag-photos">${b.scaleImgUrl?`<img class="bag-thumb" src="${b.scaleImgUrl}" onclick="event.stopPropagation();openLightbox(this.src)">`:''} ${b.goodsImgUrl?`<img class="bag-thumb" src="${b.goodsImgUrl}" onclick="event.stopPropagation();openLightbox(this.src)">`:''}</div></div><div class="bag-del" onclick="delBag(${i})">🗑️</div></div>`;
+    html+=`<div class="bag-item"><div class="bag-num">${i+1}</div><div class="bag-info"><div class="bag-type">${b.productType}</div><div class="bag-w">${fmt(b.net)} กก.</div><div class="bag-sub">Gross ${fmt(b.gross)} − Tare ${fmt(b.tare)}</div><div class="bag-photos">${b.scaleImgUrl?`<img class="bag-thumb" src="${b.scaleImgUrl}" onclick="openLightbox(this.src)">`:''} ${b.goodsImgUrl?`<img class="bag-thumb" src="${b.goodsImgUrl}" onclick="openLightbox(this.src)">`:''}</div></div><div class="bag-del" onclick="delBag(${i})">🗑️</div></div>`;
   });
   html+='</div>';el.innerHTML=html;
 }
@@ -526,7 +516,8 @@ async function submit(){
 }
 function reset(){
   Object.assign(S,{type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,vAiDone:false,gAiDone:false});
-  document.getElementById('partnerName').value='';document.getElementById('vPlate').value='';document.getElementById('vManualGroup').style.display='block';
+  document.getElementById('partnerName').value='';document.getElementById('vPlate').value='';
+  document.getElementById('vManualGroup').style.display='block';
   document.querySelectorAll('.type-btn,.doc-btn,.ptype-btn').forEach(b=>b.classList.remove('sel'));
   document.getElementById('docCard').style.display='none';document.getElementById('s1Btn').style.display='none';
   document.getElementById('hBadge').textContent='-';document.getElementById('hBadge').className='hdr-badge';
@@ -554,7 +545,6 @@ async function claude(b64,mediaType,prompt){
   const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mediaType,data:b64}},{type:'text',text:prompt}]}]})});
   const data=await resp.json();return data.content[0].text;
 }
-
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 </script>
 </body>
