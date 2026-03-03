@@ -7,233 +7,132 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
-
 :root {
-  --buy: #1565C0;
-  --sell: #2E7D32;
-  --dark: #0F172A;
-  --card: #FFFFFF;
-  --bg: #F1F5F9;
-  --text: #1E293B;
-  --muted: #94A3B8;
-  --border: #E2E8F0;
-  --green: #22C55E;
-  --red: #EF4444;
-  --orange: #F97316;
-  --shadow: 0 1px 12px rgba(0,0,0,0.08);
-  --r: 16px;
-  --accent: #1565C0;
+  --buy:#1565C0;--sell:#2E7D32;--dark:#0F172A;--card:#FFFFFF;
+  --bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;
+  --green:#22C55E;--red:#EF4444;--orange:#F97316;
+  --shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 48px; }
-
-/* ── Header ── */
-.hdr {
-  background: var(--dark);
-  padding: 18px 18px 20px;
-  position: sticky; top: 0; z-index: 100;
-}
-.hdr-top { display: flex; justify-content: space-between; align-items: flex-start; }
-.hdr-brand { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 2px; text-transform: uppercase; }
-.hdr-title { font-size: 20px; font-weight: 800; color: #fff; margin-top: 2px; }
-.hdr-step { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
-.hdr-badge {
-  font-size: 11px; font-weight: 700; padding: 4px 10px;
-  border-radius: 20px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
-}
-.hdr-badge.buy { background: rgba(21,101,192,0.4); color: #90CAF9; }
-.hdr-badge.sell { background: rgba(46,125,50,0.4); color: #A5D6A7; }
-.progress-bar { display: flex; gap: 4px; margin-top: 14px; }
-.pb-seg { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.15); flex: 1; transition: background .3s; }
-.pb-seg.done { background: rgba(255,255,255,0.5); }
-.pb-seg.active { background: #fff; }
-
-/* ── Content ── */
-.content { padding: 16px; }
-.section { display: none; animation: up .25s ease; }
-.section.active { display: block; }
-@keyframes up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
-/* ── Card ── */
-.card { background: var(--card); border-radius: var(--r); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); }
-.card-title { font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
-
-/* ── Type Grid ── */
-.type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.type-btn {
-  border: 2px solid var(--border); border-radius: 14px; padding: 18px 10px;
-  text-align: center; cursor: pointer; transition: all .2s; background: #fff;
-}
-.type-btn .ti { font-size: 30px; margin-bottom: 6px; }
-.type-btn .tl { font-size: 14px; font-weight: 700; }
-.type-btn .td { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.type-btn.buy.sel { border-color: var(--buy); background: #EFF6FF; }
-.type-btn.sell.sel { border-color: var(--sell); background: #F0FDF4; }
-
-/* ── Doc Grid ── */
-.doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.doc-btn {
-  border: 2px solid var(--border); border-radius: 14px; padding: 14px 10px;
-  text-align: center; cursor: pointer; transition: all .2s; background: #fff;
-}
-.doc-btn .di { font-size: 26px; margin-bottom: 6px; }
-.doc-btn .dl { font-size: 12px; font-weight: 700; line-height: 1.3; }
-.doc-btn .dtag {
-  display: inline-block; font-size: 10px; font-weight: 700;
-  padding: 2px 8px; border-radius: 20px; margin-top: 6px;
-}
-.doc-btn.no-price .dtag { background: #FFF7ED; color: #C2410C; }
-.doc-btn.has-price .dtag { background: #F0FDF4; color: #15803D; }
-.doc-btn.sel.buy { border-color: var(--buy); background: #EFF6FF; }
-.doc-btn.sel.sell { border-color: var(--sell); background: #F0FDF4; }
-
-/* ── Input ── */
-.igroup { margin-bottom: 14px; }
-.ilabel { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 7px; display: block; }
-.ifield {
-  width: 100%; border: 1.5px solid var(--border); border-radius: 12px;
-  padding: 13px 15px; font-size: 16px; font-family: 'Sarabun', sans-serif;
-  color: var(--text); background: #fff; outline: none; -webkit-appearance: none;
-  transition: border-color .2s;
-}
-.ifield:focus { border-color: var(--accent); }
-.ifield.ok { border-color: var(--green); background: #F0FDF4; }
-
-/* ── Photo ── */
-.photo-box {
-  border: 2px dashed var(--border); border-radius: 14px; padding: 20px;
-  text-align: center; cursor: pointer; position: relative; overflow: hidden;
-  transition: all .2s; background: #FAFAFA;
-}
-.photo-box:active { background: #F1F5F9; }
-.photo-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.photo-box .pi { font-size: 32px; margin-bottom: 6px; }
-.photo-box .pl { font-size: 14px; font-weight: 700; color: var(--text); }
-.photo-box .ps { font-size: 11px; color: var(--muted); margin-top: 3px; }
-.photo-box.has-photo { border-style: solid; border-color: var(--green); background: #F0FDF4; }
-.photo-box.has-photo .pl { color: var(--green); }
-.photo-preview { width: 100%; border-radius: 10px; margin-top: 10px; display: none; max-height: 180px; object-fit: cover; }
-.photo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-
-/* ── AI Result ── */
-.ai-result {
-  display: none; align-items: center; gap: 10px;
-  background: #F0FDF4; border: 1.5px solid #86EFAC;
-  border-radius: 12px; padding: 12px 14px; margin-top: 10px;
-}
-.ai-val { font-size: 22px; font-weight: 800; color: #15803D; }
-.ai-lbl { font-size: 11px; color: #16A34A; }
-.ai-edit { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--buy); cursor: pointer; text-decoration: underline; }
-
-/* ── Loading ── */
-.loading {
-  display: none; align-items: center; gap: 10px;
-  background: #EFF6FF; border-radius: 12px; padding: 12px 14px; margin-top: 10px;
-}
-.spinner { width: 18px; height: 18px; border: 3px solid #BFDBFE; border-top-color: var(--buy); border-radius: 50%; animation: spin .7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-txt { font-size: 13px; font-weight: 700; color: var(--buy); }
-
-/* ── Product Type Grid ── */
-.ptype-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.ptype-btn {
-  border: 2px solid var(--border); border-radius: 12px; padding: 12px 10px;
-  text-align: center; cursor: pointer; transition: all .15s; background: #fff;
-  font-size: 14px; font-weight: 700; color: var(--text);
-}
-.ptype-btn.sel { border-color: var(--orange); background: #FFF7ED; color: var(--orange); }
-.ptype-custom { margin-top: 8px; }
-
-/* ── Weight Card ── */
-.wcard {
-  background: var(--dark); border-radius: 14px; padding: 16px 18px; margin: 12px 0;
-}
-.wrow { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
-.wrow:last-child { border: none; }
-.wkey { font-size: 12px; color: rgba(255,255,255,0.45); }
-.wval { font-size: 15px; font-weight: 700; color: #fff; }
-.wval.net { font-size: 22px; color: #4ADE80; }
-
-/* ── Bag Item ── */
-.bag-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 0; border-bottom: 1px solid var(--border);
-}
-.bag-item:last-child { border: none; }
-.bag-num { width: 30px; height: 30px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--muted); flex-shrink: 0; }
-.bag-info { flex: 1; }
-.bag-type { font-size: 11px; font-weight: 700; color: var(--orange); }
-.bag-w { font-size: 15px; font-weight: 800; }
-.bag-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-.bag-del { color: var(--red); font-size: 18px; cursor: pointer; padding: 4px 8px; }
-.bag-photos { display: flex; gap: 4px; margin-top: 4px; }
-.bag-thumb { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; }
-
-/* ── Counter ── */
-.counter-bar {
-  background: var(--dark); border-radius: 14px; padding: 12px 16px;
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-}
-.counter-info { color: rgba(255,255,255,0.5); font-size: 12px; }
-.counter-num { font-size: 22px; font-weight: 800; color: #4ADE80; }
-.counter-type { font-size: 13px; font-weight: 700; color: #FCD34D; }
-
-/* ── Summary ── */
-.sum-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.sum-row:last-child { border: none; }
-.sum-key { font-size: 13px; color: var(--muted); }
-.sum-val { font-size: 14px; font-weight: 700; }
-.total-box {
-  background: var(--dark); border-radius: 14px; padding: 16px 18px;
-  display: flex; justify-content: space-between; align-items: center; margin-top: 12px;
-}
-.total-lbl { font-size: 13px; color: rgba(255,255,255,0.5); }
-.total-val { font-size: 26px; font-weight: 800; color: #4ADE80; }
-
-/* ── Buttons ── */
-.btn {
-  width: 100%; padding: 16px; border: none; border-radius: 14px;
-  font-size: 16px; font-weight: 700; font-family: 'Sarabun', sans-serif;
-  cursor: pointer; transition: all .15s; margin-bottom: 10px;
-}
-.btn:active { transform: scale(0.98); }
-.btn-primary { background: var(--buy); color: #fff; box-shadow: 0 4px 12px rgba(21,101,192,0.25); }
-.btn-primary.sell { background: var(--sell); box-shadow: 0 4px 12px rgba(46,125,50,0.25); }
-.btn-primary:disabled { background: #CBD5E1; box-shadow: none; color: #94A3B8; }
-.btn-secondary { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border); }
-.btn-outline { background: #fff; color: var(--buy); border: 1.5px solid var(--buy); }
-.btn-outline.sell { color: var(--sell); border-color: var(--sell); }
-.btn-orange { background: #FFF7ED; color: var(--orange); border: 1.5px solid #FED7AA; }
-.btn-danger { background: #FEF2F2; color: var(--red); border: 1.5px solid #FECACA; }
-.btn-row { display: flex; gap: 10px; }
-.btn-row .btn { margin-bottom: 0; }
-.btn-back { width: auto; padding: 16px 20px; flex-shrink: 0; }
-
-/* ── Note Box ── */
-.note-box { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 12px; color: #92400E; }
-
-/* ── Toast ── */
-.toast {
-  position: fixed; bottom: 20px; left: 50%;
-  transform: translateX(-50%) translateY(70px);
-  background: var(--dark); color: #fff; padding: 11px 20px;
-  border-radius: 20px; font-size: 13px; font-weight: 700;
-  transition: transform .25s; z-index: 999; white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-
-/* ── Success ── */
-.success { text-align: center; padding: 40px 10px; }
-.success-icon { font-size: 72px; margin-bottom: 16px; }
-.success-title { font-size: 24px; font-weight: 800; }
-.success-sub { font-size: 14px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
-.txn-chip { display: inline-block; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 20px; font-size: 18px; font-weight: 800; margin: 18px 0; letter-spacing: 1px; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;}
+.hdr{background:var(--dark);padding:18px 18px 20px;position:sticky;top:0;z-index:100;}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.hdr-brand{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;}
+.hdr-title{font-size:20px;font-weight:800;color:#fff;margin-top:2px;}
+.hdr-step{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.hdr-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);}
+.hdr-badge.buy{background:rgba(21,101,192,0.4);color:#90CAF9;}
+.hdr-badge.sell{background:rgba(46,125,50,0.4);color:#A5D6A7;}
+.progress-bar{display:flex;gap:4px;margin-top:14px;}
+.pb-seg{height:3px;border-radius:2px;background:rgba(255,255,255,0.15);flex:1;transition:background .3s;}
+.pb-seg.done{background:rgba(255,255,255,0.5);}
+.pb-seg.active{background:#fff;}
+.content{padding:16px;}
+.section{display:none;animation:up .25s ease;}
+.section.active{display:block;}
+@keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
+.card-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.type-btn{border:2px solid var(--border);border-radius:14px;padding:18px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
+.type-btn .ti{font-size:30px;margin-bottom:6px;}
+.type-btn .tl{font-size:14px;font-weight:700;}
+.type-btn .td{font-size:11px;color:var(--muted);margin-top:2px;}
+.type-btn.buy.sel{border-color:var(--buy);background:#EFF6FF;}
+.type-btn.sell.sel{border-color:var(--sell);background:#F0FDF4;}
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.doc-btn{border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
+.doc-btn .di{font-size:26px;margin-bottom:6px;}
+.doc-btn .dl{font-size:12px;font-weight:700;line-height:1.3;}
+.doc-btn .dtag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:6px;}
+.doc-btn.no-price .dtag{background:#FFF7ED;color:#C2410C;}
+.doc-btn.has-price .dtag{background:#F0FDF4;color:#15803D;}
+.doc-btn.sel.buy{border-color:var(--buy);background:#EFF6FF;}
+.doc-btn.sel.sell{border-color:var(--sell);background:#F0FDF4;}
+.igroup{margin-bottom:14px;}
+.ilabel{font-size:13px;font-weight:700;color:var(--text);margin-bottom:7px;display:block;}
+.ifield{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-size:16px;font-family:'Sarabun',sans-serif;color:var(--text);background:#fff;outline:none;-webkit-appearance:none;transition:border-color .2s;}
+.ifield:focus{border-color:var(--accent);}
+/* FIX 2: photo-box ไม่ล้น */
+.photo-col{display:flex;flex-direction:column;}
+.photo-box{border:2px dashed var(--border);border-radius:14px;padding:16px 10px 12px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:all .2s;background:#FAFAFA;display:flex;flex-direction:column;align-items:center;}
+.photo-box:active{background:#F1F5F9;}
+.photo-box .pi{font-size:28px;margin-bottom:4px;pointer-events:none;}
+.photo-box .pl{font-size:13px;font-weight:700;color:var(--text);pointer-events:none;}
+.photo-box .ps{font-size:10px;color:var(--muted);margin-top:2px;pointer-events:none;}
+.photo-box.has-photo{border-style:solid;border-color:var(--green);background:#F0FDF4;}
+.photo-box.has-photo .pl{color:var(--green);}
+/* FIX 2: preview อยู่ใน box */
+.photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;height:90px;object-fit:cover;object-position:center;pointer-events:none;}
+.photo-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.ai-result{display:none;align-items:center;gap:10px;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:12px 14px;margin-top:10px;}
+.ai-val{font-size:22px;font-weight:800;color:#15803D;}
+.ai-lbl{font-size:11px;color:#16A34A;}
+.ai-edit{margin-left:auto;font-size:12px;font-weight:700;color:var(--buy);cursor:pointer;text-decoration:underline;white-space:nowrap;}
+/* FIX 3: edit-box มีปุ่มยกเลิก */
+.edit-box{display:none;margin-top:10px;background:#F8FAFC;border:1.5px solid var(--border);border-radius:12px;padding:12px;}
+.edit-box-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.edit-box-title{font-size:13px;font-weight:700;}
+.edit-box-cancel{font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;text-decoration:underline;}
+.loading{display:none;align-items:center;gap:10px;background:#EFF6FF;border-radius:12px;padding:12px 14px;margin-top:10px;}
+.spinner{width:18px;height:18px;border:3px solid #BFDBFE;border-top-color:var(--buy);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-txt{font-size:13px;font-weight:700;color:var(--buy);}
+.ptype-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.ptype-btn{border:2px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .15s;background:#fff;font-size:14px;font-weight:700;color:var(--text);}
+.ptype-btn.sel{border-color:var(--orange);background:#FFF7ED;color:var(--orange);}
+.ptype-custom{margin-top:8px;}
+.wcard{background:var(--dark);border-radius:14px;padding:16px 18px;margin:12px 0;}
+.wrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
+.wrow:last-child{border:none;}
+.wkey{font-size:12px;color:rgba(255,255,255,0.45);}
+.wval{font-size:15px;font-weight:700;color:#fff;}
+.wval.net{font-size:22px;color:#4ADE80;}
+.bag-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.bag-item:last-child{border:none;}
+.bag-num{width:30px;height:30px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--muted);flex-shrink:0;}
+.bag-info{flex:1;min-width:0;}
+.bag-type{font-size:11px;font-weight:700;color:var(--orange);}
+.bag-w{font-size:15px;font-weight:800;}
+.bag-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+.bag-del{color:var(--red);font-size:18px;cursor:pointer;padding:4px 8px;flex-shrink:0;}
+.bag-photos{display:flex;gap:4px;margin-top:4px;}
+.bag-thumb{width:36px;height:36px;border-radius:6px;object-fit:cover;}
+.counter-bar{background:var(--dark);border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.counter-info{color:rgba(255,255,255,0.5);font-size:12px;}
+.counter-num{font-size:22px;font-weight:800;color:#4ADE80;}
+.counter-type{font-size:13px;font-weight:700;color:#FCD34D;}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.sum-row:last-child{border:none;}
+.sum-key{font-size:13px;color:var(--muted);}
+.sum-val{font-size:14px;font-weight:700;}
+.total-box{background:var(--dark);border-radius:14px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+.total-lbl{font-size:13px;color:rgba(255,255,255,0.5);}
+.total-val{font-size:26px;font-weight:800;color:#4ADE80;}
+.btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all .15s;margin-bottom:10px;}
+.btn:active{transform:scale(0.98);}
+.btn-primary{background:var(--buy);color:#fff;box-shadow:0 4px 12px rgba(21,101,192,0.25);}
+.btn-primary.sell{background:var(--sell);box-shadow:0 4px 12px rgba(46,125,50,0.25);}
+.btn-primary:disabled{background:#CBD5E1;box-shadow:none;color:#94A3B8;}
+.btn-secondary{background:var(--bg);color:var(--muted);border:1.5px solid var(--border);}
+.btn-outline{background:#fff;color:var(--buy);border:1.5px solid var(--buy);}
+.btn-outline.sell{color:var(--sell);border-color:var(--sell);}
+.btn-orange{background:#FFF7ED;color:var(--orange);border:1.5px solid #FED7AA;}
+.btn-row{display:flex;gap:10px;}
+.btn-row .btn{margin-bottom:0;}
+.btn-back{width:auto;padding:16px 20px;flex-shrink:0;}
+.note-box{background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#92400E;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--dark);color:#fff;padding:11px 20px;border-radius:20px;font-size:13px;font-weight:700;transition:transform .25s;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.success{text-align:center;padding:40px 10px;}
+.success-icon{font-size:72px;margin-bottom:16px;}
+.success-title{font-size:24px;font-weight:800;}
+.success-sub{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.7;}
+.txn-chip{display:inline-block;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 20px;font-size:18px;font-weight:800;margin:18px 0;letter-spacing:1px;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
     <div>
@@ -254,97 +153,74 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
 
 <div class="content">
 
-<!-- ═══ STEP 1: ประเภทกิจกรรม ═══ -->
+<!-- STEP 1 -->
 <div class="section active" id="s1">
   <div class="card">
     <div class="card-title">ประเภทกิจกรรม</div>
     <div class="type-grid">
-      <div class="type-btn buy" onclick="selType('buy',this)">
-        <div class="ti">📥</div>
-        <div class="tl">ซื้อ / นำเข้า</div>
-        <div class="td">รับสินค้าเข้าคลัง</div>
-      </div>
-      <div class="type-btn sell" onclick="selType('sell',this)">
-        <div class="ti">📤</div>
-        <div class="tl">ขาย / นำออก</div>
-        <div class="td">ส่งสินค้าออกคลัง</div>
-      </div>
+      <div class="type-btn buy" onclick="selType('buy',this)"><div class="ti">📥</div><div class="tl">ซื้อ / นำเข้า</div><div class="td">รับสินค้าเข้าคลัง</div></div>
+      <div class="type-btn sell" onclick="selType('sell',this)"><div class="ti">📤</div><div class="tl">ขาย / นำออก</div><div class="td">ส่งสินค้าออกคลัง</div></div>
     </div>
   </div>
-
   <div class="card" id="docCard" style="display:none">
     <div class="card-title">ประเภทเอกสาร</div>
     <div class="doc-grid" id="docGrid"></div>
   </div>
-
   <button class="btn btn-primary" id="s1Btn" onclick="go(2)" style="display:none">ถัดไป →</button>
 </div>
 
-<!-- ═══ STEP 2: ข้อมูลคู่ค้า ═══ -->
+<!-- STEP 2 -->
 <div class="section" id="s2">
   <div class="card">
     <div class="card-title" id="partnerTitle">นามผู้ขาย</div>
-    <div class="igroup">
+    <div class="igroup" style="margin-bottom:0">
       <input class="ifield" id="partnerName" type="text" placeholder="ชื่อ / บริษัท" oninput="chk2()">
     </div>
   </div>
-
   <div class="card">
     <div class="card-title">ทะเบียนรถ</div>
     <div class="photo-row">
-      <!-- รูปทะเบียน -->
-      <div>
+      <div class="photo-col">
         <label class="photo-box" id="vBox1" for="vPhoto1">
-          <div class="pi">🔢</div>
-          <div class="pl">รูปทะเบียน</div>
-          <div class="ps">AI อ่านเลข</div>
+          <div class="pi">🔢</div><div class="pl">รูปทะเบียน</div><div class="ps">AI อ่านเลข</div>
+          <img class="photo-preview" id="vPrev1">
         </label>
-        <input type="file" id="vPhoto1" accept="image/*" onchange="readVehicle(this)" style="display:none">
-        <img class="photo-preview" id="vPrev1">
+        <input type="file" id="vPhoto1" accept="image/*" capture="environment" onchange="readVehicle(this)" style="display:none">
       </div>
-      <!-- รูปตัวรถ -->
-      <div>
+      <div class="photo-col">
         <label class="photo-box" id="vBox2" for="vPhoto2">
-          <div class="pi">🚛</div>
-          <div class="pl">รูปตัวรถ</div>
-          <div class="ps">หลักฐานเสริม</div>
+          <div class="pi">🚛</div><div class="pl">รูปตัวรถ</div><div class="ps">หลักฐานเสริม</div>
+          <img class="photo-preview" id="vPrev2">
         </label>
-        <input type="file" id="vPhoto2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2')" style="display:none">
-        <img class="photo-preview" id="vPrev2">
+        <input type="file" id="vPhoto2" accept="image/*" capture="environment" onchange="previewOnly(this,'vPrev2','vBox2')" style="display:none">
       </div>
     </div>
-
-    <div class="loading" id="vLoading">
-      <div class="spinner"></div>
-      <div class="loading-txt">AI กำลังอ่านทะเบียน...</div>
-    </div>
+    <div class="loading" id="vLoading"><div class="spinner"></div><div class="loading-txt">AI กำลังอ่านทะเบียน...</div></div>
     <div class="ai-result" id="vResult">
-      <div>
-        <div class="ai-val" id="vVal">-</div>
-        <div class="ai-lbl">อ่านได้จากรูป</div>
-      </div>
+      <div style="flex:1;min-width:0"><div class="ai-val" id="vVal">-</div><div class="ai-lbl">อ่านได้จากรูป</div></div>
       <div class="ai-edit" onclick="editVehicle()">✏️ แก้ไข</div>
     </div>
-    <div id="vEditBox" style="display:none; margin-top:10px">
-      <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px">
-        <span style="font-size:13px;font-weight:700">แก้ไขทะเบียนรถ</span>
-        <span onclick="cancelEditVehicle()" style="margin-left:auto;font-size:12px;font-weight:700;color:#94A3B8;cursor:pointer;text-decoration:underline">✕ ยกเลิก</span>
+    <!-- FIX 3: edit box + ปุ่มยกเลิก -->
+    <div class="edit-box" id="vEditBox">
+      <div class="edit-box-hdr">
+        <span class="edit-box-title">✏️ แก้ไขทะเบียนรถ</span>
+        <span class="edit-box-cancel" onclick="cancelEditVehicle()">✕ ยกเลิก</span>
       </div>
       <input class="ifield" id="vEditIn" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="confirmEditVehicle()">
     </div>
-    <div class="igroup" style="margin-top:10px">
+    <!-- FIX 1: ซ่อนเมื่อ AI สำเร็จ -->
+    <div id="vManualGroup" style="margin-top:10px">
       <label class="ilabel">ทะเบียนรถ <span style="font-weight:400;color:var(--muted)">— กรอกเองหรือถ่ายรูปก็ได้</span></label>
       <input class="ifield" id="vPlate" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="chk2()">
     </div>
   </div>
-
   <div class="btn-row">
     <button class="btn btn-secondary btn-back" onclick="go(1)">← กลับ</button>
     <button class="btn btn-primary" id="s2Btn" onclick="go(3)" disabled>ถัดไป →</button>
   </div>
 </div>
 
-<!-- ═══ STEP 3: ประเภทสินค้า ═══ -->
+<!-- STEP 3 -->
 <div class="section" id="s3">
   <div class="note-box">💡 เลือกประเภทสินค้าครั้งเดียว จากนั้นชั่งเต๊าได้ต่อเนื่อง เปลี่ยนประเภทได้เมื่อต้องการ</div>
   <div class="card">
@@ -360,97 +236,70 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<!-- ═══ STEP 4: ชั่งสินค้า ═══ -->
+<!-- STEP 4 -->
 <div class="section" id="s4">
-  <!-- Counter -->
   <div class="counter-bar">
-    <div>
-      <div class="counter-info">เต๊าที่บันทึกแล้ว</div>
-      <div class="counter-num" id="bagCount">0</div>
-    </div>
-    <div style="text-align:right">
-      <div class="counter-info">ประเภทปัจจุบัน</div>
-      <div class="counter-type" id="currentTypeDisplay">-</div>
-    </div>
+    <div><div class="counter-info">เต๊าที่บันทึกแล้ว</div><div class="counter-num" id="bagCount">0</div></div>
+    <div style="text-align:right"><div class="counter-info">ประเภทปัจจุบัน</div><div class="counter-type" id="currentTypeDisplay">-</div></div>
   </div>
-
-  <!-- Bag list -->
   <div id="bagList"></div>
-
-  <!-- Add bag form -->
   <div class="card" id="addForm">
     <div class="card-title" id="addFormTitle">เพิ่มเต๊าใหม่</div>
-
-    <!-- 2 photos side by side -->
+    <!-- FIX 2: preview อยู่ใน photo-box -->
     <div class="photo-row">
-      <div>
+      <div class="photo-col">
         <label class="photo-box" id="sBox1" for="sPhoto1">
-          <div class="pi">⚖️</div>
-          <div class="pl">รูปตาชั่ง</div>
-          <div class="ps">AI อ่านน้ำหนัก</div>
+          <div class="pi">⚖️</div><div class="pl">รูปตาชั่ง</div><div class="ps">AI อ่านน้ำหนัก</div>
+          <img class="photo-preview" id="sPrev1">
         </label>
-        <input type="file" id="sPhoto1" accept="image/*" onchange="readScale(this)" style="display:none">
-        <img class="photo-preview" id="sPrev1">
+        <input type="file" id="sPhoto1" accept="image/*" capture="environment" onchange="readScale(this)" style="display:none">
       </div>
-      <div>
+      <div class="photo-col">
         <label class="photo-box" id="sBox2" for="sPhoto2">
-          <div class="pi">🔶</div>
-          <div class="pl">รูปทองแดง</div>
-          <div class="ps">หลักฐานในเต๊า</div>
+          <div class="pi">🔶</div><div class="pl">รูปทองแดง</div><div class="ps">หลักฐานในเต๊า</div>
+          <img class="photo-preview" id="sPrev2">
         </label>
-        <input type="file" id="sPhoto2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2')" style="display:none">
-        <img class="photo-preview" id="sPrev2">
+        <input type="file" id="sPhoto2" accept="image/*" capture="environment" onchange="previewOnly(this,'sPrev2','sBox2')" style="display:none">
       </div>
     </div>
-
-    <div class="loading" id="sLoading">
-      <div class="spinner"></div>
-      <div class="loading-txt">AI กำลังอ่านน้ำหนัก...</div>
-    </div>
+    <div class="loading" id="sLoading"><div class="spinner"></div><div class="loading-txt">AI กำลังอ่านน้ำหนัก...</div></div>
     <div class="ai-result" id="sResult">
-      <div>
-        <div class="ai-val" id="grossVal">-</div>
-        <div class="ai-lbl">น้ำหนักรวม Gross</div>
-      </div>
+      <div style="flex:1;min-width:0"><div class="ai-val" id="grossVal">-</div><div class="ai-lbl">น้ำหนักรวม Gross</div></div>
       <div class="ai-edit" onclick="editGross()">✏️ แก้ไข</div>
     </div>
-    <div id="grossEditBox" style="display:none; margin-top:10px">
-      <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px">
-        <span style="font-size:13px;font-weight:700">แก้ไขน้ำหนัก Gross (กก.)</span>
-        <span onclick="cancelEditGross()" style="margin-left:auto;font-size:12px;font-weight:700;color:#94A3B8;cursor:pointer;text-decoration:underline">✕ ยกเลิก</span>
+    <!-- FIX 3: edit gross + ปุ่มยกเลิก -->
+    <div class="edit-box" id="grossEditBox">
+      <div class="edit-box-hdr">
+        <span class="edit-box-title">✏️ แก้ไขน้ำหนัก Gross (กก.)</span>
+        <span class="edit-box-cancel" onclick="cancelEditGross()">✕ ยกเลิก</span>
       </div>
       <input class="ifield" id="grossEditIn" type="number" step="0.1" placeholder="0.0" oninput="confirmEditGross()">
     </div>
-    <div class="igroup" style="margin-top:10px">
+    <!-- FIX 1: ซ่อนเมื่อ AI สำเร็จ -->
+    <div id="grossManualGroup" style="margin-top:10px">
       <label class="ilabel">น้ำหนักรวม Gross (กก.) <span style="font-weight:400;color:var(--muted)">— กรอกเองหรือถ่ายรูปก็ได้</span></label>
       <input class="ifield" id="grossIn" type="number" step="0.1" placeholder="0.0" oninput="calcNet()">
     </div>
-
+    <!-- FIX 5: Tare carry forward -->
     <div class="igroup" style="margin-top:12px">
-      <label class="ilabel">น้ำหนักเต๊า Tare (กก.)</label>
-      <input class="ifield" id="tareIn" type="number" step="0.1" value="35.0" oninput="calcNet()">
+      <label class="ilabel">น้ำหนักเต๊า Tare (กก.) <span id="tareDefault" style="font-weight:400;color:var(--muted)"></span></label>
+      <input class="ifield" id="tareIn" type="number" step="0.1" placeholder="3.0" oninput="calcNet()">
     </div>
-
     <div class="wcard" id="netCard" style="display:none">
       <div class="wrow"><span class="wkey">Gross</span><span class="wval" id="dGross">-</span></div>
       <div class="wrow"><span class="wkey">Tare</span><span class="wval" id="dTare">-</span></div>
       <div class="wrow"><span class="wkey">สุทธิ Net</span><span class="wval net" id="dNet">-</span></div>
     </div>
-
-    <button class="btn btn-primary" id="addBagBtn" onclick="addBag()" style="margin-top:14px;margin-bottom:0" disabled>
-      ✅ ยืนยันเต๊านี้ และเพิ่มเต๊าถัดไป
-    </button>
+    <button class="btn btn-primary" id="addBagBtn" onclick="addBag()" style="margin-top:14px;margin-bottom:0" disabled>✅ ยืนยันเต๊านี้ และเพิ่มเต๊าถัดไป</button>
   </div>
-
-  <!-- Action buttons -->
-  <button class="btn btn-orange" onclick="changeType()">🔄 เปลี่ยนประเภทสินค้า</button>
+  <button class="btn btn-orange" onclick="go(3)">🔄 เปลี่ยนประเภทสินค้า</button>
   <div class="btn-row">
     <button class="btn btn-secondary btn-back" onclick="go(3)">← กลับ</button>
     <button class="btn btn-primary" id="s4Btn" onclick="go(5)" disabled>สรุปรายการ →</button>
   </div>
 </div>
 
-<!-- ═══ STEP 5: สรุปและยืนยัน ═══ -->
+<!-- STEP 5 -->
 <div class="section" id="s5">
   <div class="card">
     <div class="card-title">ข้อมูลการทำรายการ</div>
@@ -459,21 +308,16 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
     <div class="sum-row"><span class="sum-key" id="sumPartnerKey">นามผู้ขาย</span><span class="sum-val" id="sumPartner">-</span></div>
     <div class="sum-row"><span class="sum-key">ทะเบียนรถ</span><span class="sum-val" id="sumVehicle">-</span></div>
   </div>
-
   <div class="card">
     <div class="card-title">รายการเต๊าทั้งหมด</div>
     <div id="sumBags"></div>
-    <div class="total-box">
-      <div><div class="total-lbl">รวมน้ำหนักทั้งหมด</div></div>
-      <div class="total-val" id="sumTotal">0.0 กก.</div>
-    </div>
+    <div class="total-box"><div><div class="total-lbl">รวมน้ำหนักทั้งหมด</div></div><div class="total-val" id="sumTotal">0.0 กก.</div></div>
   </div>
-
   <button class="btn btn-primary" id="confirmBtn" onclick="submit()">✅ ยืนยันส่งข้อมูล</button>
   <button class="btn btn-outline" onclick="go(4)">↩️ กลับเพิ่ม / แก้ไขเต๊า</button>
 </div>
 
-<!-- ═══ STEP 6: สำเร็จ ═══ -->
+<!-- STEP 6 -->
 <div class="section" id="s6">
   <div class="success">
     <div class="success-icon">✅</div>
@@ -484,413 +328,341 @@ body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-</div><!-- /content -->
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── Config ────────────────────────────────────────────────────────
-const LIFF_ID       = "YOUR_LIFF_ID";
-const MAKE_WEBHOOK  = "https://hook.us2.make.com/dekow8wjteotu1zbyi2p4kbxsu5phrrf";
-const WORKER_URL = "https://diamond-copper-proxy.dcoppertrade.workers.dev";
+const LIFF_ID      = "YOUR_LIFF_ID";
+const MAKE_WEBHOOK = "https://hook.us2.make.com/dekow8wjteotu1zbyi2p4kbxsu5phrrf";
+const WORKER_URL   = "https://diamond-copper-proxy.dcoppertrade.workers.dev";
 
-const PRODUCT_TYPES = [
-  "ปอกสวย","ปอกช็อต","สะพานไฟ","ท่อใหม่","ท่อเก่า",
-  "ทองแดงใหญ่","ทองแดงเล็ก","บดสะอาด","บดผสม","บดชุบ","อื่นๆ (ระบุ)"
-];
-
+const PRODUCT_TYPES = ["ปอกสวย","ปอกช็อต","สะพานไฟ","ท่อใหม่","ท่อเก่า","ทองแดงใหญ่","ทองแดงเล็ก","บดสะอาด","บดผสม","บดชุบ","อื่นๆ (ระบุ)"];
 const DOC_TYPES = {
-  buy:  [{ id:'grn', icon:'📋', label:'ใบนำส่งสินค้าเข้า', hasPrice:false },
-         { id:'pb',  icon:'🧾', label:'บิลซื้อสินค้า',    hasPrice:true  }],
-  sell: [{ id:'do',  icon:'📋', label:'ใบนำส่งสินค้าออก', hasPrice:false },
-         { id:'sb',  icon:'💰', label:'บิลขายสินค้า',     hasPrice:true  }],
+  buy:  [{id:'grn',icon:'📋',label:'ใบนำส่งสินค้าเข้า',hasPrice:false},{id:'pb',icon:'🧾',label:'บิลซื้อสินค้า',hasPrice:true}],
+  sell: [{id:'do',icon:'📋',label:'ใบนำส่งสินค้าออก',hasPrice:false},{id:'sb',icon:'💰',label:'บิลขายสินค้า',hasPrice:true}],
 };
+const DOC_NAMES = {grn:'ใบนำส่งสินค้าเข้า',pb:'บิลซื้อสินค้า',do:'ใบนำส่งสินค้าออก',sb:'บิลขายสินค้า'};
 
-const DOC_NAMES = { grn:'ใบนำส่งสินค้าเข้า', pb:'บิลซื้อสินค้า', do:'ใบนำส่งสินค้าออก', sb:'บิลขายสินค้า' };
-
-// ─── State ─────────────────────────────────────────────────────────
 const S = {
-  type: null, docType: null,
-  partner: '', vehicle: '',
-  productType: null,
-  bags: [],
-  curGross: null, curTare: 35,
-  scaleImg: null, goodsImg: null,
+  type:null,docType:null,partner:'',vehicle:'',
+  productType:null,bags:[],
+  curGross:null,curTare:3.0,
+  scaleImg:null,goodsImg:null,
+  vAiDone:false,gAiDone:false
 };
 
-// ─── LIFF Init ──────────────────────────────────────────────────────
-liff.init({ liffId: LIFF_ID }).catch(() => console.log('LIFF: test mode'));
+liff.init({liffId:LIFF_ID}).catch(()=>console.log('LIFF: test mode'));
 
-// ─── Navigation ─────────────────────────────────────────────────────
-function go(n) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById('s' + n).classList.add('active');
-  ['pb1','pb2','pb3','pb4','pb5'].forEach((id, i) => {
-    const el = document.getElementById(id);
+// FIX 4: ทศนิยม 1 ตำแหน่งสม่ำเสมอ
+function fmt(n){return parseFloat(n).toFixed(1);}
+
+function go(n){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  ['pb1','pb2','pb3','pb4','pb5'].forEach((id,i)=>{
+    const el=document.getElementById(id);
     el.classList.remove('active','done');
-    if (i + 1 < n) el.classList.add('done');
-    if (i + 1 === n) el.classList.add('active');
+    if(i+1<n) el.classList.add('done');
+    if(i+1===n) el.classList.add('active');
   });
-  const steps = ['เลือกประเภท','ข้อมูลคู่ค้า','ประเภทสินค้า','ชั่งสินค้า','สรุปยืนยัน'];
-  document.getElementById('hStep').textContent = n <= 5 ? `ขั้นตอนที่ ${n} จาก 5` : 'เสร็จสิ้น';
-  document.getElementById('hTitle').textContent = n <= 5 ? steps[n-1] : 'บันทึกสำเร็จ';
-  if (n === 4) setupStep4();
-  if (n === 5) buildSummary();
-  window.scrollTo(0, 0);
+  const steps=['เลือกประเภท','ข้อมูลคู่ค้า','ประเภทสินค้า','ชั่งสินค้า','สรุปยืนยัน'];
+  document.getElementById('hStep').textContent=n<=5?`ขั้นตอนที่ ${n} จาก 5`:'เสร็จสิ้น';
+  document.getElementById('hTitle').textContent=n<=5?steps[n-1]:'บันทึกสำเร็จ';
+  if(n===4) setupStep4();
+  if(n===5) buildSummary();
+  window.scrollTo(0,0);
 }
 
-// ─── Step 1 ─────────────────────────────────────────────────────────
-function selType(type, el) {
-  S.type = type; S.docType = null;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('sel'));
+function selType(type,el){
+  S.type=type;S.docType=null;
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
-  const badge = document.getElementById('hBadge');
-  badge.textContent = type === 'buy' ? '📥 ซื้อ' : '📤 ขาย';
-  badge.className = 'hdr-badge ' + type;
-  document.getElementById('docCard').style.display = 'block';
+  const badge=document.getElementById('hBadge');
+  badge.textContent=type==='buy'?'📥 ซื้อ':'📤 ขาย';
+  badge.className='hdr-badge '+type;
+  document.getElementById('docCard').style.display='block';
   renderDocs(type);
-  document.getElementById('s1Btn').style.display = 'none';
+  document.getElementById('s1Btn').style.display='none';
 }
-
-function renderDocs(type) {
-  const g = document.getElementById('docGrid');
-  g.innerHTML = '';
-  DOC_TYPES[type].forEach(d => {
-    g.innerHTML += `<div class="doc-btn ${d.hasPrice?'has-price':'no-price'}" id="d_${d.id}" onclick="selDoc('${d.id}','${type}')">
-      <div class="di">${d.icon}</div>
-      <div class="dl">${d.label}</div>
-      <div class="dtag">${d.hasPrice ? '💰 มีราคา' : '📦 ไม่มีราคา'}</div>
-    </div>`;
+function renderDocs(type){
+  const g=document.getElementById('docGrid');g.innerHTML='';
+  DOC_TYPES[type].forEach(d=>{
+    g.innerHTML+=`<div class="doc-btn ${d.hasPrice?'has-price':'no-price'}" id="d_${d.id}" onclick="selDoc('${d.id}','${type}')">
+      <div class="di">${d.icon}</div><div class="dl">${d.label}</div>
+      <div class="dtag">${d.hasPrice?'💰 มีราคา':'📦 ไม่มีราคา'}</div></div>`;
   });
 }
-
-function selDoc(id, type) {
-  S.docType = id;
-  document.querySelectorAll('.doc-btn').forEach(b => b.classList.remove('sel'));
-  document.getElementById('d_' + id).classList.add('sel', type);
-  const btn = document.getElementById('s1Btn');
-  btn.style.display = 'block';
-  btn.className = 'btn btn-primary' + (type === 'sell' ? ' sell' : '');
+function selDoc(id,type){
+  S.docType=id;
+  document.querySelectorAll('.doc-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('d_'+id).classList.add('sel',type);
+  const btn=document.getElementById('s1Btn');
+  btn.style.display='block';
+  btn.className='btn btn-primary'+(type==='sell'?' sell':'');
 }
 
-// ─── Step 2 ─────────────────────────────────────────────────────────
-document.getElementById('s1Btn').addEventListener('click', () => {
-  const isBuy = S.type === 'buy';
-  document.getElementById('partnerTitle').textContent = isBuy ? 'นามผู้ขาย' : 'นามผู้ซื้อ';
-  document.getElementById('partnerName').placeholder = isBuy ? 'ชื่อผู้ขาย / บริษัท' : 'ชื่อผู้ซื้อ / บริษัท';
-  document.getElementById('s2Btn').className = 'btn btn-primary' + (isBuy ? '' : ' sell');
+document.getElementById('s1Btn').addEventListener('click',()=>{
+  const isBuy=S.type==='buy';
+  document.getElementById('partnerTitle').textContent=isBuy?'นามผู้ขาย':'นามผู้ซื้อ';
+  document.getElementById('partnerName').placeholder=isBuy?'ชื่อผู้ขาย / บริษัท':'ชื่อผู้ซื้อ / บริษัท';
+  document.getElementById('s2Btn').className='btn btn-primary'+(isBuy?'':' sell');
 });
 
-async function readVehicle(input) {
-  const file = input.files[0]; if (!file) return;
-  preview(file, 'vPrev1'); markBox('vBox1');
-  show('vLoading'); hide('vResult');
-  try {
-    const b64 = await toB64(file);
-    const txt = await claude(b64, file.type, 'อ่านเลขทะเบียนรถจากรูปนี้ ตอบเฉพาะเลขทะเบียนเท่านั้น เช่น "กข 1234 กรุงเทพ"');
-    document.getElementById('vVal').textContent = txt.trim();
-    show('vResult'); S.vehicle = txt.trim();
-  } catch { showVManual(); }
-  hide('vLoading'); chk2();
-}
-
-function editVehicle() {
-  const curVal = document.getElementById('vVal').textContent;
-  document.getElementById('vEditIn').value = curVal !== '-' ? curVal : '';
-  document.getElementById('vEditBox').style.display = 'block';
-}
-function cancelEditVehicle() {
-  document.getElementById('vEditBox').style.display = 'none';
-}
-function confirmEditVehicle() {
-  const val = document.getElementById('vEditIn').value.trim();
-  if (val) {
-    S.vehicle = val;
-    document.getElementById('vVal').textContent = val;
-    document.getElementById('vPlate').value = val;
-    chk2();
+// FIX 1: ซ่อน vManualGroup เมื่อ AI สำเร็จ
+async function readVehicle(input){
+  const file=input.files[0];if(!file)return;
+  previewInBox(file,'vPrev1','vBox1');
+  show('vLoading');hide('vResult');hideEl('vEditBox');
+  try{
+    const b64=await toB64(file);
+    const txt=await claude(b64,file.type,'อ่านเลขทะเบียนรถจากรูปนี้ ตอบเฉพาะเลขทะเบียนเท่านั้น เช่น "กข 1234 กรุงเทพ"');
+    const plate=txt.trim();
+    document.getElementById('vVal').textContent=plate;
+    S.vehicle=plate;S.vAiDone=true;
+    show('vResult');
+    document.getElementById('vManualGroup').style.display='none';
+    document.getElementById('vPlate').value=plate;
+  }catch{
+    S.vAiDone=false;
+    document.getElementById('vManualGroup').style.display='block';
+    document.getElementById('vPlate').focus();
   }
+  hide('vLoading');chk2();
 }
-function showVManual() { document.getElementById('vPlate').focus(); }
-
-function chk2() {
-  const name = document.getElementById('partnerName').value.trim();
-  const plate = document.getElementById('vPlate').value.trim();
-  const aiPlate = document.getElementById('vVal').textContent;
-  S.partner = name;
-  S.vehicle = plate || (aiPlate !== '-' ? aiPlate : '');
-  document.getElementById('s2Btn').disabled = !(name && S.vehicle);
+function editVehicle(){
+  document.getElementById('vEditIn').value=document.getElementById('vVal').textContent;
+  document.getElementById('vEditBox').style.display='block';
+  document.getElementById('vEditIn').focus();
+}
+function cancelEditVehicle(){document.getElementById('vEditBox').style.display='none';}
+function confirmEditVehicle(){
+  const val=document.getElementById('vEditIn').value.trim();
+  if(val){S.vehicle=val;document.getElementById('vVal').textContent=val;document.getElementById('vPlate').value=val;chk2();}
+}
+function chk2(){
+  const name=document.getElementById('partnerName').value.trim();
+  const manual=document.getElementById('vPlate').value.trim();
+  S.partner=name;
+  if(!S.vAiDone) S.vehicle=manual;
+  document.getElementById('s2Btn').disabled=!(name&&S.vehicle);
 }
 
-// ─── Step 3 ─────────────────────────────────────────────────────────
-document.getElementById('s2Btn').addEventListener('click', renderPTypes);
-
-function renderPTypes() {
-  const g = document.getElementById('ptypeGrid');
-  g.innerHTML = '';
-  PRODUCT_TYPES.forEach(t => {
-    g.innerHTML += `<div class="ptype-btn" onclick="selPType('${t}',this)">${t}</div>`;
+document.getElementById('s2Btn').addEventListener('click',renderPTypes);
+function renderPTypes(){
+  const g=document.getElementById('ptypeGrid');g.innerHTML='';
+  PRODUCT_TYPES.forEach(t=>{
+    const safe=t.replace(/'/g,"\\'");
+    g.innerHTML+=`<div class="ptype-btn" onclick="selPType('${safe}',this)">${t}</div>`;
   });
-}
-
-function selPType(t, el) {
-  document.querySelectorAll('.ptype-btn').forEach(b => b.classList.remove('sel'));
-  el.classList.add('sel');
-  if (t === 'อื่นๆ (ระบุ)') {
-    show('ptypeCustom'); document.getElementById('customType').focus();
-    S.productType = null;
-  } else {
-    hide('ptypeCustom'); S.productType = t;
+  if(S.productType){
+    document.querySelectorAll('.ptype-btn').forEach(b=>{if(b.textContent===S.productType)b.classList.add('sel');});
   }
+}
+function selPType(t,el){
+  document.querySelectorAll('.ptype-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  if(t==='อื่นๆ (ระบุ)'){show('ptypeCustom');document.getElementById('customType').focus();S.productType=null;}
+  else{hideEl('ptypeCustom');S.productType=t;}
   chk3();
 }
-
-function chk3() {
-  const custom = document.getElementById('customType').value.trim();
-  if (custom) S.productType = custom;
-  document.getElementById('s3Btn').disabled = !S.productType;
-  document.getElementById('s3Btn').className = 'btn btn-primary' + (S.type === 'sell' ? ' sell' : '');
+function chk3(){
+  const custom=document.getElementById('customType').value.trim();
+  if(custom) S.productType=custom;
+  document.getElementById('s3Btn').disabled=!S.productType;
+  document.getElementById('s3Btn').className='btn btn-primary'+(S.type==='sell'?' sell':'');
 }
 
-// ─── Step 4 ─────────────────────────────────────────────────────────
-function setupStep4() {
-  document.getElementById('currentTypeDisplay').textContent = S.productType || '-';
-  document.getElementById('bagCount').textContent = S.bags.length;
-  renderBags();
-  resetAddForm();
+function setupStep4(){
+  document.getElementById('currentTypeDisplay').textContent=S.productType||'-';
+  document.getElementById('bagCount').textContent=S.bags.length;
+  if(S.bags.length===0) S.curTare=S.type==='buy'?3.0:2.0;
+  const hint=document.getElementById('tareDefault');
+  if(hint) hint.textContent='— default '+(S.type==='buy'?'3.0 (ซื้อ)':'2.0 (ขาย)');
+  renderBags();resetAddForm();
 }
 
-function changeType() {
-  go(3);
-}
-
-async function readScale(input) {
-  const file = input.files[0]; if (!file) return;
-  preview(file, 'sPrev1'); markBox('sBox1');
-  S.scaleImg = file;
-  show('sLoading'); hide('sResult'); hide('netCard');
-  try {
-    const b64 = await toB64(file);
-    const txt = await claude(b64, file.type, 'อ่านตัวเลขน้ำหนักบนหน้าจอตาชั่งดิจิตอลในรูปนี้ ตอบเฉพาะตัวเลขเท่านั้น รวมทศนิยมด้วยถ้ามี เช่น 802.0 หรือ 364.2 ไม่ต้องมีหน่วย ถ้ามีจุดทศนิยมบนหน้าจอให้ใส่ด้วย');
-    const n = parseFloat(txt.trim());
-    if (!isNaN(n)) {
-      document.getElementById('grossVal').textContent = n + ' กก.';
-      show('sResult'); S.curGross = n;
-      document.getElementById('grossIn').value = n;
+// FIX 1: ซ่อน grossManualGroup เมื่อ AI สำเร็จ
+async function readScale(input){
+  const file=input.files[0];if(!file)return;
+  previewInBox(file,'sPrev1','sBox1');
+  S.scaleImg=file;
+  show('sLoading');hide('sResult');hideEl('grossEditBox');hide('netCard');
+  try{
+    const b64=await toB64(file);
+    const txt=await claude(b64,file.type,'อ่านตัวเลขน้ำหนักบนหน้าจอตาชั่งดิจิตอลในรูปนี้ ตอบเฉพาะตัวเลขเท่านั้น รวมทศนิยมด้วยถ้ามี เช่น 802.0 หรือ 364.2 ไม่ต้องมีหน่วย ถ้ามีจุดทศนิยมบนหน้าจอให้ใส่ด้วย');
+    const n=parseFloat(txt.trim());
+    if(!isNaN(n)){
+      document.getElementById('grossVal').textContent=fmt(n)+' กก.';
+      show('sResult');S.curGross=n;S.gAiDone=true;
+      document.getElementById('grossIn').value=fmt(n);
+      document.getElementById('grossManualGroup').style.display='none';
       calcNet();
-    } else { showGrossManual(); }
-  } catch { showGrossManual(); }
+    }else{
+      S.gAiDone=false;
+      document.getElementById('grossManualGroup').style.display='block';
+      document.getElementById('grossIn').focus();
+    }
+  }catch{
+    S.gAiDone=false;
+    document.getElementById('grossManualGroup').style.display='block';
+    document.getElementById('grossIn').focus();
+  }
   hide('sLoading');
 }
-
-function editGross() {
-  const curVal = document.getElementById('grossVal').textContent.replace(' กก.','');
-  document.getElementById('grossEditIn').value = curVal;
-  document.getElementById('grossEditBox').style.display = 'block';
+function editGross(){
+  document.getElementById('grossEditIn').value=document.getElementById('grossVal').textContent.replace(' กก.','');
+  document.getElementById('grossEditBox').style.display='block';
+  document.getElementById('grossEditIn').focus();
 }
-function cancelEditGross() {
-  document.getElementById('grossEditBox').style.display = 'none';
-}
-function confirmEditGross() {
-  const val = parseFloat(document.getElementById('grossEditIn').value);
-  if (!isNaN(val)) {
-    S.curGross = val;
-    document.getElementById('grossVal').textContent = val + ' กก.';
-    document.getElementById('grossIn').value = val;
-    calcNet();
-  }
-}
-function showGrossManual() { document.getElementById('grossIn').focus(); }
-
-function calcNet() {
-  const g = parseFloat(document.getElementById('grossIn').value) || S.curGross;
-  const t = parseFloat(document.getElementById('tareIn').value) || 35;
-  if (!g) return;
-  S.curGross = g; S.curTare = t;
-  const net = Math.round((g - t) * 10) / 10;
-  document.getElementById('dGross').textContent = g + ' กก.';
-  document.getElementById('dTare').textContent = t + ' กก.';
-  document.getElementById('dNet').textContent = net + ' กก.';
-  show('netCard'); chkAddBag();
+function cancelEditGross(){document.getElementById('grossEditBox').style.display='none';}
+function confirmEditGross(){
+  const val=parseFloat(document.getElementById('grossEditIn').value);
+  if(!isNaN(val)){S.curGross=val;document.getElementById('grossVal').textContent=fmt(val)+' กก.';document.getElementById('grossIn').value=fmt(val);calcNet();}
 }
 
-function previewOnly(input, prevId, boxId) {
-  const file = input.files[0]; if (!file) return;
-  preview(file, prevId); markBox(boxId);
-  if (boxId === 'sBox2') S.goodsImg = file;
+// FIX 4+5: toFixed(1) + Tare carry forward
+function calcNet(){
+  const gRaw=parseFloat(document.getElementById('grossIn').value);
+  const g=!isNaN(gRaw)?gRaw:S.curGross;
+  const tRaw=parseFloat(document.getElementById('tareIn').value);
+  const t=!isNaN(tRaw)?tRaw:S.curTare;
+  if(!g)return;
+  S.curGross=g;S.curTare=t;
+  const net=parseFloat((g-t).toFixed(1));
+  document.getElementById('dGross').textContent=fmt(g)+' กก.';
+  document.getElementById('dTare').textContent=fmt(t)+' กก.';
+  document.getElementById('dNet').textContent=fmt(net)+' กก.';
+  show('netCard');chkAddBag();
+}
+function previewOnly(input,prevId,boxId){
+  const file=input.files[0];if(!file)return;
+  previewInBox(file,prevId,boxId);
+  if(boxId==='sBox2') S.goodsImg=file;
   chkAddBag();
 }
+function chkAddBag(){document.getElementById('addBagBtn').disabled=!S.curGross;}
 
-function chkAddBag() {
-  document.getElementById('addBagBtn').disabled = !S.curGross;
+function addBag(){
+  const gross=S.curGross,tare=S.curTare;
+  const net=parseFloat((gross-tare).toFixed(1));
+  S.bags.push({gross,tare,net,productType:S.productType,
+    scaleImgUrl:document.getElementById('sPrev1').src||null,
+    goodsImgUrl:document.getElementById('sPrev2').src||null});
+  toast('✅ เต๊าที่ '+S.bags.length+' บันทึกแล้ว');
+  document.getElementById('bagCount').textContent=S.bags.length;
+  document.getElementById('s4Btn').disabled=false;
+  renderBags();resetAddForm();
 }
 
-function addBag() {
-  const gross = S.curGross;
-  const tare = S.curTare;
-  const net = Math.round((gross - tare) * 10) / 10;
-  S.bags.push({
-    gross, tare, net,
-    productType: S.productType,
-    scaleImgUrl: document.getElementById('sPrev1').src || null,
-    goodsImgUrl: document.getElementById('sPrev2').src || null,
-  });
-  toast('✅ เต๊าที่ ' + S.bags.length + ' บันทึกแล้ว');
-  document.getElementById('bagCount').textContent = S.bags.length;
-  document.getElementById('s4Btn').disabled = false;
-  renderBags();
-  resetAddForm();
+function resetAddForm(){
+  S.curGross=null;S.scaleImg=null;S.goodsImg=null;S.gAiDone=false;
+  ['sPhoto1','sPhoto2'].forEach(id=>document.getElementById(id).value='');
+  ['sPrev1','sPrev2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});
+  ['sBox1','sBox2'].forEach(id=>document.getElementById(id).classList.remove('has-photo'));
+  hide('sResult');hideEl('grossEditBox');hide('sLoading');hide('netCard');
+  document.getElementById('grossIn').value='';
+  document.getElementById('grossManualGroup').style.display='block';
+  document.getElementById('tareIn').value=fmt(S.curTare); // FIX 5
+  document.getElementById('addBagBtn').disabled=true;
+  document.getElementById('addFormTitle').textContent=S.bags.length>0?`เพิ่มเต๊าที่ ${S.bags.length+1}`:'เพิ่มเต๊าใหม่';
 }
 
-function resetAddForm() {
-  S.curGross = null; S.scaleImg = null; S.goodsImg = null;
-  ['sPhoto1','sPhoto2'].forEach(id => document.getElementById(id).value = '');
-  ['sPrev1','sPrev2'].forEach(id => { const el = document.getElementById(id); el.style.display='none'; el.src=''; });
-  ['sBox1','sBox2'].forEach(id => document.getElementById(id).classList.remove('has-photo'));
-  hide('sResult'); hide('sLoading'); hide('netCard');
-  document.getElementById('grossIn').value = '';
-  document.getElementById('addBagBtn').disabled = true;
-  document.getElementById('addFormTitle').textContent = S.bags.length > 0 ? `เพิ่มเต๊าที่ ${S.bags.length + 1}` : 'เพิ่มเต๊าใหม่';
+function delBag(i){
+  S.bags.splice(i,1);
+  document.getElementById('bagCount').textContent=S.bags.length;
+  document.getElementById('s4Btn').disabled=S.bags.length===0;
+  renderBags();toast('🗑️ ลบเต๊าแล้ว');
 }
-
-function delBag(i) {
-  S.bags.splice(i, 1);
-  document.getElementById('bagCount').textContent = S.bags.length;
-  document.getElementById('s4Btn').disabled = S.bags.length === 0;
-  renderBags();
-  toast('🗑️ ลบเต๊าแล้ว');
-}
-
-function renderBags() {
-  const el = document.getElementById('bagList');
-  if (!S.bags.length) { el.innerHTML = ''; return; }
-  let html = '<div class="card">';
-  S.bags.forEach((b, i) => {
-    html += `<div class="bag-item">
+function renderBags(){
+  const el=document.getElementById('bagList');
+  if(!S.bags.length){el.innerHTML='';return;}
+  let html='<div class="card">';
+  S.bags.forEach((b,i)=>{
+    html+=`<div class="bag-item">
       <div class="bag-num">${i+1}</div>
       <div class="bag-info">
         <div class="bag-type">${b.productType}</div>
-        <div class="bag-w">${b.net} กก.</div>
-        <div class="bag-sub">Gross ${b.gross} − Tare ${b.tare}</div>
+        <div class="bag-w">${fmt(b.net)} กก.</div>
+        <div class="bag-sub">Gross ${fmt(b.gross)} − Tare ${fmt(b.tare)}</div>
         <div class="bag-photos">
-          ${b.scaleImgUrl ? `<img class="bag-thumb" src="${b.scaleImgUrl}">` : ''}
-          ${b.goodsImgUrl ? `<img class="bag-thumb" src="${b.goodsImgUrl}">` : ''}
+          ${b.scaleImgUrl?`<img class="bag-thumb" src="${b.scaleImgUrl}">`:''}
+          ${b.goodsImgUrl?`<img class="bag-thumb" src="${b.goodsImgUrl}">`:''}
         </div>
       </div>
       <div class="bag-del" onclick="delBag(${i})">🗑️</div>
     </div>`;
   });
-  html += '</div>';
-  el.innerHTML = html;
+  html+='</div>';el.innerHTML=html;
 }
 
-// ─── Step 5: Summary ────────────────────────────────────────────────
-function buildSummary() {
-  document.getElementById('sumType').textContent = S.type === 'buy' ? 'ซื้อ / นำเข้า' : 'ขาย / นำออก';
-  document.getElementById('sumDoc').textContent = DOC_NAMES[S.docType] || '-';
-  document.getElementById('sumPartnerKey').textContent = S.type === 'buy' ? 'นามผู้ขาย' : 'นามผู้ซื้อ';
-  document.getElementById('sumPartner').textContent = S.partner;
-  document.getElementById('sumVehicle').textContent = S.vehicle;
-  document.getElementById('confirmBtn').className = 'btn btn-primary' + (S.type === 'sell' ? ' sell' : '');
-
-  // Group by product type
-  const groups = {};
-  S.bags.forEach(b => {
-    if (!groups[b.productType]) groups[b.productType] = { count: 0, net: 0 };
-    groups[b.productType].count++;
-    groups[b.productType].net += b.net;
-  });
-
-  let html = ''; let total = 0;
-  Object.entries(groups).forEach(([type, data]) => {
-    const net = Math.round(data.net * 10) / 10;
-    total += net;
-    html += `<div class="bag-item">
+function buildSummary(){
+  document.getElementById('sumType').textContent=S.type==='buy'?'ซื้อ / นำเข้า':'ขาย / นำออก';
+  document.getElementById('sumDoc').textContent=DOC_NAMES[S.docType]||'-';
+  document.getElementById('sumPartnerKey').textContent=S.type==='buy'?'นามผู้ขาย':'นามผู้ซื้อ';
+  document.getElementById('sumPartner').textContent=S.partner;
+  document.getElementById('sumVehicle').textContent=S.vehicle;
+  document.getElementById('confirmBtn').className='btn btn-primary'+(S.type==='sell'?' sell':'');
+  const groups={};
+  S.bags.forEach(b=>{if(!groups[b.productType])groups[b.productType]={count:0,net:0};groups[b.productType].count++;groups[b.productType].net+=b.net;});
+  let html='',total=0;
+  Object.entries(groups).forEach(([type,data])=>{
+    const net=parseFloat(data.net.toFixed(1));total+=net;
+    html+=`<div class="bag-item">
       <div class="bag-num" style="background:#FFF7ED;color:#F97316;font-weight:800">${data.count}</div>
-      <div class="bag-info">
-        <div class="bag-type">${type}</div>
-        <div class="bag-w">${net} กก.</div>
-        <div class="bag-sub">${data.count} เต๊า</div>
-      </div>
+      <div class="bag-info"><div class="bag-type">${type}</div><div class="bag-w">${fmt(net)} กก.</div><div class="bag-sub">${data.count} เต๊า</div></div>
     </div>`;
   });
-  document.getElementById('sumBags').innerHTML = html;
-  document.getElementById('sumTotal').textContent = Math.round(total * 10) / 10 + ' กก.';
+  document.getElementById('sumBags').innerHTML=html;
+  document.getElementById('sumTotal').textContent=fmt(parseFloat(total.toFixed(1)))+' กก.';
 }
 
-// ─── Submit ─────────────────────────────────────────────────────────
-async function submit() {
-  const btn = document.getElementById('confirmBtn');
-  btn.textContent = '⏳ กำลังส่งข้อมูล...'; btn.disabled = true;
-  const txnId = 'TXN-' + Date.now().toString().slice(-6);
-  const payload = {
-    txnId, type: S.type, docType: S.docType,
-    partner: S.partner, vehicle: S.vehicle,
-    bags: S.bags.map(b => ({ productType: b.productType, gross: b.gross, tare: b.tare, net: b.net })),
-    timestamp: new Date().toISOString(),
+async function submit(){
+  const btn=document.getElementById('confirmBtn');
+  btn.textContent='⏳ กำลังส่งข้อมูล...';btn.disabled=true;
+  const txnId='TXN-'+Date.now().toString().slice(-6);
+  const payload={txnId,type:S.type,docType:S.docType,partner:S.partner,vehicle:S.vehicle,
+    bags:S.bags.map(b=>({productType:b.productType,gross:b.gross,tare:b.tare,net:b.net})),
+    timestamp:new Date().toISOString()};
+  try{await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
+  catch(e){console.log('webhook:',e);}
+  document.getElementById('txnChip').textContent=txnId;go(6);
+}
+
+function reset(){
+  Object.assign(S,{type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,scaleImg:null,goodsImg:null,vAiDone:false,gAiDone:false});
+  document.getElementById('partnerName').value='';document.getElementById('vPlate').value='';
+  document.getElementById('vManualGroup').style.display='block';
+  document.querySelectorAll('.type-btn,.doc-btn,.ptype-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('docCard').style.display='none';document.getElementById('s1Btn').style.display='none';
+  document.getElementById('hBadge').textContent='-';document.getElementById('hBadge').className='hdr-badge';
+  ['vPrev1','vPrev2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});
+  ['vBox1','vBox2'].forEach(id=>document.getElementById(id).classList.remove('has-photo'));
+  hide('vResult');hide('vLoading');hideEl('vEditBox');go(1);
+}
+
+function show(id){const el=document.getElementById(id);if(el)el.style.display='flex';}
+function hide(id){const el=document.getElementById(id);if(el)el.style.display='none';}
+function hideEl(id){const el=document.getElementById(id);if(el)el.style.display='none';}
+
+// FIX 2: img อยู่ใน label แล้ว — แค่ set src และ show
+function previewInBox(file,imgId,boxId){
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=document.getElementById(imgId);
+    img.src=e.target.result;img.style.display='block';
+    document.getElementById(boxId).classList.add('has-photo');
   };
-  try {
-    await fetch(MAKE_WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-  } catch(e) { console.log('webhook:', e); }
-  document.getElementById('txnChip').textContent = txnId;
-  go(6);
-}
-
-// ─── Reset ──────────────────────────────────────────────────────────
-function reset() {
-  Object.assign(S, { type:null, docType:null, partner:'', vehicle:'', productType:null, bags:[], curGross:null, curTare:35, scaleImg:null, goodsImg:null });
-  document.getElementById('partnerName').value = '';
-  document.getElementById('vPlate').value = '';
-  document.querySelectorAll('.type-btn,.doc-btn,.ptype-btn').forEach(b => b.classList.remove('sel'));
-  document.getElementById('docCard').style.display = 'none';
-  document.getElementById('s1Btn').style.display = 'none';
-  document.getElementById('hBadge').textContent = '-';
-  document.getElementById('hBadge').className = 'hdr-badge';
-  ['vPrev1','vPrev2'].forEach(id => { const el=document.getElementById(id); el.style.display='none'; el.src=''; });
-  ['vBox1','vBox2'].forEach(id => document.getElementById(id).classList.remove('has-photo'));
-  hide('vResult'); hide('vLoading');
-  go(1);
-}
-
-// ─── Helpers ────────────────────────────────────────────────────────
-function show(id) { const el=document.getElementById(id); if(el) el.style.display='flex'; }
-function hide(id) { const el=document.getElementById(id); if(el) el.style.display='none'; }
-function markBox(id) { document.getElementById(id).classList.add('has-photo'); }
-
-function preview(file, imgId) {
-  const r = new FileReader();
-  r.onload = e => { const img=document.getElementById(imgId); img.src=e.target.result; img.style.display='block'; };
   r.readAsDataURL(file);
 }
-
-function toB64(file) {
-  return new Promise((res,rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result.split(',')[1]);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
+function toB64(file){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
 }
-
-async function claude(b64, mediaType, prompt) {
-  const resp = await fetch(WORKER_URL, {
-    method: 'POST',
-    headers: { 'Content-Type':'application/json' },
-    body: JSON.stringify({
-      messages: [{ role:'user', content: [
-        { type:'image', source:{ type:'base64', media_type:mediaType, data:b64 } },
-        { type:'text', text:prompt }
-      ]}]
-    }),
-  });
-  const data = await resp.json();
-  return data.content[0].text;
+async function claude(b64,mediaType,prompt){
+  const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mediaType,data:b64}},{type:'text',text:prompt}]}]})});
+  const data=await resp.json();return data.content[0].text;
 }
-
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 </script>
 </body>
 </html>
