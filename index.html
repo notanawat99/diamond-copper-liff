@@ -124,6 +124,13 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .success-title{font-size:24px;font-weight:800;}
 .success-sub{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.7;}
 .txn-chip{display:inline-block;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 20px;font-size:18px;font-weight:800;margin:18px 0;letter-spacing:1px;}
+/* Lightbox */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:100%;max-height:90vh;border-radius:12px;object-fit:contain;}
+.lightbox-close{position:absolute;top:16px;right:16px;color:#fff;font-size:32px;cursor:pointer;line-height:1;background:rgba(255,255,255,0.15);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;}
+/* photo-preview คลิกได้ */
+.photo-preview{cursor:pointer;}
 </style>
 </head>
 <body>
@@ -180,14 +187,14 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="pi">🔢</div><div class="pl">รูปทะเบียน</div><div class="ps">AI อ่านเลข</div>
           <img class="photo-preview" id="vPrev1">
         </label>
-        <input type="file" id="vPhoto1" accept="image/*" capture="environment" onchange="readVehicle(this)" style="display:none">
+        <input type="file" id="vPhoto1" accept="image/*" onchange="readVehicle(this)" style="display:none">
       </div>
       <div class="photo-col">
         <label class="photo-box" id="vBox2" for="vPhoto2">
           <div class="pi">🚛</div><div class="pl">รูปตัวรถ</div><div class="ps">หลักฐานเสริม</div>
           <img class="photo-preview" id="vPrev2">
         </label>
-        <input type="file" id="vPhoto2" accept="image/*" capture="environment" onchange="previewOnly(this,'vPrev2','vBox2')" style="display:none">
+        <input type="file" id="vPhoto2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2')" style="display:none">
       </div>
     </div>
     <div class="loading" id="vLoading"><div class="spinner"></div><div class="loading-txt">AI กำลังอ่านทะเบียน...</div></div>
@@ -242,14 +249,14 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="pi">⚖️</div><div class="pl">รูปตาชั่ง</div><div class="ps">AI อ่านน้ำหนัก</div>
           <img class="photo-preview" id="sPrev1">
         </label>
-        <input type="file" id="sPhoto1" accept="image/*" capture="environment" onchange="readScale(this)" style="display:none">
+        <input type="file" id="sPhoto1" accept="image/*" onchange="readScale(this)" style="display:none">
       </div>
       <div class="photo-col">
         <label class="photo-box" id="sBox2" for="sPhoto2">
           <div class="pi">🔶</div><div class="pl">รูปทองแดง</div><div class="ps">หลักฐานในเต๊า</div>
           <img class="photo-preview" id="sPrev2">
         </label>
-        <input type="file" id="sPhoto2" accept="image/*" capture="environment" onchange="previewOnly(this,'sPrev2','sBox2')" style="display:none">
+        <input type="file" id="sPhoto2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2')" style="display:none">
       </div>
     </div>
     <div class="loading" id="sLoading"><div class="spinner"></div><div class="loading-txt">AI กำลังอ่านน้ำหนัก...</div></div>
@@ -267,7 +274,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <input class="ifield" id="grossIn" type="number" step="0.1" placeholder="0.0" oninput="calcNet()">
     </div>
     <div class="igroup" style="margin-top:12px">
-      <label class="ilabel">น้ำหนักเต๊า Tare (กก.) <span id="tareHint" style="font-weight:400;color:var(--muted)"></span></label>
+      <label class="ilabel">น้ำหนักเต๊า Tare (กก.)</label>
       <input class="ifield" id="tareIn" type="number" step="0.1" oninput="calcNet()">
     </div>
     <div class="wcard" id="netCard" style="display:none">
@@ -315,6 +322,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 </div>
 <div class="toast" id="toast"></div>
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-close" onclick="closeLightbox()">✕</div>
+  <img id="lightboxImg" src="" alt="">
+</div>
 
 <script>
 const LIFF_ID      = "YOUR_LIFF_ID";
@@ -465,9 +477,6 @@ function setupStep4(){
   }
   document.getElementById('currentTypeDisplay').textContent=S.productType||'-';
   document.getElementById('bagCount').textContent=S.bags.length;
-  // แสดง hint default
-  const hint=document.getElementById('tareHint');
-  if(hint) hint.textContent=`— default ${fmt(TARE_DEFAULT[S.type])} กก. (${S.type==='buy'?'ซื้อ':'ขาย'})`;
   renderBags();resetAddForm();
 }
 
@@ -638,9 +647,17 @@ function previewInBox(file,imgId,boxId){
   r.onload=e=>{
     const img=document.getElementById(imgId);
     img.src=e.target.result;img.style.display='block';
+    img.onclick=()=>openLightbox(e.target.result);
     document.getElementById(boxId).classList.add('has-photo');
   };
   r.readAsDataURL(file);
+}
+function openLightbox(src){
+  document.getElementById('lightboxImg').src=src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
 }
 function toB64(file){
   return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
