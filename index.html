@@ -58,6 +58,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .photo-box.has-photo .pl{color:var(--green);}
 .photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;height:80px;object-fit:cover;object-position:center;cursor:pointer;}
 .photo-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.photo-action-single{display:block;text-align:center;padding:10px;border:1.5px solid var(--buy);border-radius:10px;background:#EFF6FF;font-size:12px;font-weight:700;color:var(--buy);cursor:pointer;font-family:'Sarabun',sans-serif;}
 .photo-action-btn{display:block;text-align:center;padding:9px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Sarabun',sans-serif;}
 .photo-action-btn:active{background:var(--bg);}
 .btn-view{width:100%;padding:8px;border:1.5px solid #86EFAC;border-radius:10px;background:#F0FDF4;font-size:12px;font-weight:700;color:#15803D;cursor:pointer;font-family:'Sarabun',sans-serif;display:none;text-align:center;-webkit-appearance:none;type:button;}
@@ -184,12 +185,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="pi">🔢</div><div class="pl">รูปทะเบียน</div><div class="ps">AI อ่านเลข</div>
           <img class="photo-preview" id="vPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <div class="photo-btn-row">
-          <button type="button" class="photo-action-btn" onclick="openCamera('vP1c')">📷 ถ่าย</button>
-          <input type="file" id="vP1c" accept="image/*" capture="environment" onchange="readVehicle(this)" style="display:none">
-          <label class="photo-action-btn" for="vP1g">🖼️ คลัง</label>
-          <input type="file" id="vP1g" accept="image/*" onchange="readVehicle(this)" style="display:none">
-        </div>
+        <label class="photo-action-btn photo-action-single" for="vP1g">📷 ถ่าย / เลือกรูป</label>
+        <input type="file" id="vP1g" accept="image/*" onchange="readVehicle(this)" style="display:none">
         <button type="button" class="btn-view" id="vView1" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
       <div class="photo-col">
@@ -197,10 +194,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="pi">🚛</div><div class="pl">รูปตัวรถ</div><div class="ps">หลักฐานเสริม</div>
           <img class="photo-preview" id="vPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <div class="photo-btn-row">
-          <button type="button" class="photo-action-btn" onclick="openCamera('vP2c')">📷 ถ่าย</button>
-          <input type="file" id="vP2c" accept="image/*" capture="environment" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
-          <label class="photo-action-btn" for="vP2g">🖼️ คลัง</label>
+        <label class="photo-action-btn photo-action-single" for="vP2g">📷 ถ่าย / เลือกรูป</label>
           <input type="file" id="vP2g" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
         </div>
         <button type="button" class="btn-view" id="vView2" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
@@ -257,12 +251,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="pi">⚖️</div><div class="pl">รูปตาชั่ง</div><div class="ps">AI อ่านน้ำหนัก</div>
           <img class="photo-preview" id="sPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <div class="photo-btn-row">
-          <button type="button" class="photo-action-btn" onclick="openCamera('sP1c')">📷 ถ่าย</button>
-          <input type="file" id="sP1c" accept="image/*" capture="environment" onchange="readScale(this)" style="display:none">
-          <label class="photo-action-btn" for="sP1g">🖼️ คลัง</label>
-          <input type="file" id="sP1g" accept="image/*" onchange="readScale(this)" style="display:none">
-        </div>
+        <label class="photo-action-btn photo-action-single" for="sP1g">📷 ถ่าย / เลือกรูป</label>
+        <input type="file" id="sP1g" accept="image/*" onchange="readScale(this)" style="display:none">
         <button type="button" class="btn-view" id="sView1" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
       <div class="photo-col">
@@ -270,10 +260,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="pi">🔶</div><div class="pl">รูปทองแดง</div><div class="ps">หลักฐานในเต๊า</div>
           <img class="photo-preview" id="sPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <div class="photo-btn-row">
-          <button type="button" class="photo-action-btn" onclick="openCamera('sP2c')">📷 ถ่าย</button>
-          <input type="file" id="sP2c" accept="image/*" capture="environment" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
-          <label class="photo-action-btn" for="sP2g">🖼️ คลัง</label>
+        <label class="photo-action-btn photo-action-single" for="sP2g">📷 ถ่าย / เลือกรูป</label>
           <input type="file" id="sP2g" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
         </div>
         <button type="button" class="btn-view" id="sView2" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
@@ -493,7 +480,7 @@ function addBag(){
 function resetAddForm(){
   S.curGross=null;S.gAiDone=false;
   // ล้าง file inputs
-  ['sP1c','sP1g','sP2c','sP2g'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['sP1g','sP2g'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   // ล้างรูป preview
   ['sPrev1','sPrev2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});
   // reset photo box state
@@ -567,25 +554,7 @@ async function claude(b64,mediaType,prompt){
   const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mediaType,data:b64}},{type:'text',text:prompt}]}]})});
   const data=await resp.json();return data.content[0].text;
 }
-function openCamera(inputId){
-  const tmp = document.createElement('input');
-  tmp.type = 'file';
-  tmp.accept = 'image/*';
-  tmp.setAttribute('capture', 'environment');
-  tmp.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
-  document.body.appendChild(tmp);
-  tmp.addEventListener('change', function(){
-    if(!tmp.files || !tmp.files[0]){ document.body.removeChild(tmp); return; }
-    const file = tmp.files[0];
-    // เรียก handler ตรงๆ ตาม inputId
-    if(inputId==='vP1c') readVehicleFile(file);
-    else if(inputId==='vP2c') previewOnlyFile(file,'vPrev2','vBox2','vView2');
-    else if(inputId==='sP1c') readScaleFile(file);
-    else if(inputId==='sP2c') previewOnlyFile(file,'sPrev2','sBox2','sView2');
-    document.body.removeChild(tmp);
-  });
-  tmp.click();
-}
+
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 </script>
 </body>
