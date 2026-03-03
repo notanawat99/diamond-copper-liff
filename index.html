@@ -7,12 +7,7 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
-:root {
-  --buy:#1565C0;--sell:#2E7D32;--dark:#0F172A;--card:#FFFFFF;
-  --bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;
-  --green:#22C55E;--red:#EF4444;--orange:#F97316;
-  --shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;
-}
+:root{--buy:#1565C0;--sell:#2E7D32;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;}
 .hdr{background:var(--dark);padding:18px 18px 20px;position:sticky;top:0;z-index:100;}
@@ -53,23 +48,23 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .ilabel{font-size:13px;font-weight:700;color:var(--text);margin-bottom:7px;display:block;}
 .ifield{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-size:16px;font-family:'Sarabun',sans-serif;color:var(--text);background:#fff;outline:none;-webkit-appearance:none;transition:border-color .2s;}
 .ifield:focus{border-color:var(--accent);}
-/* FIX 2: photo-box ไม่ล้น */
+/* photo-box: overflow hidden, preview inside */
 .photo-col{display:flex;flex-direction:column;}
-.photo-box{border:2px dashed var(--border);border-radius:14px;padding:16px 10px 12px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:all .2s;background:#FAFAFA;display:flex;flex-direction:column;align-items:center;}
+.photo-box{border:2px dashed var(--border);border-radius:14px;padding:14px 10px 10px;text-align:center;cursor:pointer;overflow:hidden;transition:all .2s;background:#FAFAFA;display:flex;flex-direction:column;align-items:center;}
 .photo-box:active{background:#F1F5F9;}
-.photo-box .pi{font-size:28px;margin-bottom:4px;pointer-events:none;}
-.photo-box .pl{font-size:13px;font-weight:700;color:var(--text);pointer-events:none;}
-.photo-box .ps{font-size:10px;color:var(--muted);margin-top:2px;pointer-events:none;}
+.photo-box .pi{font-size:26px;margin-bottom:3px;pointer-events:none;}
+.photo-box .pl{font-size:12px;font-weight:700;color:var(--text);pointer-events:none;}
+.photo-box .ps{font-size:10px;color:var(--muted);margin-top:1px;pointer-events:none;}
 .photo-box.has-photo{border-style:solid;border-color:var(--green);background:#F0FDF4;}
 .photo-box.has-photo .pl{color:var(--green);}
-/* FIX 2: preview อยู่ใน box */
-.photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;height:90px;object-fit:cover;object-position:center;pointer-events:none;}
+/* preview อยู่ใน box ไม่ล้น */
+.photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;height:80px;object-fit:cover;object-position:center;pointer-events:none;}
 .photo-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
 .ai-result{display:none;align-items:center;gap:10px;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:12px 14px;margin-top:10px;}
 .ai-val{font-size:22px;font-weight:800;color:#15803D;}
 .ai-lbl{font-size:11px;color:#16A34A;}
 .ai-edit{margin-left:auto;font-size:12px;font-weight:700;color:var(--buy);cursor:pointer;text-decoration:underline;white-space:nowrap;}
-/* FIX 3: edit-box มีปุ่มยกเลิก */
+/* edit-box พร้อมปุ่มยกเลิก */
 .edit-box{display:none;margin-top:10px;background:#F8FAFC;border:1.5px solid var(--border);border-radius:12px;padding:12px;}
 .edit-box-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .edit-box-title{font-size:13px;font-weight:700;}
@@ -200,15 +195,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <div style="flex:1;min-width:0"><div class="ai-val" id="vVal">-</div><div class="ai-lbl">อ่านได้จากรูป</div></div>
       <div class="ai-edit" onclick="editVehicle()">✏️ แก้ไข</div>
     </div>
-    <!-- FIX 3: edit box + ปุ่มยกเลิก -->
     <div class="edit-box" id="vEditBox">
-      <div class="edit-box-hdr">
-        <span class="edit-box-title">✏️ แก้ไขทะเบียนรถ</span>
-        <span class="edit-box-cancel" onclick="cancelEditVehicle()">✕ ยกเลิก</span>
-      </div>
+      <div class="edit-box-hdr"><span class="edit-box-title">✏️ แก้ไขทะเบียนรถ</span><span class="edit-box-cancel" onclick="cancelEditVehicle()">✕ ยกเลิก</span></div>
       <input class="ifield" id="vEditIn" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="confirmEditVehicle()">
     </div>
-    <!-- FIX 1: ซ่อนเมื่อ AI สำเร็จ -->
+    <!-- ซ่อนเมื่อ AI สำเร็จ -->
     <div id="vManualGroup" style="margin-top:10px">
       <label class="ilabel">ทะเบียนรถ <span style="font-weight:400;color:var(--muted)">— กรอกเองหรือถ่ายรูปก็ได้</span></label>
       <input class="ifield" id="vPlate" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="chk2()">
@@ -245,7 +236,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   <div id="bagList"></div>
   <div class="card" id="addForm">
     <div class="card-title" id="addFormTitle">เพิ่มเต๊าใหม่</div>
-    <!-- FIX 2: preview อยู่ใน photo-box -->
     <div class="photo-row">
       <div class="photo-col">
         <label class="photo-box" id="sBox1" for="sPhoto1">
@@ -267,23 +257,18 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <div style="flex:1;min-width:0"><div class="ai-val" id="grossVal">-</div><div class="ai-lbl">น้ำหนักรวม Gross</div></div>
       <div class="ai-edit" onclick="editGross()">✏️ แก้ไข</div>
     </div>
-    <!-- FIX 3: edit gross + ปุ่มยกเลิก -->
     <div class="edit-box" id="grossEditBox">
-      <div class="edit-box-hdr">
-        <span class="edit-box-title">✏️ แก้ไขน้ำหนัก Gross (กก.)</span>
-        <span class="edit-box-cancel" onclick="cancelEditGross()">✕ ยกเลิก</span>
-      </div>
+      <div class="edit-box-hdr"><span class="edit-box-title">✏️ แก้ไขน้ำหนัก Gross (กก.)</span><span class="edit-box-cancel" onclick="cancelEditGross()">✕ ยกเลิก</span></div>
       <input class="ifield" id="grossEditIn" type="number" step="0.1" placeholder="0.0" oninput="confirmEditGross()">
     </div>
-    <!-- FIX 1: ซ่อนเมื่อ AI สำเร็จ -->
+    <!-- ซ่อนเมื่อ AI สำเร็จ -->
     <div id="grossManualGroup" style="margin-top:10px">
       <label class="ilabel">น้ำหนักรวม Gross (กก.) <span style="font-weight:400;color:var(--muted)">— กรอกเองหรือถ่ายรูปก็ได้</span></label>
       <input class="ifield" id="grossIn" type="number" step="0.1" placeholder="0.0" oninput="calcNet()">
     </div>
-    <!-- FIX 5: Tare carry forward -->
     <div class="igroup" style="margin-top:12px">
-      <label class="ilabel">น้ำหนักเต๊า Tare (กก.) <span id="tareDefault" style="font-weight:400;color:var(--muted)"></span></label>
-      <input class="ifield" id="tareIn" type="number" step="0.1" placeholder="3.0" oninput="calcNet()">
+      <label class="ilabel">น้ำหนักเต๊า Tare (กก.) <span id="tareHint" style="font-weight:400;color:var(--muted)"></span></label>
+      <input class="ifield" id="tareIn" type="number" step="0.1" oninput="calcNet()">
     </div>
     <div class="wcard" id="netCard" style="display:none">
       <div class="wrow"><span class="wkey">Gross</span><span class="wval" id="dGross">-</span></div>
@@ -343,6 +328,9 @@ const DOC_TYPES = {
 };
 const DOC_NAMES = {grn:'ใบนำส่งสินค้าเข้า',pb:'บิลซื้อสินค้า',do:'ใบนำส่งสินค้าออก',sb:'บิลขายสินค้า'};
 
+// default tare ตาม type: ซื้อ=3, ขาย=2
+const TARE_DEFAULT = {buy:3.0, sell:2.0};
+
 const S = {
   type:null,docType:null,partner:'',vehicle:'',
   productType:null,bags:[],
@@ -353,7 +341,6 @@ const S = {
 
 liff.init({liffId:LIFF_ID}).catch(()=>console.log('LIFF: test mode'));
 
-// FIX 4: ทศนิยม 1 ตำแหน่งสม่ำเสมอ
 function fmt(n){return parseFloat(n).toFixed(1);}
 
 function go(n){
@@ -408,7 +395,6 @@ document.getElementById('s1Btn').addEventListener('click',()=>{
   document.getElementById('s2Btn').className='btn btn-primary'+(isBuy?'':' sell');
 });
 
-// FIX 1: ซ่อน vManualGroup เมื่อ AI สำเร็จ
 async function readVehicle(input){
   const file=input.files[0];if(!file)return;
   previewInBox(file,'vPrev1','vBox1');
@@ -473,15 +459,18 @@ function chk3(){
 }
 
 function setupStep4(){
+  // set tare default ตาม type เฉพาะเต๊าแรก
+  if(S.bags.length===0){
+    S.curTare=TARE_DEFAULT[S.type]||3.0;
+  }
   document.getElementById('currentTypeDisplay').textContent=S.productType||'-';
   document.getElementById('bagCount').textContent=S.bags.length;
-  if(S.bags.length===0) S.curTare=S.type==='buy'?3.0:2.0;
-  const hint=document.getElementById('tareDefault');
-  if(hint) hint.textContent='— default '+(S.type==='buy'?'3.0 (ซื้อ)':'2.0 (ขาย)');
+  // แสดง hint default
+  const hint=document.getElementById('tareHint');
+  if(hint) hint.textContent=`— default ${fmt(TARE_DEFAULT[S.type])} กก. (${S.type==='buy'?'ซื้อ':'ขาย'})`;
   renderBags();resetAddForm();
 }
 
-// FIX 1: ซ่อน grossManualGroup เมื่อ AI สำเร็จ
 async function readScale(input){
   const file=input.files[0];if(!file)return;
   previewInBox(file,'sPrev1','sBox1');
@@ -520,7 +509,6 @@ function confirmEditGross(){
   if(!isNaN(val)){S.curGross=val;document.getElementById('grossVal').textContent=fmt(val)+' กก.';document.getElementById('grossIn').value=fmt(val);calcNet();}
 }
 
-// FIX 4+5: toFixed(1) + Tare carry forward
 function calcNet(){
   const gRaw=parseFloat(document.getElementById('grossIn').value);
   const g=!isNaN(gRaw)?gRaw:S.curGross;
@@ -562,7 +550,8 @@ function resetAddForm(){
   hide('sResult');hideEl('grossEditBox');hide('sLoading');hide('netCard');
   document.getElementById('grossIn').value='';
   document.getElementById('grossManualGroup').style.display='block';
-  document.getElementById('tareIn').value=fmt(S.curTare); // FIX 5
+  // carry forward tare จากเต๊าก่อนหน้า
+  document.getElementById('tareIn').value=fmt(S.curTare);
   document.getElementById('addBagBtn').disabled=true;
   document.getElementById('addFormTitle').textContent=S.bags.length>0?`เพิ่มเต๊าที่ ${S.bags.length+1}`:'เพิ่มเต๊าใหม่';
 }
@@ -644,7 +633,6 @@ function show(id){const el=document.getElementById(id);if(el)el.style.display='f
 function hide(id){const el=document.getElementById(id);if(el)el.style.display='none';}
 function hideEl(id){const el=document.getElementById(id);if(el)el.style.display='none';}
 
-// FIX 2: img อยู่ใน label แล้ว — แค่ set src และ show
 function previewInBox(file,imgId,boxId){
   const r=new FileReader();
   r.onload=e=>{
