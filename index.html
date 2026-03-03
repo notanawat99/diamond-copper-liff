@@ -57,8 +57,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .photo-box.has-photo{border-style:solid;border-color:var(--green);background:#F0FDF4;}
 .photo-box.has-photo .pl{color:var(--green);}
 .photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;height:80px;object-fit:cover;object-position:center;cursor:pointer;}
-.photo-upload-btn{display:block;width:100%;text-align:center;padding:10px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:12px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Sarabun',sans-serif;}
+.photo-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.photo-upload-btn{display:block;width:100%;text-align:center;padding:9px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Sarabun',sans-serif;}
 .photo-upload-btn:active{background:var(--bg);}
+.photo-upload-btn.cam{border-color:var(--buy);color:var(--buy);background:#EFF6FF;}
+/* Camera overlay */
+.cam-overlay{display:none;position:fixed;inset:0;background:#000;z-index:9998;flex-direction:column;}
+.cam-overlay.open{display:flex;}
+.cam-video{width:100%;flex:1;object-fit:cover;}
+.cam-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#000;}
+.cam-shutter{width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,0.5);cursor:pointer;flex-shrink:0;}
+.cam-cancel{color:#fff;font-size:14px;font-weight:700;cursor:pointer;padding:8px 16px;font-family:'Sarabun',sans-serif;background:transparent;border:none;}
 .btn-view{width:100%;padding:8px;border:1.5px solid #86EFAC;border-radius:10px;background:#F0FDF4;font-size:12px;font-weight:700;color:#15803D;cursor:pointer;font-family:'Sarabun',sans-serif;display:none;text-align:center;}
 .ai-result{display:none;align-items:center;gap:10px;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:12px 14px;margin-top:10px;}
 .ai-val{font-size:22px;font-weight:800;color:#15803D;}
@@ -189,8 +198,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="ps">AI อ่านเลข</div>
           <img class="photo-preview" id="vPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <label class="photo-upload-btn" for="vP1">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="vP1" accept="image/*" capture="environment" onchange="readVehicle(this)" style="display:none">
+        <div class="photo-btn-row">
+          <button type="button" class="photo-upload-btn cam" onclick="openCam('vP1',false)">📷 ถ่าย</button>
+          <label class="photo-upload-btn" for="vP1">🖼️ คลัง</label>
+        </div>
+        <input type="file" id="vP1" accept="image/*" onchange="readVehicle(this)" style="display:none">
         <button type="button" class="btn-view" id="vView1" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
       <div class="photo-col">
@@ -200,8 +212,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="ps">หลักฐานเสริม</div>
           <img class="photo-preview" id="vPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <label class="photo-upload-btn" for="vP2">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="vP2" accept="image/*" capture="environment" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
+        <div class="photo-btn-row">
+          <button type="button" class="photo-upload-btn cam" onclick="openCam('vP2',false)">📷 ถ่าย</button>
+          <label class="photo-upload-btn" for="vP2">🖼️ คลัง</label>
+        </div>
+        <input type="file" id="vP2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
         <button type="button" class="btn-view" id="vView2" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
     </div>
@@ -258,8 +273,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="ps">AI อ่านน้ำหนัก</div>
           <img class="photo-preview" id="sPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <label class="photo-upload-btn" for="sP1">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="sP1" accept="image/*" capture="environment" onchange="readScale(this)" style="display:none">
+        <div class="photo-btn-row">
+          <button type="button" class="photo-upload-btn cam" onclick="openCam('sP1',true)">📷 ถ่าย</button>
+          <label class="photo-upload-btn" for="sP1">🖼️ คลัง</label>
+        </div>
+        <input type="file" id="sP1" accept="image/*" onchange="readScale(this)" style="display:none">
         <button type="button" class="btn-view" id="sView1" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
       <div class="photo-col">
@@ -269,8 +287,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <div class="ps">หลักฐานในเต๊า</div>
           <img class="photo-preview" id="sPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
-        <label class="photo-upload-btn" for="sP2">📷 ถ่าย / เลือกรูป</label>
-        <input type="file" id="sP2" accept="image/*" capture="environment" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
+        <div class="photo-btn-row">
+          <button type="button" class="photo-upload-btn cam" onclick="openCam('sP2',false)">📷 ถ่าย</button>
+          <label class="photo-upload-btn" for="sP2">🖼️ คลัง</label>
+        </div>
+        <input type="file" id="sP2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
         <button type="button" class="btn-view" id="sView2" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
       </div>
     </div>
@@ -336,6 +357,15 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 </div>
 <div class="toast" id="toast"></div>
+<div class="cam-overlay" id="camOverlay">
+  <video class="cam-video" id="camVideo" autoplay playsinline muted></video>
+  <div class="cam-bar">
+    <button class="cam-cancel" onclick="closeCam()">✕ ยกเลิก</button>
+    <button class="cam-shutter" id="camShutter" onclick="snapPhoto()"></button>
+    <div style="width:80px"></div>
+  </div>
+</div>
+<canvas id="camCanvas" style="display:none"></canvas>
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <img class="lightbox-img" id="lightboxImg" src="" alt="" onclick="event.stopPropagation()">
   <button class="lightbox-close" onclick="closeLightbox()">✕ ปิด</button>
@@ -391,8 +421,8 @@ document.getElementById('s1Btn').addEventListener('click',()=>{
   document.getElementById('s2Btn').className='btn btn-primary'+(isBuy?'':' sell');
 });
 
-async function readVehicle(input){
-  const file=input.files[0];if(!file)return;
+async function readVehicle(input){ const file=input.files[0];if(!file)return; await readVehicleFile(file); }
+async function readVehicleFile(file){
   previewInBox(file,'vPrev1','vBox1','vView1');
   show('vLoading');hide('vResult');hideEl('vEditBox');
   try{
@@ -433,8 +463,8 @@ function setupStep4(){
   document.getElementById('bagCount').textContent=S.bags.length;
   renderBags();resetAddForm();
 }
-async function readScale(input){
-  const file=input.files[0];if(!file)return;
+async function readScale(input){ const file=input.files[0];if(!file)return; await readScaleFile(file); }
+async function readScaleFile(file){
   previewInBox(file,'sPrev1','sBox1','sView1');
   show('sLoading');hide('sResult');hideEl('grossEditBox');hide('netCard');
   try{
@@ -545,6 +575,48 @@ async function claude(b64,mediaType,prompt){
   const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mediaType,data:b64}},{type:'text',text:prompt}]}]})});
   const data=await resp.json();return data.content[0].text;
 }
+// ---- CAMERA ----
+let camStream = null;
+let camTargetId = null;
+let camIsScale = false;
+
+async function openCam(targetId, isScale) {
+  camTargetId = targetId;
+  camIsScale = isScale;
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false
+    });
+    document.getElementById('camVideo').srcObject = camStream;
+    document.getElementById('camOverlay').classList.add('open');
+  } catch(e) {
+    toast('⚠️ ไม่สามารถเปิดกล้องได้ — ลองใช้ปุ่ม คลัง แทน');
+  }
+}
+
+function closeCam() {
+  if(camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+  document.getElementById('camOverlay').classList.remove('open');
+}
+
+function snapPhoto() {
+  const video = document.getElementById('camVideo');
+  const canvas = document.getElementById('camCanvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  closeCam();
+  canvas.toBlob(blob => {
+    const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+    if(camTargetId === 'vP1') { previewInBox(file,'vPrev1','vBox1','vView1'); readVehicleFile(file); }
+    else if(camTargetId === 'vP2') { previewInBox(file,'vPrev2','vBox2','vView2'); chk2(); }
+    else if(camTargetId === 'sP1') { readScaleFile(file); }
+    else if(camTargetId === 'sP2') { previewInBox(file,'sPrev2','sBox2','sView2'); chkAddBag(); }
+  }, 'image/jpeg', 0.92);
+}
+// ---- END CAMERA ----
+
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 </script>
 </body>
