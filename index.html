@@ -822,6 +822,14 @@ if('serviceWorker' in navigator){
       .catch(e=>console.log('SW error:',e));
   });
 }
+// ป้องกัน pull-to-refresh
+let lastTouchY=0;
+document.addEventListener('touchstart',e=>{lastTouchY=e.touches[0].clientY;},{passive:false});
+document.addEventListener('touchmove',e=>{
+  const y=e.touches[0].clientY;
+  if(y>lastTouchY && window.scrollY===0){e.preventDefault();}
+  lastTouchY=y;
+},{passive:false});
 </script>
 </body>
 </html>
