@@ -10,6 +10,9 @@
 <meta name="apple-mobile-web-app-title" content="DCT ชั่งสินค้า">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  html, body { overscroll-behavior: none; overscroll-behavior-y: none; touch-action: pan-x pan-y; }
+</style>
 <title>Diamond Copper - บันทึกการชั่ง</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
@@ -17,7 +20,7 @@
 :root{--buy:#1565C0;--sell:#2E7D32;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{overscroll-behavior-y:none;}
-body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;overscroll-behavior-y:none;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;overscroll-behavior:none;overscroll-behavior-y:none;}
 .hdr{background:var(--dark);padding:18px 18px 20px;position:sticky;top:0;z-index:100;}
 .hdr-top{display:flex;justify-content:space-between;align-items:flex-start;}
 .hdr-brand{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;}
@@ -827,9 +830,16 @@ let lastTouchY=0;
 document.addEventListener('touchstart',e=>{lastTouchY=e.touches[0].clientY;},{passive:false});
 document.addEventListener('touchmove',e=>{
   const y=e.touches[0].clientY;
-  if(y>lastTouchY && window.scrollY===0){e.preventDefault();}
+  const diff=y-lastTouchY;
+  // block ถ้าลากลง และ document อยู่บนสุด
+  const scrollTop=window.scrollY||document.documentElement.scrollTop||document.body.scrollTop||0;
+  if(diff>0 && scrollTop<=0){
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  }
   lastTouchY=y;
-},{passive:false});
+},{passive:false,capture:true});
 </script>
 </body>
 </html>
