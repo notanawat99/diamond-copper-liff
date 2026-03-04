@@ -666,7 +666,41 @@ function buildSummary(){
 async function submit(){
   const btn=document.getElementById('confirmBtn');btn.textContent='⏳ กำลังส่งข้อมูล...';btn.disabled=true;
   const txnId='TXN-'+Date.now().toString().slice(-6);
-  const payload={txnId,type:S.type,docType:S.docType,partner:S.partner,vehicle:S.vehicle,bags:S.bags.map(b=>({productType:b.productType,gross:b.gross,tare:b.tare,net:b.net})),timestamp:new Date().toISOString()};
+  
+  // คำนวณน้ำหนักแยกตามประเภทสินค้า
+  const productTotals={
+    'ปอกสวย':0,'ปอกช็อต':0,'สะพานไฟ':0,'ท่อใหม่':0,'ท่อเก่า':0,
+    'ทองแดงใหญ่':0,'ทองแดงเล็ก':0,'บดสะอาด':0,'บดผสม':0,'บดชุบ':0,'อื่นๆ':0
+  };
+  let totalNet=0;
+  S.bags.forEach(b=>{
+    const key=productTotals.hasOwnProperty(b.productType)?b.productType:'อื่นๆ';
+    productTotals[key]=parseFloat((productTotals[key]+b.net).toFixed(1));
+    totalNet=parseFloat((totalNet+b.net).toFixed(1));
+  });
+
+  const payload={
+    txnId,
+    type:S.type,
+    docType:S.docType,
+    partner:S.partner,
+    vehicle:S.vehicle,
+    timestamp:new Date().toISOString(),
+    totalNet,
+    ปอกสวย:productTotals['ปอกสวย'],
+    ปอกช็อต:productTotals['ปอกช็อต'],
+    สะพานไฟ:productTotals['สะพานไฟ'],
+    ท่อใหม่:productTotals['ท่อใหม่'],
+    ท่อเก่า:productTotals['ท่อเก่า'],
+    ทองแดงใหญ่:productTotals['ทองแดงใหญ่'],
+    ทองแดงเล็ก:productTotals['ทองแดงเล็ก'],
+    บดสะอาด:productTotals['บดสะอาด'],
+    บดผสม:productTotals['บดผสม'],
+    บดชุบ:productTotals['บดชุบ'],
+    อื่นๆ:productTotals['อื่นๆ'],
+    bags:S.bags.map(b=>({productType:b.productType,gross:b.gross,tare:b.tare,net:b.net}))
+  };
+
   try{await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(e){console.log('webhook:',e);}
   document.getElementById('txnChip').textContent=txnId;go(6);
 }
