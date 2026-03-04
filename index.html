@@ -783,7 +783,19 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('/diamond-copper-liff/sw.js')
-      .then(()=>console.log('SW OK'))
+      .then(reg=>{
+        reg.addEventListener('updatefound',()=>{
+          const newWorker=reg.installing;
+          newWorker.addEventListener('statechange',()=>{
+            if(newWorker.state==='installed' && navigator.serviceWorker.controller){
+              // มีเวอร์ชันใหม่ — reload อัตโนมัติ
+              window.location.reload();
+            }
+          });
+        });
+        // เช็คอัพเดทตอนเปิดแอปทุกครั้ง
+        reg.update();
+      })
       .catch(e=>console.log('SW error:',e));
   });
 }
