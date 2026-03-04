@@ -1,47 +1,53 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0F172A">
-    <title>Diamond Copper - บันทึกการชั่ง</title>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
-        :root{--buy:#1565C0;--sell:#2E7D32;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
-        *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-        body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;}
-        .hdr{background:var(--dark);padding:18px 18px 20px;position:sticky;top:0;z-index:100;}
-        .hdr-top{display:flex;justify-content:space-between;align-items:flex-start;}
-        .hdr-brand{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;}
-        .hdr-title{font-size:20px;font-weight:800;color:#fff;margin-top:2px;}
-        .hdr-step{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
-        .hdr-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);}
-        .hdr-badge.buy{background:rgba(21,101,192,0.4);color:#90CAF9;}
-        .hdr-badge.sell{background:rgba(46,125,50,0.4);color:#A5D6A7;}
-        .progress-bar{display:flex;gap:4px;margin-top:14px;}
-        .pb-seg{height:3px;border-radius:2px;background:rgba(255,255,255,0.15);flex:1;transition:background .3s;}
-        .pb-seg.done{background:rgba(255,255,255,0.5);}
-        .pb-seg.active{background:#fff;}
-        .content{padding:16px;}
-        .section{display:none;animation:up .25s ease;}
-        .section.active{display:block;}
-        @keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-        .card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
-        .card-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
-        .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-        .type-btn{border:2px solid var(--border);border-radius:14px;padding:18px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
-        .type-btn .ti{font-size:30px;margin-bottom:6px;}
-        .type-btn .tl{font-size:14px;font-weight:700;}
-        .type-btn.buy.sel{border-color:var(--buy);background:#EFF6FF;}
-        .type-btn.sell.sel{border-color:var(--sell);background:#F0FDF4;}
-        .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-        .doc-btn{border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;background:#fff;}
-        .doc-btn.sel.buy{border-color:var(--buy);background:#EFF6FF;}
-        .doc-btn.sel.sell{border-color:var(--sell);background:#F0FDF4;}
-        .igroup{margin-bottom:14px;}
-        .ilabel{font-size:13px;font-weight:700;color:var(--text);margin-bottom:7px;display:block;}
-        .ifield{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-size:16px;font-family:'Sarabun',sans-serif;outline:none;}
-        .ifield:focus{border-color:var(--accent);}
-        .photo-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-        .photo-box{border
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F172A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DCT ชั่งสินค้า">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  html, body { overscroll-behavior: none; overscroll-behavior-y: none; touch-action: pan-x pan-y; }
+</style>
+<title>Diamond Copper - บันทึกการชั่ง</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
+:root{--buy:#1565C0;--sell:#2E7D32;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{overscroll-behavior-y:none;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;overscroll-behavior:none;overscroll-behavior-y:none;}
+.hdr{background:var(--dark);padding:18px 18px 20px;position:sticky;top:0;z-index:100;}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.hdr-brand{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;}
+.hdr-title{font-size:20px;font-weight:800;color:#fff;margin-top:2px;}
+.hdr-step{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.hdr-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);}
+.hdr-badge.buy{background:rgba(21,101,192,0.4);color:#90CAF9;}
+.hdr-badge.sell{background:rgba(46,125,50,0.4);color:#A5D6A7;}
+.progress-bar{display:flex;gap:4px;margin-top:14px;}
+.pb-seg{height:3px;border-radius:2px;background:rgba(255,255,255,0.15);flex:1;transition:background .3s;}
+.pb-seg.done{background:rgba(255,255,255,0.5);}
+.pb-seg.active{background:#fff;}
+.content{padding:16px;}
+.section{display:none;animation:up .25s ease;}
+.section.active{display:block;}
+@keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
+.card-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.type-btn{border:2px solid var(--border);border-radius:14px;padding:18px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
+.type-btn .ti{font-size:30px;margin-bottom:6px;}
+.type-btn .tl{font-size:14px;font-weight:700;}
+.type-btn .td{font-size:11px;color:var(--muted);margin-top:2px;}
+.type-btn.buy.sel{border-color:var(--buy);background:#EFF6FF;}
+.type-btn.sell.sel{border-color:var(--sell);background:#F0FDF4;}
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.doc-btn{border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
+.doc-btn .di{font-size:26px;margin-bottom:6px;}
+.doc-btn .dl{font-size:12px;font-weight:700;line-height:1.3;}
+.doc-
