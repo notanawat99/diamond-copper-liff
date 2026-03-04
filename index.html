@@ -354,7 +354,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <button class="btn btn-primary" id="addBagBtn" onclick="addBag()" style="margin-top:14px;margin-bottom:0" disabled>✅ ยืนยันเต๊านี้ และเพิ่มเต๊าถัดไป</button>
   </div>
-  <button class="btn btn-orange" onclick="go(3)">🔄 เปลี่ยนประเภทสินค้า</button>
+  <button class="btn btn-orange" onclick="confirmChangeType()">🔄 เปลี่ยนประเภทสินค้า</button>
   <div class="btn-row">
     <button class="btn btn-secondary btn-back" onclick="go(3)">← กลับ</button>
     <button class="btn btn-primary" id="s4Btn" onclick="go(5)" disabled>สรุปรายการ →</button>
@@ -415,6 +415,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 </div>
 <div class="toast" id="toast"></div>
+<div class="dialog-overlay" id="changeTypeDialog">
+  <div class="dialog-box">
+    <div class="dialog-icon">🔄</div>
+    <div class="dialog-title">เปลี่ยนประเภทสินค้า?</div>
+    <div class="dialog-sub">ข้อมูลน้ำหนักที่กรอกไว้จะถูกล้าง<br>เต๊าที่บันทึกแล้วจะยังอยู่</div>
+    <div class="dialog-btns">
+      <button class="dialog-cancel" onclick="document.getElementById('changeTypeDialog').classList.remove('open')">ยกเลิก</button>
+      <button class="dialog-confirm" style="background:var(--orange)" onclick="document.getElementById('changeTypeDialog').classList.remove('open');go(3)">เปลี่ยน</button>
+    </div>
+  </div>
+</div>
 <div class="dialog-overlay" id="delDialog">
   <div class="dialog-box">
     <div class="dialog-icon">🗑️</div>
@@ -588,6 +599,14 @@ function resetAddForm(){
   document.getElementById('addFormTitle').textContent=S.bags.length>0?`เพิ่มเต๊าที่ ${S.bags.length+1}`:'เพิ่มเต๊าใหม่';
   document.getElementById('addForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
+function confirmChangeType(){
+  // ถ้ามีรูปหรือน้ำหนักที่กรอกไว้ ให้ถามก่อน
+  if(S.curGross || document.getElementById('grossIn').value){
+    document.getElementById('changeTypeDialog').classList.add('open');
+  } else {
+    go(3);
+  }
+}
 let pendingDelIdx = null;
 function delBag(i){
   pendingDelIdx=i;
@@ -705,12 +724,15 @@ async function submit(){
   document.getElementById('txnChip').textContent=txnId;go(6);
 }
 function reset(){
+  // cleanup camera stream ก่อน
+  closeCam();
   Object.assign(S,{type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,vAiDone:false,gAiDone:false});
   document.getElementById('partnerName').value='';document.getElementById('vPlate').value='';
   document.getElementById('vManualGroup').style.display='block';
   document.querySelectorAll('.type-btn,.doc-btn,.ptype-btn').forEach(b=>b.classList.remove('sel'));
   document.getElementById('docCard').style.display='none';document.getElementById('s1Btn').style.display='none';
   document.getElementById('hBadge').textContent='-';document.getElementById('hBadge').className='hdr-badge';
+  ['vP1','vP2','sP1','sP2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['vPrev1','vPrev2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});
   ['vBox1','vBox2'].forEach(id=>document.getElementById(id).classList.remove('has-photo'));
   ['vView1','vView2'].forEach(id=>document.getElementById(id).style.display='none');
