@@ -1,601 +1,166 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0F172A">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="DCT ชั่งสินค้า">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<style>
-  html, body { overscroll-behavior: none; overscroll-behavior-y: none; touch-action: pan-x pan-y; }
-</style>
-<title>Diamond Copper - บันทึกการชั่ง</title>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
-:root{--buy:#1565C0;--sell:#2E7D32;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html{overscroll-behavior-y:none;}
-body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;overscroll-behavior:none;overscroll-behavior-y:none;}
-.hdr{background:var(--dark);padding:18px 18px 20px;position:sticky;top:0;z-index:100;}
-.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;}
-.hdr-brand{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;}
-.hdr-title{font-size:20px;font-weight:800;color:#fff;margin-top:2px;}
-.hdr-step{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
-.hdr-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);}
-.hdr-badge.buy{background:rgba(21,101,192,0.4);color:#90CAF9;}
-.hdr-badge.sell{background:rgba(46,125,50,0.4);color:#A5D6A7;}
-.progress-bar{display:flex;gap:4px;margin-top:14px;}
-.pb-seg{height:3px;border-radius:2px;background:rgba(255,255,255,0.15);flex:1;transition:background .3s;}
-.pb-seg.done{background:rgba(255,255,255,0.5);}
-.pb-seg.active{background:#fff;}
-.content{padding:16px;}
-.section{display:none;animation:up .25s ease;}
-.section.active{display:block;}
-@keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
-.card-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
-.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.type-btn{border:2px solid var(--border);border-radius:14px;padding:18px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
-.type-btn .ti{font-size:30px;margin-bottom:6px;}
-.type-btn .tl{font-size:14px;font-weight:700;}
-.type-btn .td{font-size:11px;color:var(--muted);margin-top:2px;}
-.type-btn.buy.sel{border-color:var(--buy);background:#EFF6FF;}
-.type-btn.sell.sel{border-color:var(--sell);background:#F0FDF4;}
-.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.doc-btn{border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
-.doc-btn .di{font-size:26px;margin-bottom:6px;}
-.doc-btn .dl{font-size:12px;font-weight:700;line-height:1.3;}
-.doc-btn .dtag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:6px;}
-.doc-btn.no-price .dtag{background:#FFF7ED;color:#C2410C;}
-.doc-btn.has-price .dtag{background:#F0FDF4;color:#15803D;}
-.doc-btn.sel.buy{border-color:var(--buy);background:#EFF6FF;}
-.doc-btn.sel.sell{border-color:var(--sell);background:#F0FDF4;}
-.igroup{margin-bottom:14px;}
-.ilabel{font-size:13px;font-weight:700;color:var(--text);margin-bottom:7px;display:block;}
-.ifield{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-size:16px;font-family:'Sarabun',sans-serif;color:var(--text);background:#fff;outline:none;-webkit-appearance:none;transition:border-color .2s;}
-.ifield:focus{border-color:var(--accent);}
-.photo-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-.photo-col{display:flex;flex-direction:column;gap:6px;}
-.photo-box{border:2px dashed var(--border);border-radius:14px;padding:14px 10px 10px;text-align:center;overflow:hidden;background:#FAFAFA;display:flex;flex-direction:column;align-items:center;}
-.photo-box .pi{font-size:26px;margin-bottom:3px;}
-.photo-box .pl{font-size:12px;font-weight:700;color:var(--text);}
-.photo-box .ps{font-size:10px;color:var(--muted);margin-top:1px;}
-.photo-box.has-photo{border-style:solid;border-color:var(--green);background:#F0FDF4;}
-.photo-box.has-photo .pl{color:var(--green);}
-.photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;height:80px;object-fit:cover;object-position:center;cursor:pointer;}
-.photo-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
-.photo-upload-btn{display:block;width:100%;text-align:center;padding:9px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Sarabun',sans-serif;}
-.photo-upload-btn:active{background:var(--bg);}
-.photo-upload-btn.cam{border-color:var(--buy);color:var(--buy);background:#EFF6FF;}
-.cam-overlay{display:none;position:fixed;inset:0;background:#000;z-index:9998;flex-direction:column;}
-.cam-overlay.open{display:flex;}
-.cam-video{width:100%;flex:1;object-fit:cover;}
-.cam-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#000;}
-.cam-shutter{width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,0.5);cursor:pointer;flex-shrink:0;}
-.cam-cancel{color:#fff;font-size:14px;font-weight:700;cursor:pointer;padding:8px 16px;font-family:'Sarabun',sans-serif;background:transparent;border:none;}
-.btn-view{width:100%;padding:8px;border:1.5px solid #86EFAC;border-radius:10px;background:#F0FDF4;font-size:12px;font-weight:700;color:#15803D;cursor:pointer;font-family:'Sarabun',sans-serif;display:none;text-align:center;}
-.ai-result{display:none;align-items:center;gap:10px;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:12px 14px;margin-top:10px;}
-.ai-val{font-size:22px;font-weight:800;color:#15803D;}
-.ai-lbl{font-size:11px;color:#16A34A;}
-.ai-edit{margin-left:auto;font-size:12px;font-weight:700;color:var(--buy);cursor:pointer;text-decoration:underline;white-space:nowrap;}
-.edit-box{display:none;margin-top:10px;background:#F8FAFC;border:1.5px solid var(--border);border-radius:12px;padding:12px;}
-.edit-box-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.edit-box-title{font-size:13px;font-weight:700;}
-.edit-box-cancel{font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;text-decoration:underline;}
-.loading{display:none;align-items:center;gap:10px;background:#EFF6FF;border-radius:12px;padding:12px 14px;margin-top:10px;}
-.spinner{width:18px;height:18px;border:3px solid #BFDBFE;border-top-color:var(--buy);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.loading-txt{font-size:13px;font-weight:700;color:var(--buy);}
-.ptype-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-.ptype-btn{border:2px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .15s;background:#fff;font-size:14px;font-weight:700;color:var(--text);}
-.ptype-btn.sel{border-color:var(--orange);background:#FFF7ED;color:var(--orange);}
-.ptype-custom{margin-top:8px;}
-.wcard{background:var(--dark);border-radius:14px;padding:16px 18px;margin:12px 0;}
-.wrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
-.wrow:last-child{border:none;}
-.wkey{font-size:12px;color:rgba(255,255,255,0.45);}
-.wval{font-size:15px;font-weight:700;color:#fff;}
-.wval.net{font-size:22px;color:#4ADE80;}
-.bag-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
-.bag-item:last-child{border:none;}
-.bag-num{width:30px;height:30px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--muted);flex-shrink:0;}
-.bag-info{flex:1;min-width:0;}
-.bag-type{font-size:11px;font-weight:700;color:var(--orange);}
-.bag-w{font-size:15px;font-weight:800;}
-.bag-sub{font-size:11px;color:var(--muted);margin-top:1px;}
-.bag-del{color:var(--red);font-size:18px;cursor:pointer;padding:4px 8px;flex-shrink:0;}
-.bag-photos{display:flex;gap:4px;margin-top:4px;}
-.bag-thumb{width:36px;height:36px;border-radius:6px;object-fit:cover;cursor:pointer;}
-.counter-bar{background:var(--dark);border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.counter-info{color:rgba(255,255,255,0.5);font-size:12px;}
-.counter-num{font-size:22px;font-weight:800;color:#4ADE80;}
-.counter-type{font-size:13px;font-weight:700;color:#FCD34D;}
-.dialog-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9997;align-items:center;justify-content:center;padding:24px;}
-.dialog-overlay.open{display:flex;}
-.dialog-box{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:320px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.2);}
-.dialog-icon{font-size:40px;margin-bottom:10px;}
-.dialog-title{font-size:17px;font-weight:800;margin-bottom:6px;}
-.dialog-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
-.dialog-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.dialog-cancel{padding:13px;border:2px solid var(--border);border-radius:12px;background:#fff;font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;color:var(--text);}
-.dialog-confirm{padding:13px;border:none;border-radius:12px;background:var(--red);font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;color:#fff;}
-.sum-header{background:var(--dark);border-radius:14px;padding:16px 18px;margin-bottom:14px;}
-.sum-header-type{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;}
-.sum-header-main{font-size:20px;font-weight:800;color:#fff;margin:4px 0;}
-.sum-header-sub{font-size:12px;color:rgba(255,255,255,0.5);}
-.sum-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.sum-meta-item{background:#fff;border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);}
-.sum-meta-key{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
-.sum-meta-val{font-size:14px;font-weight:700;margin-top:3px;word-break:break-all;}
-.sum-bag-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
-.sum-bag-row:last-child{border:none;}
-.sum-bag-num{width:26px;height:26px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--muted);flex-shrink:0;margin-right:10px;}
-.sum-bag-type{font-size:11px;font-weight:700;color:var(--orange);}
-.sum-bag-w{font-size:15px;font-weight:800;}
-.sum-bag-detail{font-size:11px;color:var(--muted);}
-.sum-bag-net{font-size:16px;font-weight:800;color:var(--buy);margin-left:auto;flex-shrink:0;}
-.sum-total-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;}
-.sum-total-label{font-size:13px;color:var(--muted);font-weight:700;}
-.sum-total-val{font-size:28px;font-weight:800;color:var(--buy);}
-.sum-by-type{background:var(--bg);border-radius:12px;padding:12px 14px;margin-top:10px;}
-.sum-by-type-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
-.sum-by-type-row:last-child{border:none;}
-.sum-by-type-label{font-size:13px;font-weight:700;}
-.sum-by-type-val{font-size:13px;font-weight:800;color:var(--buy);}
-.sum-bags-count{font-size:11px;color:var(--muted);}
-.btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all .15s;margin-bottom:10px;}
-.btn:active{transform:scale(0.98);}
-.btn-primary{background:var(--buy);color:#fff;box-shadow:0 4px 12px rgba(21,101,192,0.25);}
-.btn-primary.sell{background:var(--sell);box-shadow:0 4px 12px rgba(46,125,50,0.25);}
-.btn-primary:disabled{background:#CBD5E1;box-shadow:none;color:#94A3B8;}
-.btn-secondary{background:#fff;color:var(--text);border:2px solid #94A3B8;font-weight:700;}
-.btn-outline{background:#fff;color:var(--buy);border:1.5px solid var(--buy);}
-.btn-outline.sell{color:var(--sell);border-color:var(--sell);}
-.btn-orange{background:#FFF7ED;color:var(--orange);border:1.5px solid #FED7AA;}
-.btn-row{display:flex;gap:10px;}
-.btn-row .btn{margin-bottom:0;}
-.btn-back{width:auto;padding:16px 20px;flex-shrink:0;}
-.note-box{background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#92400E;}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--dark);color:#fff;padding:11px 20px;border-radius:20px;font-size:13px;font-weight:700;transition:transform .25s;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
-.toast.show{transform:translateX(-50%) translateY(0);}
-.success{text-align:center;padding:40px 10px;}
-.success-icon{font-size:72px;margin-bottom:16px;}
-.success-title{font-size:24px;font-weight:800;}
-.success-sub{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.7;}
-.txn-chip{display:inline-block;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 20px;font-size:18px;font-weight:800;margin:18px 0;letter-spacing:1px;}
-.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
-.lightbox.open{display:flex;}
-.lightbox-img{max-width:100%;max-height:80vh;border-radius:12px;object-fit:contain;}
-.lightbox-close{margin-top:20px;padding:12px 36px;border:2px solid rgba(255,255,255,0.4);border-radius:24px;background:transparent;color:#fff;font-size:15px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0F172A">
+    <title>Diamond Copper - บันทึกการชั่ง</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
+        :root{--buy:#1565C0;--sell:#2E7D32;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
+        *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+        body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;}
+        .hdr{background:var(--dark);padding:18px 18px 20px;position:sticky;top:0;z-index:100;}
+        .hdr-top{display:flex;justify-content:space-between;align-items:flex-start;}
+        .hdr-brand{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;}
+        .hdr-title{font-size:20px;font-weight:800;color:#fff;margin-top:2px;}
+        .hdr-step{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+        .hdr-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);}
+        .hdr-badge.buy{background:rgba(21,101,192,0.4);color:#90CAF9;}
+        .hdr-badge.sell{background:rgba(46,125,50,0.4);color:#A5D6A7;}
+        .progress-bar{display:flex;gap:4px;margin-top:14px;}
+        .pb-seg{height:3px;border-radius:2px;background:rgba(255,255,255,0.15);flex:1;transition:background .3s;}
+        .pb-seg.done{background:rgba(255,255,255,0.5);}
+        .pb-seg.active{background:#fff;}
+        .content{padding:16px;}
+        .section{display:none;animation:up .25s ease;}
+        .section.active{display:block;}
+        @keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+        .card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
+        .card-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+        .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        .type-btn{border:2px solid var(--border);border-radius:14px;padding:18px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
+        .type-btn .ti{font-size:30px;margin-bottom:6px;}
+        .type-btn .tl{font-size:14px;font-weight:700;}
+        .type-btn.buy.sel{border-color:var(--buy);background:#EFF6FF;}
+        .type-btn.sell.sel{border-color:var(--sell);background:#F0FDF4;}
+        .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        .doc-btn{border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;background:#fff;}
+        .doc-btn.sel.buy{border-color:var(--buy);background:#EFF6FF;}
+        .doc-btn.sel.sell{border-color:var(--sell);background:#F0FDF4;}
+        .igroup{margin-bottom:14px;}
+        .ilabel{font-size:13px;font-weight:700;color:var(--text);margin-bottom:7px;display:block;}
+        .ifield{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-size:16px;font-family:'Sarabun',sans-serif;outline:none;}
+        .ifield:focus{border-color:var(--accent);}
+        .photo-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+        .photo-box{border:2px dashed var(--border);border-radius:14px;padding:14px 10px;text-align:center;background:#FAFAFA;min-height:100px;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+        .photo-box.has-photo{border-style:solid;border-color:var(--green);background:#F0FDF4;}
+        .photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;height:80px;object-fit:cover;}
+        .photo-upload-btn{display:block;width:100%;padding:9px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:11px;font-weight:700;cursor:pointer;}
+        .photo-upload-btn.cam{border-color:var(--buy);color:var(--buy);background:#EFF6FF;}
+        .ptype-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+        .ptype-btn{border:2px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;cursor:pointer;font-size:14px;font-weight:700;}
+        .ptype-btn.sel{border-color:var(--orange);background:#FFF7ED;color:var(--orange);}
+        .wcard{background:var(--dark);border-radius:14px;padding:16px 18px;margin:12px 0;}
+        .wrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.07);}
+        .wval{font-size:15px;font-weight:700;color:#fff;}
+        .wval.net{font-size:22px;color:#4ADE80;}
+        .btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;}
+        .btn-primary{background:var(--buy);color:#fff;}
+        .btn-primary:disabled{background:#CBD5E1;color:#94A3B8;}
+        .btn-secondary{background:#fff;border:2px solid #94A3B8;}
+        .counter-bar{background:var(--dark);border-radius:14px;padding:12px 16px;display:flex;justify-content:space-between;margin-bottom:14px;color:#fff;}
+        .loading{display:none;align-items:center;gap:10px;background:#EFF6FF;padding:12px;border-radius:12px;margin-top:10px;}
+        .spinner{width:18px;height:18px;border:3px solid #BFDBFE;border-top-color:var(--buy);border-radius:50%;animation:spin .7s linear infinite;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+    </style>
 </head>
 <body>
 
 <div class="hdr">
-  <div class="hdr-top">
-    <div>
-      <div class="hdr-brand">Diamond Copper Trade</div>
-      <div class="hdr-title" id="hTitle">บันทึกการชั่งสินค้า</div>
-      <div class="hdr-step" id="hStep">ขั้นตอนที่ 1 จาก 5</div>
+    <div class="hdr-top">
+        <div>
+            <div class="hdr-brand">Diamond Copper Trade</div>
+            <div class="hdr-title" id="hTitle">บันทึกการชั่งสินค้า</div>
+            <div class="hdr-step" id="hStep">ขั้นตอนที่ 1 จาก 5</div>
+        </div>
+        <div class="hdr-badge" id="hBadge">-</div>
     </div>
-    <div class="hdr-badge" id="hBadge">-</div>
-  </div>
-  <div class="progress-bar">
-    <div class="pb-seg active" id="pb1"></div>
-    <div class="pb-seg" id="pb2"></div>
-    <div class="pb-seg" id="pb3"></div>
-    <div class="pb-seg" id="pb4"></div>
-    <div class="pb-seg" id="pb5"></div>
-  </div>
+    <div class="progress-bar">
+        <div class="pb-seg active" id="pb1"></div>
+        <div class="pb-seg" id="pb2"></div>
+        <div class="pb-seg" id="pb3"></div>
+        <div class="pb-seg" id="pb4"></div>
+        <div class="pb-seg" id="pb5"></div>
+    </div>
 </div>
 
 <div class="content">
-
-<div class="section active" id="s1">
-  <div class="card">
-    <div class="card-title">ประเภทกิจกรรม</div>
-    <div class="type-grid">
-      <div class="type-btn buy" onclick="selType('buy',this)">
-        <div class="ti">📥</div><div class="tl">ซื้อ / นำเข้า</div><div class="td">รับสินค้าเข้าคลัง</div>
-      </div>
-      <div class="type-btn sell" onclick="selType('sell',this)">
-        <div class="ti">📤</div><div class="tl">ขาย / นำออก</div><div class="td">ส่งสินค้าออกคลัง</div>
-      </div>
-    </div>
-  </div>
-  <div class="card" id="docCard" style="display:none">
-    <div class="card-title">ประเภทเอกสาร</div>
-    <div class="doc-grid" id="docGrid"></div>
-  </div>
-  <button class="btn btn-primary" id="s1Btn" onclick="go(2)" style="display:none">ถัดไป →</button>
-</div>
-
-<div class="section" id="s2">
-  <div class="card">
-    <div class="card-title" id="partnerTitle">นามผู้ขาย</div>
-    <div class="igroup" style="margin-bottom:0">
-      <input class="ifield" id="partnerName" type="text" placeholder="ชื่อ / บริษัท" oninput="chk2()">
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">ทะเบียนรถ</div>
-    <div class="photo-row">
-      <div class="photo-col">
-        <div class="photo-box" id="vBox1">
-          <div class="pi">🔢</div>
-          <div class="pl">รูปทะเบียน</div>
-          <div class="ps">AI อ่านเลข</div>
-          <img class="photo-preview" id="vPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
+    <div class="section active" id="s1">
+        <div class="card">
+            <div class="card-title">ประเภทกิจกรรม</div>
+            <div class="type-grid">
+                <div class="type-btn buy" onclick="selType('buy',this)">
+                    <div class="ti">📥</div><div class="tl">ซื้อ / นำเข้า</div>
+                </div>
+                <div class="type-btn sell" onclick="selType('sell',this)">
+                    <div class="ti">📤</div><div class="tl">ขาย / นำออก</div>
+                </div>
+            </div>
         </div>
-        <div class="photo-btn-row">
-          <button type="button" class="photo-upload-btn cam" onclick="openCam('vP1',false)">📷 ถ่าย</button>
-          <button type="button" class="photo-upload-btn" onclick="document.getElementById('vP1').click()">🖼️ คลัง</button>
+        <div class="card" id="docCard" style="display:none">
+            <div class="card-title">ประเภทเอกสาร</div>
+            <div class="doc-grid" id="docGrid"></div>
         </div>
-        <input type="file" id="vP1" accept="image/*" onchange="readVehicle(this)" style="display:none">
-        <button type="button" class="btn-view" id="vView1" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
-      </div>
-      <div class="photo-col">
-        <div class="photo-box" id="vBox2">
-          <div class="pi">🚛</div>
-          <div class="pl">รูปตัวรถ</div>
-          <div class="ps">หลักฐานเสริม</div>
-          <img class="photo-preview" id="vPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
+        <button class="btn btn-primary" id="s1Btn" onclick="go(2)" style="display:none">ถัดไป →</button>
+    </div>
+
+    <div class="section" id="s2">
+        <div class="card">
+            <div class="card-title" id="partnerTitle">นามผู้ขาย</div>
+            <input class="ifield" id="partnerName" type="text" placeholder="ชื่อ / บริษัท" oninput="chk2()">
         </div>
-        <div class="photo-btn-row">
-          <button type="button" class="photo-upload-btn cam" onclick="openCam('vP2',false)">📷 ถ่าย</button>
-          <button type="button" class="photo-upload-btn" onclick="document.getElementById('vP2').click()">🖼️ คลัง</button>
+        <div class="card">
+            <div class="card-title">ข้อมูลรถ</div>
+            <div class="photo-row">
+                <div class="photo-col">
+                    <div class="photo-box" id="vBox1">📸 ทะเบียนรถ <img class="photo-preview" id="vPrev1"></div>
+                    <button class="photo-upload-btn cam" onclick="document.getElementById('vP1').click()">📷 ถ่ายรูป</button>
+                    <input type="file" id="vP1" accept="image/*" onchange="previewOnly(this,'vPrev1','vBox1')" style="display:none">
+                </div>
+                <div class="photo-col">
+                    <div class="photo-box" id="vBox2">🚛 รูปตัวรถ <img class="photo-preview" id="vPrev2"></div>
+                    <button class="photo-upload-btn" onclick="document.getElementById('vP2').click()">🖼️ เลือกรูป</button>
+                    <input type="file" id="vP2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2')" style="display:none">
+                </div>
+            </div>
+            <label class="ilabel">ระบุทะเบียนรถ</label>
+            <input class="ifield" id="vPlate" type="text" placeholder="กข 1234 ชลบุรี" oninput="chk2()">
         </div>
-        <input type="file" id="vP2" accept="image/*" onchange="previewOnly(this,'vPrev2','vBox2','vView2')" style="display:none">
-        <button type="button" class="btn-view" id="vView2" onclick="event.stopPropagation();openLightbox(document.getElementById('vPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
-      </div>
-    </div>
-    <div class="loading" id="vLoading"><div class="spinner"></div><div class="loading-txt">AI กำลังอ่านทะเบียน...</div></div>
-    <div class="ai-result" id="vResult">
-      <div style="flex:1;min-width:0"><div class="ai-val" id="vVal">-</div><div class="ai-lbl">อ่านได้จากรูป</div></div>
-      <div class="ai-edit" onclick="editVehicle()">✏️ แก้ไข</div>
-    </div>
-    <div class="edit-box" id="vEditBox">
-      <div class="edit-box-hdr"><span class="edit-box-title">✏️ แก้ไขทะเบียนรถ</span><span class="edit-box-cancel" onclick="cancelEditVehicle()">✕ ยกเลิก</span></div>
-      <input class="ifield" id="vEditIn" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="confirmEditVehicle()">
-    </div>
-    <div id="vManualGroup" style="margin-top:10px">
-      <label class="ilabel">ทะเบียนรถ <span style="font-weight:400;color:var(--muted)">— กรอกเองได้ถ้าไม่ถ่ายรูป</span></label>
-      <input class="ifield" id="vPlate" type="text" placeholder="เช่น กข 1234 ชลบุรี" oninput="chk2()">
-    </div>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-secondary btn-back" onclick="go(1)">← กลับ</button>
-    <button class="btn btn-primary" id="s2Btn" onclick="go(3)" disabled>ถัดไป →</button>
-  </div>
-</div>
-
-<div class="section" id="s3">
-  <div class="note-box">💡 เลือกประเภทสินค้าครั้งเดียว จากนั้นชั่งเต๊าได้ต่อเนื่อง เปลี่ยนประเภทได้เมื่อต้องการ</div>
-  <div class="card">
-    <div class="card-title">ประเภทสินค้า</div>
-    <div class="ptype-grid" id="ptypeGrid"></div>
-    <div class="ptype-custom" id="ptypeCustom" style="display:none">
-      <input class="ifield" id="customType" type="text" placeholder="ระบุประเภทสินค้า..." oninput="chk3()">
-    </div>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-secondary btn-back" onclick="go(2)">← กลับ</button>
-    <button class="btn btn-primary" id="s3Btn" onclick="go(4)" disabled>เริ่มชั่ง →</button>
-  </div>
-</div>
-
-<div class="section" id="s4">
-  <div class="counter-bar">
-    <div><div class="counter-info">เต๊าที่บันทึกแล้ว</div><div class="counter-num" id="bagCount">0</div></div>
-    <div style="text-align:right"><div class="counter-info">ประเภทปัจจุบัน</div><div class="counter-type" id="currentTypeDisplay">-</div></div>
-  </div>
-  <div id="bagList"></div>
-  <div class="card" id="addForm">
-    <div class="card-title" id="addFormTitle">เพิ่มเต๊าใหม่</div>
-    <div class="photo-row">
-      <div class="photo-col">
-        <div class="photo-box" id="sBox1">
-          <div class="pi">⚖️</div>
-          <div class="pl">รูปตาชั่ง</div>
-          <div class="ps">AI อ่านน้ำหนัก</div>
-          <img class="photo-preview" id="sPrev1" onclick="event.stopPropagation();openLightbox(this.src)">
+        <div class="btn-row" style="display:flex;gap:10px;">
+            <button class="btn btn-secondary" onclick="go(1)">กลับ</button>
+            <button class="btn btn-primary" id="s2Btn" onclick="go(3)" disabled>ถัดไป →</button>
         </div>
-        <div class="photo-btn-row">
-          <button type="button" class="photo-upload-btn cam" onclick="openCam('sP1',true)">📷 ถ่าย</button>
-          <button type="button" class="photo-upload-btn" onclick="document.getElementById('sP1').click()">🖼️ คลัง</button>
+    </div>
+
+    <div class="section" id="s3">
+        <div class="card">
+            <div class="card-title">เลือกประเภทสินค้า</div>
+            <div class="ptype-grid" id="ptypeGrid"></div>
+            <div id="ptypeCustom" style="display:none; margin-top:10px;">
+                <input class="ifield" id="customType" type="text" placeholder="ระบุประเภทสินค้าอื่นๆ..." oninput="chk3()">
+            </div>
         </div>
-        <input type="file" id="sP1" accept="image/*" onchange="readScale(this)" style="display:none">
-        <button type="button" class="btn-view" id="sView1" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev1').src)">🔍 ดูรูปขนาดเต็ม</button>
-      </div>
-      <div class="photo-col">
-        <div class="photo-box" id="sBox2">
-          <div class="pi">🔶</div>
-          <div class="pl">รูปทองแดง</div>
-          <div class="ps">หลักฐานในเต๊า</div>
-          <img class="photo-preview" id="sPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
+        <div style="display:flex;gap:10px;">
+            <button class="btn btn-secondary" onclick="go(2)">กลับ</button>
+            <button class="btn btn-primary" id="s3Btn" onclick="go(4)" disabled>เริ่มชั่ง →</button>
         </div>
-        <div class="photo-btn-row">
-          <button type="button" class="photo-upload-btn cam" onclick="openCam('sP2',false)">📷 ถ่าย</button>
-          <button type="button" class="photo-upload-btn" onclick="document.getElementById('sP2').click()">🖼️ คลัง</button>
+    </div>
+
+    <div class="section" id="s4">
+        <div class="counter-bar">
+            <div>ชั่งแล้ว: <span id="bagCount">0</span> เต๊า</div>
+            <div id="currentTypeDisplay">-</div>
         </div>
-        <input type="file" id="sP2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
-        <button type="button" class="btn-view" id="sView2" onclick="event.stopPropagation();openLightbox(document.getElementById('sPrev2').src)">🔍 ดูรูปขนาดเต็ม</button>
-      </div>
-    </div>
-    <div class="loading" id="sLoading"><div class="spinner"></div><div class="loading-txt">AI กำลังอ่านน้ำหนัก...</div></div>
-    <div class="ai-result" id="sResult">
-      <div style="flex:1;min-width:0"><div class="ai-val" id="grossVal">-</div><div class="ai-lbl">น้ำหนักรวม Gross</div></div>
-      <div class="ai-edit" onclick="editGross()">✏️ แก้ไข</div>
-    </div>
-    <div class="edit-box" id="grossEditBox">
-      <div class="edit-box-hdr"><span class="edit-box-title">✏️ แก้ไขน้ำหนัก Gross (กก.)</span><span class="edit-box-cancel" onclick="cancelEditGross()">✕ ยกเลิก</span></div>
-      <input class="ifield" id="grossEditIn" type="number" step="0.1" placeholder="0.0" oninput="confirmEditGross()">
-    </div>
-    <div id="grossManualGroup" style="margin-top:10px">
-      <label class="ilabel">น้ำหนักรวม Gross (กก.) <span style="font-weight:400;color:var(--muted)">— กรอกเองได้ถ้า AI อ่านไม่ออก</span></label>
-      <input class="ifield" id="grossIn" type="number" step="0.1" placeholder="0.0" oninput="calcNet()">
-    </div>
-    <div class="igroup" style="margin-top:12px">
-      <label class="ilabel">น้ำหนักเต๊า Tare (กก.)</label>
-      <input class="ifield" id="tareIn" type="number" step="0.1" oninput="calcNet()">
-    </div>
-    <div class="wcard" id="netCard" style="display:none">
-      <div class="wrow"><span class="wkey">Gross</span><span class="wval" id="dGross">-</span></div>
-      <div class="wrow"><span class="wkey">Tare</span><span class="wval" id="dTare">-</span></div>
-      <div class="wrow"><span class="wkey">สุทธิ Net</span><span class="wval net" id="dNet">-</span></div>
-    </div>
-    <button class="btn btn-primary" id="addBagBtn" onclick="addBag()" style="margin-top:14px;margin-bottom:0" disabled>✅ ยืนยันเต๊านี้ และเพิ่มเต๊าถัดไป</button>
-  </div>
-  <button class="btn btn-orange" onclick="confirmChangeType()">🔄 เปลี่ยนประเภทสินค้า</button>
-  <div class="btn-row">
-    <button class="btn btn-secondary btn-back" onclick="go(3)">← กลับ</button>
-    <button class="btn btn-primary" id="s4Btn" onclick="go(5)" disabled>สรุปรายการ →</button>
-  </div>
-</div>
-
-<div class="section" id="s5">
-  <div class="sum-header">
-    <div class="sum-header-type" id="sumTypeLabel">-</div>
-    <div class="sum-header-main" id="sumDocMain">-</div>
-    <div class="sum-header-sub" id="sumDateSub">-</div>
-  </div>
-  <div class="sum-meta">
-    <div class="sum-meta-item">
-      <div class="sum-meta-key" id="sumPartnerKey">นามผู้ขาย</div>
-      <div class="sum-meta-val" id="sumPartner">-</div>
-    </div>
-    <div class="sum-meta-item">
-      <div class="sum-meta-key">ทะเบียนรถ</div>
-      <div class="sum-meta-val" id="sumVehicle">-</div>
-    </div>
-    <div class="sum-meta-item">
-      <div class="sum-meta-key">จำนวนเต๊า</div>
-      <div class="sum-meta-val" id="sumBagCount">-</div>
-    </div>
-    <div class="sum-meta-item">
-      <div class="sum-meta-key">รวมน้ำหนัก</div>
-      <div class="sum-meta-val" id="sumTotalSmall" style="color:var(--buy)">-</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">สรุปตามประเภทสินค้า</div>
-    <div id="sumByType"></div>
-    <div class="sum-total-row">
-      <span class="sum-total-label">น้ำหนักสุทธิรวม</span>
-      <span class="sum-total-val" id="sumTotal">0.0 กก.</span>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">รายการทุกเต๊า</div>
-    <div id="sumBags"></div>
-  </div>
-  <button class="btn btn-primary" id="confirmBtn" onclick="submit()">✅ ยืนยันส่งข้อมูล</button>
-  <button class="btn btn-outline" onclick="go(4)">↩️ กลับเพิ่ม / แก้ไขเต๊า</button>
-</div>
-
-<div class="section" id="s6">
-  <div class="success">
-    <div class="success-icon">✅</div>
-    <div class="success-title">บันทึกสำเร็จ!</div>
-    <div class="txn-chip" id="txnChip">TXN-000000</div>
-    <div class="success-sub">ข้อมูลถูกส่งเรียบร้อยแล้ว<br>เจ้าของจะได้รับการแจ้งเตือนทันที<br>รอกำหนดราคาจากเจ้าของ</div>
-    <button class="btn btn-primary" style="margin-top:32px" onclick="reset()">+ เริ่มรายการใหม่</button>
-  </div>
-</div>
-
-</div>
-<div class="toast" id="toast"></div>
-<div class="dialog-overlay" id="changeTypeDialog">
-  <div class="dialog-box">
-    <div class="dialog-icon">🔄</div>
-    <div class="dialog-title">เปลี่ยนประเภทสินค้า?</div>
-    <div class="dialog-sub">ข้อมูลน้ำหนักที่กรอกไว้จะถูกล้าง<br>เต๊าที่บันทึกแล้วจะยังอยู่</div>
-    <div class="dialog-btns">
-      <button class="dialog-cancel" onclick="document.getElementById('changeTypeDialog').classList.remove('open')">ยกเลิก</button>
-      <button class="dialog-confirm" style="background:var(--orange)" onclick="document.getElementById('changeTypeDialog').classList.remove('open');go(3)">เปลี่ยน</button>
-    </div>
-  </div>
-</div>
-<div class="dialog-overlay" id="delDialog">
-  <div class="dialog-box">
-    <div class="dialog-icon">🗑️</div>
-    <div class="dialog-title">ลบเต๊านี้?</div>
-    <div class="dialog-sub" id="delDialogSub">ต้องการลบรายการนี้ใช่ไหม<br>ไม่สามารถกู้คืนได้</div>
-    <div class="dialog-btns">
-      <button class="dialog-cancel" onclick="closeDelDialog()">ยกเลิก</button>
-      <button class="dialog-confirm" onclick="confirmDel()">ลบเลย</button>
-    </div>
-  </div>
-</div>
-<div class="cam-overlay" id="camOverlay">
-  <video class="cam-video" id="camVideo" autoplay playsinline muted></video>
-  <div class="cam-bar">
-    <button class="cam-cancel" onclick="closeCam()">✕ ยกเลิก</button>
-    <button class="cam-shutter" id="camShutter" onclick="snapPhoto()"></button>
-    <div style="width:80px"></div>
-  </div>
-</div>
-<canvas id="camCanvas" style="display:none"></canvas>
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <img class="lightbox-img" id="lightboxImg" src="" alt="" onclick="event.stopPropagation()">
-  <button class="lightbox-close" onclick="closeLightbox()">✕ ปิด</button>
-</div>
-
-<script>
-const LIFF_ID      = "YOUR_LIFF_ID"; // ใส่ LIFF ID ของคุณ
-const MAKE_WEBHOOK = "https://hook.us2.make.com/dekow8wjteotu1zbyi2p4kbxsu5phrrf";
-const WORKER_URL   = "https://diamond-copper-proxy.dcoppertrade.workers.dev";
-const PRODUCT_TYPES = ["ปอกสวย","ปอกช็อต","สะพานไฟ","ท่อใหม่","ท่อเก่า","ทองแดงใหญ่","ทองแดงเล็ก","บดสะอาด","บดผสม","บดชุบ","อื่นๆ (ระบุ)"];
-
-const DOC_TYPES = {
-  buy:  [{id:'grn',icon:'📋',label:'ใบนำส่งสินค้าเข้า',hasPrice:false},{id:'pb',icon:'🧾',label:'บิลซื้อสินค้า',hasPrice:true}],
-  sell: [{id:'do',icon:'📋',label:'ใบนำส่งสินค้าออก',hasPrice:false},{id:'sb',icon:'💰',label:'บิลขายสินค้า',hasPrice:true}],
-};
-
-let S = {
-    type: null,
-    docType: null,
-    partner: '',
-    vehicle: '',
-    productType: null,
-    bags: [],
-    curGross: 0,
-    curTare: 3.0
-};
-
-// --- ฟังก์ชันหลักในการส่งข้อมูล (จุดที่ต้องมี scaleImg) ---
-// --- ฟังก์ชันหลักในการส่งข้อมูล (แก้ไขเพื่อให้ดึงรูปได้ถูกต้อง 100%) ---
-async function submit() {
-    const btn = document.getElementById('confirmBtn');
-    btn.disabled = true;
-    btn.innerHTML = "⌛ กำลังส่งข้อมูล...";
-
-    const txnId = "TXN-" + Math.floor(100000 + Math.random() * 900000);
-    
-    // ดึงค่ารูปภาพจาก ID ที่ถูกต้องในหน้า HTML
-    const vPhoto1 = document.getElementById('vPrev1').src; // รูปทะเบียน
-    const vPhoto2 = document.getElementById('vPrev2').src; // รูปตัวรถ
-    const sPhoto1 = document.getElementById('sPrev1').src; // รูปตาชั่งล่าสุด
-    const sPhoto2 = document.getElementById('sPrev2').src; // รูปทองแดงล่าสุด
-
-    // สร้าง Payload ส่งไป Make.com
-    const payload = {
-        txnId: txnId,
-        type: S.type,
-        docType: S.docType,
-        partner: document.getElementById('partnerName').value,
-        vehicle: document.getElementById('vPlate').value || S.vehicle,
-        totalNet: parseFloat(S.bags.reduce((a, b) => a + b.net, 0).toFixed(1)),
-        bagCount: S.bags.length,
-        // ส่งรูปภาพหลัก (ตรวจสอบว่าไม่ใช่ URL เว็บตัวเอง แต่เป็น data:image)
-        scaleImg: (sPhoto1 && sPhoto1.startsWith('data:')) ? sPhoto1 : null,
-        goodsImg: (sPhoto2 && sPhoto2.startsWith('data:')) ? sPhoto2 : null,
-        vehicleImg: (vPhoto1 && vPhoto1.startsWith('data:')) ? vPhoto1 : null,
-        timestamp: new Date().toISOString(),
-        // รายละเอียดเต๊าทั้งหมด
-        bags: S.bags.map(b => ({
-            productType: b.type,
-            gross: b.gross,
-            tare: b.tare,
-            net: b.net,
-            img: b.img // รูปในแต่ละเต๊า
-        }))
-    };
-
-    try {
-        const res = await fetch(MAKE_WEBHOOK, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-            document.getElementById('txnChip').textContent = txnId;
-            go(6); // ไปหน้าสำเร็จ
-        } else {
-            alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + res.status);
-        }
-    } catch (err) {
-        console.error(err);
-        alert("ติดต่อ Server ไม่ได้ กรุณาเช็คอินเทอร์เน็ต");
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = "✅ ยืนยันส่งข้อมูล";
-    }
-}
-
-// --- ฟังก์ชันช่วยจัดการ UI และรูปภาพ ---
-function openCam(id, isScale) {
-    // โค้ดเปิดกล้อง (ข้ามไปเพื่อความกระชับ)
-    document.getElementById(id).click(); 
-}
-
-function previewOnly(input, prevId, boxId, viewId) {
-    const file = input.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const img = document.getElementById(prevId);
-            img.src = e.target.result;
-            img.style.display = 'block';
-            document.getElementById(boxId).classList.add('has-photo');
-            if(viewId) document.getElementById(viewId).style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// ฟังก์ชันอื่นๆ (go, calcNet, addBag ฯลฯ) ให้คงไว้ตามเดิม
-function go(n) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('s' + n).classList.add('active');
-    window.scrollTo(0,0);
-}
-
-function calcNet() {
-    const g = parseFloat(document.getElementById('grossIn').value) || 0;
-    const t = parseFloat(document.getElementById('tareIn').value) || 0;
-    const net = g - t;
-    document.getElementById('dNet').textContent = net.toFixed(1) + " กก.";
-    document.getElementById('netCard').style.display = 'block';
-    document.getElementById('addBagBtn').disabled = (net <= 0);
-}
-
-function addBag() {
-    const g = parseFloat(document.getElementById('grossIn').value);
-    const t = parseFloat(document.getElementById('tareIn').value);
-    const sPhoto1 = document.getElementById('sPrev1').src;
-    
-    S.bags.push({
-        type: S.productType,
-        gross: g,
-        tare: t,
-        net: g - t,
-        img: sPhoto1.startsWith('data:') ? sPhoto1 : null
-    });
-    
-    updateBagUI();
-    resetBagForm();
-}
-
-function updateBagUI() {
-    document.getElementById('bagCount').textContent = S.bags.length;
-    document.getElementById('s4Btn').disabled = (S.bags.length === 0);
-}
-
-function resetBagForm() {
-    document.getElementById('grossIn').value = '';
-    document.getElementById('sPrev1').style.display = 'none';
-    document.getElementById('sBox1').classList.remove('has-photo');
-    document.getElementById('netCard').style.display = 'none';
-}
-
-// ปิดท้ายไฟล์ HTML
-</script>
-</body>
-</html>
+        <div class="card">
+            <div class="photo-row">
+                <div class="photo-col">
+                    <div class="photo-box" id="sBox1">⚖️ ตาชั่ง <img class="photo-preview" id="sPrev1"></div>
+                    <button class="photo-upload-btn cam" onclick="document.getElementById('sP1').click()">📷 ถ่ายรูป</button>
+                    <input type="file" id="sP1" accept="image/*" onchange="previewOnly(this,'sPrev1','sBox1')" style="display:none">
+                </div>
+                <div class="photo-col">
+                    <div class="photo-box" id="sBox2">🔶 สินค้า <img class="photo-preview" id="sPrev2"></div>
+                    <button class="photo-upload-btn" onclick="document.getElementById('sP2').click()">🖼️ เลือกรูป</button>
+                    <input type="file" id="sP2" accept="image/*" onchange
