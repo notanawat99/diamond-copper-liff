@@ -469,6 +469,7 @@ let S = {
 };
 
 // --- ฟังก์ชันหลักในการส่งข้อมูล (จุดที่ต้องมี scaleImg) ---
+// --- ฟังก์ชันหลักในการส่งข้อมูล (แก้ไขเพื่อให้ดึงรูปได้ถูกต้อง 100%) ---
 async function submit() {
     const btn = document.getElementById('confirmBtn');
     btn.disabled = true;
@@ -476,11 +477,11 @@ async function submit() {
 
     const txnId = "TXN-" + Math.floor(100000 + Math.random() * 900000);
     
-    // ดึง Data URL ของรูปภาพจากหน้าจอ (Base64)
-    const vPhoto1 = document.getElementById('vPrev1').src;
-    const vPhoto2 = document.getElementById('vPrev2').src;
-    const sPhoto1 = document.getElementById('sPrev1').src;
-    const sPhoto2 = document.getElementById('sPrev2').src;
+    // ดึงค่ารูปภาพจาก ID ที่ถูกต้องในหน้า HTML
+    const vPhoto1 = document.getElementById('vPrev1').src; // รูปทะเบียน
+    const vPhoto2 = document.getElementById('vPrev2').src; // รูปตัวรถ
+    const sPhoto1 = document.getElementById('sPrev1').src; // รูปตาชั่งล่าสุด
+    const sPhoto2 = document.getElementById('sPrev2').src; // รูปทองแดงล่าสุด
 
     // สร้าง Payload ส่งไป Make.com
     const payload = {
@@ -489,13 +490,21 @@ async function submit() {
         docType: S.docType,
         partner: document.getElementById('partnerName').value,
         vehicle: document.getElementById('vPlate').value || S.vehicle,
-        totalNet: S.bags.reduce((a, b) => a + b.net, 0),
+        totalNet: parseFloat(S.bags.reduce((a, b) => a + b.net, 0).toFixed(1)),
         bagCount: S.bags.length,
-        bags: S.bags, // รายละเอียดทุกเต๊า
-        // ส่งรูปภาพ (เช็คว่ามีการถ่ายรูปจริงหรือไม่)
-        vehicleImg: (vPhoto1 && vPhoto1.startsWith('data:')) ? vPhoto1 : null,
+        // ส่งรูปภาพหลัก (ตรวจสอบว่าไม่ใช่ URL เว็บตัวเอง แต่เป็น data:image)
         scaleImg: (sPhoto1 && sPhoto1.startsWith('data:')) ? sPhoto1 : null,
-        goodsImg: (sPhoto2 && sPhoto2.startsWith('data:')) ? sPhoto2 : null
+        goodsImg: (sPhoto2 && sPhoto2.startsWith('data:')) ? sPhoto2 : null,
+        vehicleImg: (vPhoto1 && vPhoto1.startsWith('data:')) ? vPhoto1 : null,
+        timestamp: new Date().toISOString(),
+        // รายละเอียดเต๊าทั้งหมด
+        bags: S.bags.map(b => ({
+            productType: b.type,
+            gross: b.gross,
+            tare: b.tare,
+            net: b.net,
+            img: b.img // รูปในแต่ละเต๊า
+        }))
     };
 
     try {
@@ -509,11 +518,11 @@ async function submit() {
             document.getElementById('txnChip').textContent = txnId;
             go(6); // ไปหน้าสำเร็จ
         } else {
-            alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
+            alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + res.status);
         }
     } catch (err) {
         console.error(err);
-        alert("ติดต่อ Server ไม่ได้");
+        alert("ติดต่อ Server ไม่ได้ กรุณาเช็คอินเทอร์เน็ต");
     } finally {
         btn.disabled = false;
         btn.innerHTML = "✅ ยืนยันส่งข้อมูล";
