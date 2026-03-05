@@ -72,7 +72,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .photo-upload-btn{display:block;width:100%;text-align:center;padding:9px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Sarabun',sans-serif;}
 .photo-upload-btn:active{background:var(--bg);}
 .photo-upload-btn.cam{border-color:var(--buy);color:var(--buy);background:#EFF6FF;}
-/* Camera overlay */
 .cam-overlay{display:none;position:fixed;inset:0;background:#000;z-index:9998;flex-direction:column;}
 .cam-overlay.open{display:flex;}
 .cam-video{width:100%;flex:1;object-fit:cover;}
@@ -116,7 +115,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .counter-info{color:rgba(255,255,255,0.5);font-size:12px;}
 .counter-num{font-size:22px;font-weight:800;color:#4ADE80;}
 .counter-type{font-size:13px;font-weight:700;color:#FCD34D;}
-/* Confirm Dialog */
 .dialog-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9997;align-items:center;justify-content:center;padding:24px;}
 .dialog-overlay.open{display:flex;}
 .dialog-box{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:320px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.2);}
@@ -126,7 +124,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .dialog-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .dialog-cancel{padding:13px;border:2px solid var(--border);border-radius:12px;background:#fff;font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;color:var(--text);}
 .dialog-confirm{padding:13px;border:none;border-radius:12px;background:var(--red);font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;color:#fff;}
-/* Summary redesign */
 .sum-header{background:var(--dark);border-radius:14px;padding:16px 18px;margin-bottom:14px;}
 .sum-header-type{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;}
 .sum-header-main{font-size:20px;font-weight:800;color:#fff;margin:4px 0;}
@@ -466,10 +463,31 @@ const DOC_TYPES = {
 };
 const DOC_NAMES = {grn:'ใบนำส่งสินค้าเข้า',pb:'บิลซื้อสินค้า',do:'ใบนำส่งสินค้าออก',sb:'บิลขายสินค้า'};
 const TARE_DEFAULT = {buy:3.0,sell:2.0};
-const S = {type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,vAiDone:false,gAiDone:false};
+const S = {type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,vAiDone:false,gAiDone:false,
+  vImg1:null, vImg2:null}; // เก็บ base64 รูปทะเบียนและตัวรถ
 
 liff.init({liffId:LIFF_ID}).catch(()=>console.log('LIFF test mode'));
 function fmt(n){return parseFloat(n).toFixed(1);}
+
+// ---- IMAGE COMPRESSION ----
+// บีบอัดรูปให้เล็กลงก่อนส่ง: resize ไม่เกิน 1200px, quality 60%
+function compressImage(dataUrl, maxSize=1200, quality=0.6){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=>{
+      let w = img.width, h = img.height;
+      if(w > maxSize || h > maxSize){
+        if(w > h){ h = Math.round(h * maxSize / w); w = maxSize; }
+        else { w = Math.round(w * maxSize / h); h = maxSize; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality).split(',')[1]);
+    };
+    img.src = dataUrl;
+  });
+}
 
 function go(n){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -511,6 +529,9 @@ async function readVehicleFile(file){
   show('vLoading');hide('vResult');hideEl('vEditBox');
   try{
     const b64=await toB64(file);
+    // เก็บรูปบีบอัดสำหรับส่ง
+    const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+    S.vImg1 = await compressImage(dataUrl);
     const txt=await claude(b64,file.type,'อ่านเลขทะเบียนรถจากรูปนี้ ตอบเฉพาะเลขทะเบียนเท่านั้น เช่น "กข 1234 กรุงเทพ"');
     const plate=txt.trim();document.getElementById('vVal').textContent=plate;S.vehicle=plate;S.vAiDone=true;
     show('vResult');document.getElementById('vManualGroup').style.display='none';document.getElementById('vPlate').value=plate;
@@ -526,6 +547,18 @@ function chk2(){
   const name=document.getElementById('partnerName').value.trim();const manual=document.getElementById('vPlate').value.trim();
   S.partner=name;if(!S.vAiDone)S.vehicle=manual;document.getElementById('s2Btn').disabled=!(name&&S.vehicle);
 }
+
+async function previewOnly(input,prevId,boxId,viewId){
+  const file=input.files[0];if(!file)return;
+  previewInBox(file,prevId,boxId,viewId);
+  // เก็บรูปตัวรถ
+  if(boxId==='vBox2'){
+    const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+    S.vImg2 = await compressImage(dataUrl);
+  }
+  chkAddBag();
+}
+
 document.getElementById('s2Btn').addEventListener('click',renderPTypes);
 function renderPTypes(){
   const g=document.getElementById('ptypeGrid');g.innerHTML='';
@@ -553,6 +586,9 @@ async function readScaleFile(file){
   show('sLoading');hide('sResult');hideEl('grossEditBox');hide('netCard');
   try{
     const b64=await toB64(file);
+    // เก็บรูปตาชั่งบีบอัด
+    const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+    S._pendingScaleImg = await compressImage(dataUrl);
     const txt=await claude(b64,file.type,'ในรูปนี้มีหน้าจอตาชั่งดิจิตอลแสดงตัวเลขสีแดง จงอ่านตัวเลขน้ำหนักที่แสดงอยู่ ตอบเป็นตัวเลขอย่างเดียวเท่านั้น ห้ามมีหน่วยหรือข้อความอื่น ถ้าเห็น 679.8 ให้ตอบ 679.8 ถ้าเห็น 802.0 ให้ตอบ 802.0');
     const n=parseFloat(txt.trim());
     if(!isNaN(n)){
@@ -579,20 +615,35 @@ function calcNet(){
   document.getElementById('dGross').textContent=fmt(g)+' กก.';document.getElementById('dTare').textContent=fmt(t)+' กก.';document.getElementById('dNet').textContent=fmt(net)+' กก.';
   show('netCard');chkAddBag();
 }
-function previewOnly(input,prevId,boxId,viewId){const file=input.files[0];if(!file)return;previewInBox(file,prevId,boxId,viewId);chkAddBag();}
 function chkAddBag(){document.getElementById('addBagBtn').disabled=!S.curGross;}
+
+async function previewOnlyGoods(input,prevId,boxId,viewId){
+  const file=input.files[0];if(!file)return;
+  previewInBox(file,prevId,boxId,viewId);
+  const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+  S._pendingGoodsImg = await compressImage(dataUrl);
+  chkAddBag();
+}
+
 function addBag(){
   const gross=S.curGross;
   const tare=parseFloat(document.getElementById('tareIn').value)||S.curTare;
   S.curTare=tare;
   const net=parseFloat((gross-tare).toFixed(1));
-  S.bags.push({gross,tare,net,productType:S.productType,scaleImgUrl:document.getElementById('sPrev1').src||null,goodsImgUrl:document.getElementById('sPrev2').src||null});
+  S.bags.push({
+    gross,tare,net,productType:S.productType,
+    scaleImgUrl:document.getElementById('sPrev1').src||null,
+    goodsImgUrl:document.getElementById('sPrev2').src||null,
+    scaleImg:S._pendingScaleImg||null,   // base64 บีบอัด
+    goodsImg:S._pendingGoodsImg||null    // base64 บีบอัด
+  });
+  S._pendingScaleImg=null; S._pendingGoodsImg=null;
   toast('✅ เต๊าที่ '+S.bags.length+' บันทึกแล้ว');
   document.getElementById('bagCount').textContent=S.bags.length;document.getElementById('s4Btn').disabled=false;
   renderBags();resetAddForm();
 }
 function resetAddForm(){
-  S.curGross=null;S.gAiDone=false;
+  S.curGross=null;S.gAiDone=false;S._pendingScaleImg=null;S._pendingGoodsImg=null;
   ['sP1','sP2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['sPrev1','sPrev2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});
   ['sBox1','sBox2'].forEach(id=>document.getElementById(id).classList.remove('has-photo'));
@@ -604,12 +655,9 @@ function resetAddForm(){
   document.getElementById('addForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function confirmChangeType(){
-  // ถ้ามีรูปหรือน้ำหนักที่กรอกไว้ ให้ถามก่อน
   if(S.curGross || document.getElementById('grossIn').value){
     document.getElementById('changeTypeDialog').classList.add('open');
-  } else {
-    go(3);
-  }
+  } else { go(3); }
 }
 let pendingDelIdx = null;
 function delBag(i){
@@ -636,10 +684,8 @@ function renderBags(){
 }
 function buildSummary(){
   const isBuy=S.type==='buy';
-  const DOC_NAMES={grn:'ใบนำส่งสินค้าเข้า',pb:'บิลซื้อสินค้า',do:'ใบนำส่งสินค้าออก',sb:'บิลขายสินค้า'};
   const now=new Date();
   const dateStr=now.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'})+' '+now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-
   document.getElementById('sumTypeLabel').textContent=isBuy?'📥 ซื้อ / นำเข้า':'📤 ขาย / นำออก';
   document.getElementById('sumDocMain').textContent=DOC_NAMES[S.docType]||'-';
   document.getElementById('sumDateSub').textContent=dateStr;
@@ -648,53 +694,33 @@ function buildSummary(){
   document.getElementById('sumVehicle').textContent=S.vehicle;
   document.getElementById('sumBagCount').textContent=S.bags.length+' เต๊า';
   document.getElementById('confirmBtn').className='btn btn-primary'+(isBuy?'':' sell');
-
-  // คำนวณ total และ group by type
-  const groups={};
-  let total=0;
+  const groups={};let total=0;
   S.bags.forEach(b=>{
     if(!groups[b.productType])groups[b.productType]={count:0,net:0};
     groups[b.productType].count++;
     groups[b.productType].net=parseFloat((groups[b.productType].net+b.net).toFixed(1));
     total=parseFloat((total+b.net).toFixed(1));
   });
-
   document.getElementById('sumTotalSmall').textContent=fmt(total)+' กก.';
   document.getElementById('sumTotal').textContent=fmt(total)+' กก.';
-
-  // สรุปตามประเภท
   let typeHtml='';
   Object.entries(groups).forEach(([type,data])=>{
-    typeHtml+=`<div class="sum-by-type-row">
-      <div><div class="sum-by-type-label">${type}</div><div class="sum-bags-count">${data.count} เต๊า</div></div>
-      <div class="sum-by-type-val">${fmt(data.net)} กก.</div>
-    </div>`;
+    typeHtml+=`<div class="sum-by-type-row"><div><div class="sum-by-type-label">${type}</div><div class="sum-bags-count">${data.count} เต๊า</div></div><div class="sum-by-type-val">${fmt(data.net)} กก.</div></div>`;
   });
   document.getElementById('sumByType').innerHTML=typeHtml;
-
-  // รายการทุกเต๊า
   let bagsHtml='';
   S.bags.forEach((b,i)=>{
-    bagsHtml+=`<div class="sum-bag-row">
-      <div class="sum-bag-num">${i+1}</div>
-      <div style="flex:1;min-width:0">
-        <div class="sum-bag-type">${b.productType}</div>
-        <div class="sum-bag-detail">Gross ${fmt(b.gross)} − Tare ${fmt(b.tare)} กก.</div>
-      </div>
-      <div class="sum-bag-net">${fmt(b.net)} กก.</div>
-    </div>`;
+    bagsHtml+=`<div class="sum-bag-row"><div class="sum-bag-num">${i+1}</div><div style="flex:1;min-width:0"><div class="sum-bag-type">${b.productType}</div><div class="sum-bag-detail">Gross ${fmt(b.gross)} − Tare ${fmt(b.tare)} กก.</div></div><div class="sum-bag-net">${fmt(b.net)} กก.</div></div>`;
   });
   document.getElementById('sumBags').innerHTML=bagsHtml;
 }
+
 async function submit(){
   const btn=document.getElementById('confirmBtn');btn.textContent='⏳ กำลังส่งข้อมูล...';btn.disabled=true;
   const txnId='TXN-'+Date.now().toString().slice(-6);
-  
-  // คำนวณน้ำหนักแยกตามประเภทสินค้า
-  const productTotals={
-    'ปอกสวย':0,'ปอกช็อต':0,'สะพานไฟ':0,'ท่อใหม่':0,'ท่อเก่า':0,
-    'ทองแดงใหญ่':0,'ทองแดงเล็ก':0,'บดสะอาด':0,'บดผสม':0,'บดชุบ':0,'อื่นๆ':0
-  };
+
+  // คำนวณน้ำหนักแยกตามประเภท
+  const productTotals={'ปอกสวย':0,'ปอกช็อต':0,'สะพานไฟ':0,'ท่อใหม่':0,'ท่อเก่า':0,'ทองแดงใหญ่':0,'ทองแดงเล็ก':0,'บดสะอาด':0,'บดผสม':0,'บดชุบ':0,'อื่นๆ':0};
   let totalNet=0;
   S.bags.forEach(b=>{
     const key=productTotals.hasOwnProperty(b.productType)?b.productType:'อื่นๆ';
@@ -703,34 +729,31 @@ async function submit(){
   });
 
   const payload={
-    txnId,
-    type:S.type,
-    docType:S.docType,
-    partner:S.partner,
-    vehicle:S.vehicle,
+    txnId,type:S.type,docType:S.docType,partner:S.partner,vehicle:S.vehicle,
     timestamp:new Date().toISOString(),
     totalNet,
-    pokSuay:productTotals['ปอกสวย'],
-    pokChot:productTotals['ปอกช็อต'],
-    saPhanFai:productTotals['สะพานไฟ'],
-    thorMai:productTotals['ท่อใหม่'],
-    thorKao:productTotals['ท่อเก่า'],
-    thongDangYai:productTotals['ทองแดงใหญ่'],
-    thongDangLek:productTotals['ทองแดงเล็ก'],
-    bodSaad:productTotals['บดสะอาด'],
-    bodPasom:productTotals['บดผสม'],
-    bodChup:productTotals['บดชุบ'],
-    other:productTotals['อื่นๆ'],
-    bags:S.bags.map(b=>({productType:b.productType,gross:b.gross,tare:b.tare,net:b.net}))
+    pokSuay:productTotals['ปอกสวย'],pokChot:productTotals['ปอกช็อต'],saPhanFai:productTotals['สะพานไฟ'],
+    thorMai:productTotals['ท่อใหม่'],thorKao:productTotals['ท่อเก่า'],thongDangYai:productTotals['ทองแดงใหญ่'],
+    thongDangLek:productTotals['ทองแดงเล็ก'],bodSaad:productTotals['บดสะอาด'],bodPasom:productTotals['บดผสม'],
+    bodChup:productTotals['บดชุบ'],other:productTotals['อื่นๆ'],
+    bags:S.bags.map(b=>({productType:b.productType,gross:b.gross,tare:b.tare,net:b.net})),
+    // รูปภาพ base64 บีบอัด
+    images:{
+      vPlate: S.vImg1||null,        // รูปทะเบียน
+      vCar:   S.vImg2||null,        // รูปตัวรถ
+      scales: S.bags.map(b=>b.scaleImg||null),  // รูปตาชั่งแต่ละเต๊า
+      goods:  S.bags.map(b=>b.goodsImg||null),  // รูปทองแดงแต่ละเต๊า
+    }
   };
 
-  try{await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(e){console.log('webhook:',e);}
+  try{await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
+  catch(e){console.log('webhook:',e);}
   document.getElementById('txnChip').textContent=txnId;go(6);
 }
+
 function reset(){
-  // cleanup camera stream ก่อน
   closeCam();
-  Object.assign(S,{type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,vAiDone:false,gAiDone:false});
+  Object.assign(S,{type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,vAiDone:false,gAiDone:false,vImg1:null,vImg2:null,_pendingScaleImg:null,_pendingGoodsImg:null});
   document.getElementById('partnerName').value='';document.getElementById('vPlate').value='';
   document.getElementById('vManualGroup').style.display='block';
   document.querySelectorAll('.type-btn,.doc-btn,.ptype-btn').forEach(b=>b.classList.remove('sel'));
@@ -761,49 +784,62 @@ async function claude(b64,mediaType,prompt){
   const resp=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mediaType,data:b64}},{type:'text',text:prompt}]}]})});
   const data=await resp.json();return data.content[0].text;
 }
+
 // ---- CAMERA ----
-let camStream = null;
-let camTargetId = null;
-let camIsScale = false;
-
-async function openCam(targetId, isScale) {
-  camTargetId = targetId;
-  camIsScale = isScale;
-  try {
-    camStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
-      audio: false
-    });
-    document.getElementById('camVideo').srcObject = camStream;
+let camStream=null,camTargetId=null,camIsScale=false;
+async function openCam(targetId,isScale){
+  camTargetId=targetId;camIsScale=isScale;
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
+    document.getElementById('camVideo').srcObject=camStream;
     document.getElementById('camOverlay').classList.add('open');
-  } catch(e) {
-    toast('⚠️ ไม่สามารถเปิดกล้องได้ — ลองใช้ปุ่ม คลัง แทน');
-  }
+  }catch(e){toast('⚠️ ไม่สามารถเปิดกล้องได้ — ลองใช้ปุ่ม คลัง แทน');}
 }
-
-function closeCam() {
-  if(camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+function closeCam(){
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
   document.getElementById('camOverlay').classList.remove('open');
 }
-
-function snapPhoto() {
-  const video = document.getElementById('camVideo');
-  const canvas = document.getElementById('camCanvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  canvas.getContext('2d').drawImage(video, 0, 0);
+function snapPhoto(){
+  const video=document.getElementById('camVideo');
+  const canvas=document.getElementById('camCanvas');
+  canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
   closeCam();
-  canvas.toBlob(blob => {
-    const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-    if(camTargetId === 'vP1') { previewInBox(file,'vPrev1','vBox1','vView1'); readVehicleFile(file); }
-    else if(camTargetId === 'vP2') { previewInBox(file,'vPrev2','vBox2','vView2'); chk2(); }
-    else if(camTargetId === 'sP1') { readScaleFile(file); }
-    else if(camTargetId === 'sP2') { previewInBox(file,'sPrev2','sBox2','sView2'); chkAddBag(); }
-  }, 'image/jpeg', 0.92);
+  canvas.toBlob(blob=>{
+    const file=new File([blob],'photo.jpg',{type:'image/jpeg'});
+    if(camTargetId==='vP1'){previewInBox(file,'vPrev1','vBox1','vView1');readVehicleFile(file);}
+    else if(camTargetId==='vP2'){previewInBox(file,'vPrev2','vBox2','vView2');
+      // เก็บรูปตัวรถจากกล้อง
+      const r=new FileReader();r.onload=async e=>{S.vImg2=await compressImage(e.target.result);};r.readAsDataURL(file);
+      chk2();}
+    else if(camTargetId==='sP1'){readScaleFile(file);}
+    else if(camTargetId==='sP2'){previewInBox(file,'sPrev2','sBox2','sView2');
+      // เก็บรูปทองแดงจากกล้อง
+      const r=new FileReader();r.onload=async e=>{S._pendingGoodsImg=await compressImage(e.target.result);};r.readAsDataURL(file);
+      chkAddBag();}
+  },'image/jpeg',0.92);
 }
 // ---- END CAMERA ----
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+</script>
+<script>
+// ---- รูปทองแดงจาก file picker ต้องเก็บ base64 ด้วย ----
+// override previewOnly สำหรับ sP2
+document.getElementById('sP2').addEventListener('change', async function(){
+  const file = this.files[0]; if(!file) return;
+  previewInBox(file,'sPrev2','sBox2','sView2');
+  const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+  S._pendingGoodsImg = await compressImage(dataUrl);
+  chkAddBag();
+});
+// override previewOnly สำหรับ vP2
+document.getElementById('vP2').addEventListener('change', async function(){
+  const file = this.files[0]; if(!file) return;
+  previewInBox(file,'vPrev2','vBox2','vView2');
+  const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+  S.vImg2 = await compressImage(dataUrl);
+});
 </script>
 <script>
 if('serviceWorker' in navigator){
@@ -813,31 +849,19 @@ if('serviceWorker' in navigator){
         reg.addEventListener('updatefound',()=>{
           const newWorker=reg.installing;
           newWorker.addEventListener('statechange',()=>{
-            if(newWorker.state==='installed' && navigator.serviceWorker.controller){
-              // มีเวอร์ชันใหม่ — reload อัตโนมัติ
-              window.location.reload();
-            }
+            if(newWorker.state==='installed'&&navigator.serviceWorker.controller){window.location.reload();}
           });
         });
-        // เช็คอัพเดทตอนเปิดแอปทุกครั้ง
         reg.update();
-      })
-      .catch(e=>console.log('SW error:',e));
+      }).catch(e=>console.log('SW error:',e));
   });
 }
-// ป้องกัน pull-to-refresh
 let lastTouchY=0;
 document.addEventListener('touchstart',e=>{lastTouchY=e.touches[0].clientY;},{passive:false});
 document.addEventListener('touchmove',e=>{
-  const y=e.touches[0].clientY;
-  const diff=y-lastTouchY;
-  // block ถ้าลากลง และ document อยู่บนสุด
+  const y=e.touches[0].clientY;const diff=y-lastTouchY;
   const scrollTop=window.scrollY||document.documentElement.scrollTop||document.body.scrollTop||0;
-  if(diff>0 && scrollTop<=0){
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  }
+  if(diff>0&&scrollTop<=0){e.preventDefault();e.stopPropagation();return false;}
   lastTouchY=y;
 },{passive:false,capture:true});
 </script>
