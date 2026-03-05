@@ -715,9 +715,59 @@ function buildSummary(){
   document.getElementById('sumBags').innerHTML=bagsHtml;
 }
 
+// ---- อัพรูปไป Google Drive ----
+async function uploadToDrive(base64Data, fileName, txnId) {
+  if (!base64Data) return null;
+  try {
+    const res = await fetch(WORKER_URL + '/upload-drive', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fileName,
+        mimeType: 'image/jpeg',
+        base64Data,
+        subFolder: txnId
+      })
+    });
+    const data = await res.json();
+    return data.viewLink || null;
+  } catch(e) {
+    console.log('Drive upload error:', e);
+    return null;
+  }
+}
+
 async function submit(){
-  const btn=document.getElementById('confirmBtn');btn.textContent='⏳ กำลังส่งข้อมูล...';btn.disabled=true;
+  const btn=document.getElementById('confirmBtn');
+  btn.textContent='⏳ กำลังอัพโหลดรูป...';btn.disabled=true;
   const txnId='TXN-'+Date.now().toString().slice(-6);
+
+  // อัพรูปทั้งหมดขึ้น Drive พร้อมกัน
+  const uploadJobs = [];
+  uploadJobs.push(uploadToDrive(S.vImg1, '01_ทะเบียน.jpg', txnId));
+  uploadJobs.push(uploadToDrive(S.vImg2, '02_ตัวรถ.jpg', txnId));
+  S.bags.forEach((b, i) => {
+    uploadJobs.push(uploadToDrive(b.scaleImg, `${String(i+1).padStart(2,'0')}_เต๊า${i+1}_ตาชั่ง.jpg`, txnId));
+    uploadJobs.push(uploadToDrive(b.goodsImg, `${String(i+1).padStart(2,'0')}_เต๊า${i+1}_ทองแดง.jpg`, txnId));
+  });
+
+  btn.textContent='⏳ กำลังส่งข้อมูล...';
+  const uploadResults = await Promise.all(uploadJobs);
+
+  // แยก link
+  const driveLinks = {
+    vPlate: uploadResults[0],
+    vCar:   uploadResults[1],
+    scales: [],
+    goods:  []
+  };
+  S.bags.forEach((b, i) => {
+    driveLinks.scales.push(uploadResults[2 + i*2]);
+    driveLinks.goods.push(uploadResults[3 + i*2]);
+  });
+
+  // สร้าง link folder รวม
+  const folderLink = `https://drive.google.com/drive/folders/13NmkhrcAMOemasdQ03kCVCBVuAo04e-x`;
 
   // คำนวณน้ำหนักแยกตามประเภท
   const productTotals={'ปอกสวย':0,'ปอกช็อต':0,'สะพานไฟ':0,'ท่อใหม่':0,'ท่อเก่า':0,'ทองแดงใหญ่':0,'ทองแดงเล็ก':0,'บดสะอาด':0,'บดผสม':0,'บดชุบ':0,'อื่นๆ':0};
@@ -737,13 +787,8 @@ async function submit(){
     thongDangLek:productTotals['ทองแดงเล็ก'],bodSaad:productTotals['บดสะอาด'],bodPasom:productTotals['บดผสม'],
     bodChup:productTotals['บดชุบ'],other:productTotals['อื่นๆ'],
     bags:S.bags.map(b=>({productType:b.productType,gross:b.gross,tare:b.tare,net:b.net})),
-    // รูปภาพ base64 บีบอัด
-    images:{
-      vPlate: S.vImg1||null,        // รูปทะเบียน
-      vCar:   S.vImg2||null,        // รูปตัวรถ
-      scales: S.bags.map(b=>b.scaleImg||null),  // รูปตาชั่งแต่ละเต๊า
-      goods:  S.bags.map(b=>b.goodsImg||null),  // รูปทองแดงแต่ละเต๊า
-    }
+    driveFolder: folderLink,  // link folder รวมทุกรูปของ TXN นี้
+    driveLinks                // link แต่ละรูป
   };
 
   try{await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
