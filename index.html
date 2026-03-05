@@ -739,7 +739,7 @@ async function submit(){
 
   // สร้างโฟลเดอร์ก่อน 1 ครั้ง
   let folderId = null;
-  let folderLink = `https://drive.google.com/drive/folders/13NmkhrcAMOemasdQ03kCVCBVuAo04e-x`;
+  let folderLink = `https://pub-db91351e32b94b03afa7cb64873b1379.r2.dev/${txnId}`;
   try {
     const res = await fetch(WORKER_URL + '/create-folder', {
       method: 'POST',
