@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dct-v17';
+const CACHE_NAME = 'dct-v18';
 const ASSETS = [
   '/diamond-copper-liff/',
   '/diamond-copper-liff/index.html',
