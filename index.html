@@ -910,6 +910,14 @@ async function submit(){
     flexMessage: flexMessage   // <-- Flex Message สำเร็จรูปสำหรับ LINE
   };
 
+  // เก็บข้อมูลลง KV สำหรับใบพิมพ์
+  try{await fetch(WORKER_URL+'/store-txn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    txnId, type:S.type, docType:S.docType, partner:S.partner, vehicle:S.vehicle,
+    timestamp: new Date().toISOString(), totalNet,
+    bags: S.bags.map(b=>({productType:b.productType, gross:b.gross, tare:b.tare, net:b.net})),
+    driveFolder: folderLink
+  })});}catch(e){console.log('store-txn:',e);}
+
   try{await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
   catch(e){console.log('webhook:',e);}
   document.getElementById('txnChip').textContent=txnId;go(6);
