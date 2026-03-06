@@ -565,7 +565,7 @@ function renderPTypes(){
 function selPType(t,el){
   document.querySelectorAll('.ptype-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
   if(t==='อื่นๆ (ระบุ)'){show('ptypeCustom');document.getElementById('customType').focus();S.productType=null;}
-  else{hideEl('ptypeCustom');S.productType=t;}chk3();
+  else{hideEl('ptypeCustom');document.getElementById('customType').value='';S.productType=t;}chk3();
 }
 function chk3(){
   const custom=document.getElementById('customType').value.trim();if(custom)S.productType=custom;
