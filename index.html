@@ -766,7 +766,7 @@ async function submit(){
   const productTotals={'ปอกสวย':0,'ปอกช็อต':0,'สะพานไฟ':0,'ท่อใหม่':0,'ท่อเก่า':0,'ทองแดงใหญ่':0,'ทองแดงเล็ก':0,'บดสะอาด':0,'บดผสม':0,'บดชุบ':0,'อื่นๆ':0};
   let totalNet=0;
   S.bags.forEach(b=>{
-    const key=productTotals.hasOwnProperty(b.productType)?b.productType:'อื่นๆ';
+    const key=productTotals.hasOwnProperty(b.productType)?b.productType:b.productType;
     productTotals[key]=parseFloat((productTotals[key]+b.net).toFixed(1));
     totalNet=parseFloat((totalNet+b.net).toFixed(1));
   });
