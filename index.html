@@ -750,17 +750,16 @@ async function submit(){
     if (data.folderId) { folderId = data.folderId; }
   } catch(e) { console.log('create folder error:', e); }
 
-  // อัพรูปทีละใบ (sequential)
+// อัพรูปทีละใบ (sequential)
   btn.textContent='⏳ กำลังอัพโหลดรูป...';
-  if (S.vImg1) await uploadToDrive(S.vImg1, '01_ทะเบียน.jpg', txnId);
-  if (S.vImg2) await uploadToDrive(S.vImg2, '02_ตัวรถ.jpg', txnId);
+  if (S.vImg1) await uploadToDrive(S.vImg1, 'A1_ทะเบียน.jpg', txnId);
+  if (S.vImg2) await uploadToDrive(S.vImg2, 'A2_ตัวรถ.jpg', txnId);
   for (let i = 0; i < S.bags.length; i++) {
     const b = S.bags[i];
     const n = String(i+1).padStart(2,'0');
-    if (b.scaleImg) await uploadToDrive(b.scaleImg, `${n}_เต๊า${i+1}_ตาชั่ง.jpg`, txnId);
-    if (b.goodsImg) await uploadToDrive(b.goodsImg, `${n}_เต๊า${i+1}_ทองแดง.jpg`, txnId);
+    if (b.scaleImg) await uploadToDrive(b.scaleImg, `B${n}_เต๊า${i+1}_ตาชั่ง.jpg`, txnId);
+    if (b.goodsImg) await uploadToDrive(b.goodsImg, `B${n}_เต๊า${i+1}_ทองแดง.jpg`, txnId);
   }
-
   btn.textContent='⏳ กำลังส่งข้อมูล...';
 
   // คำนวณน้ำหนักแยกตามประเภท
