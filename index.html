@@ -17,7 +17,7 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
-:root{--buy:#1565C0;--sell:#2E7D32;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
+:root{--buy:#1565C0;--sell:#2E7D32;--process:#7C3AED;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{overscroll-behavior-y:none;}
 body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;overscroll-behavior:none;overscroll-behavior-y:none;}
@@ -29,6 +29,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .hdr-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);}
 .hdr-badge.buy{background:rgba(21,101,192,0.4);color:#90CAF9;}
 .hdr-badge.sell{background:rgba(46,125,50,0.4);color:#A5D6A7;}
+.hdr-badge.process{background:rgba(124,58,237,0.4);color:#DDD6FE;}
 .progress-bar{display:flex;gap:4px;margin-top:14px;}
 .pb-seg{height:3px;border-radius:2px;background:rgba(255,255,255,0.15);flex:1;transition:background .3s;}
 .pb-seg.done{background:rgba(255,255,255,0.5);}
@@ -39,22 +40,14 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 @keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 .card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);}
 .card-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
-.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.type-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 .type-btn{border:2px solid var(--border);border-radius:14px;padding:18px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
-.type-btn .ti{font-size:30px;margin-bottom:6px;}
+.type-btn .ti{font-size:28px;margin-bottom:6px;}
 .type-btn .tl{font-size:14px;font-weight:700;}
-.type-btn .td{font-size:11px;color:var(--muted);margin-top:2px;}
+.type-btn .td{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3;}
 .type-btn.buy.sel{border-color:var(--buy);background:#EFF6FF;}
 .type-btn.sell.sel{border-color:var(--sell);background:#F0FDF4;}
-.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.doc-btn{border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
-.doc-btn .di{font-size:26px;margin-bottom:6px;}
-.doc-btn .dl{font-size:12px;font-weight:700;line-height:1.3;}
-.doc-btn .dtag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:6px;}
-.doc-btn.no-price .dtag{background:#FFF7ED;color:#C2410C;}
-.doc-btn.has-price .dtag{background:#F0FDF4;color:#15803D;}
-.doc-btn.sel.buy{border-color:var(--buy);background:#EFF6FF;}
-.doc-btn.sel.sell{border-color:var(--sell);background:#F0FDF4;}
+.type-btn.process.sel{border-color:var(--process);background:#F5F3FF;}
 .igroup{margin-bottom:14px;}
 .ilabel{font-size:13px;font-weight:700;color:var(--text);margin-bottom:7px;display:block;}
 .ifield{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-size:16px;font-family:'Sarabun',sans-serif;color:var(--text);background:#fff;outline:none;-webkit-appearance:none;transition:border-color .2s;}
@@ -152,10 +145,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .btn:active{transform:scale(0.98);}
 .btn-primary{background:var(--buy);color:#fff;box-shadow:0 4px 12px rgba(21,101,192,0.25);}
 .btn-primary.sell{background:var(--sell);box-shadow:0 4px 12px rgba(46,125,50,0.25);}
+.btn-primary.process{background:var(--process);box-shadow:0 4px 12px rgba(124,58,237,0.25);}
 .btn-primary:disabled{background:#CBD5E1;box-shadow:none;color:#94A3B8;}
 .btn-secondary{background:#fff;color:var(--text);border:2px solid #94A3B8;font-weight:700;}
 .btn-outline{background:#fff;color:var(--buy);border:1.5px solid var(--buy);}
 .btn-outline.sell{color:var(--sell);border-color:var(--sell);}
+.btn-outline.process{color:var(--process);border-color:var(--process);}
 .btn-orange{background:#FFF7ED;color:var(--orange);border:1.5px solid #FED7AA;}
 .btn-row{display:flex;gap:10px;}
 .btn-row .btn{margin-bottom:0;}
@@ -200,20 +195,25 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <div class="section active" id="s1">
   <div class="card">
     <div class="card-title">ประเภทกิจกรรม</div>
-    <div class="type-grid">
+    <div class="type-grid-3">
       <div class="type-btn buy" onclick="selType('buy',this)">
-        <div class="ti">📥</div><div class="tl">ซื้อ / นำเข้า</div><div class="td">รับสินค้าเข้าคลัง</div>
+        <div class="ti">📥</div>
+        <div class="tl">ซื้อ</div>
+        <div class="td">รับเข้า<br>มีราคา</div>
       </div>
       <div class="type-btn sell" onclick="selType('sell',this)">
-        <div class="ti">📤</div><div class="tl">ขาย / นำออก</div><div class="td">ส่งสินค้าออกคลัง</div>
+        <div class="ti">📤</div>
+        <div class="tl">ขาย</div>
+        <div class="td">ส่งออก<br>มีราคา</div>
+      </div>
+      <div class="type-btn process" onclick="selType('process',this)">
+        <div class="ti">🔄</div>
+        <div class="tl">แปรรูป</div>
+        <div class="td">ชั่งอย่างเดียว<br>ไม่มีราคา</div>
       </div>
     </div>
   </div>
-  <div class="card" id="docCard" style="display:none">
-    <div class="card-title">ประเภทเอกสาร</div>
-    <div class="doc-grid" id="docGrid"></div>
-  </div>
-  <button class="btn btn-primary" id="s1Btn" onclick="go(2)" style="display:none">ถัดไป →</button>
+  <button class="btn btn-primary" id="s1Btn" onclick="goStep2()" style="display:none">ถัดไป →</button>
 </div>
 
 <!-- STEP 2 -->
@@ -400,7 +400,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div id="sumBags"></div>
   </div>
   <button class="btn btn-primary" id="confirmBtn" onclick="submit()">✅ ยืนยันส่งข้อมูล</button>
-  <button class="btn btn-outline" onclick="go(4)">↩️ กลับเพิ่ม / แก้ไขเต๊า</button>
+  <button class="btn btn-outline" id="backToStep4Btn" onclick="go(4)">↩️ กลับเพิ่ม / แก้ไขเต๊า</button>
 </div>
 
 <!-- STEP 6 -->
@@ -409,13 +409,14 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div class="success-icon">✅</div>
     <div class="success-title">บันทึกสำเร็จ!</div>
     <div class="txn-chip" id="txnChip">TXN-000000</div>
-    <div class="success-sub">ข้อมูลถูกส่งเรียบร้อยแล้ว<br>เจ้าของจะได้รับการแจ้งเตือนทันที<br>รอกำหนดราคาจากเจ้าของ</div>
+    <div class="success-sub" id="successSub">ข้อมูลถูกส่งเรียบร้อยแล้ว<br>เจ้าของจะได้รับการแจ้งเตือนทันที</div>
     <button class="btn btn-primary" style="margin-top:32px" onclick="reset()">+ เริ่มรายการใหม่</button>
   </div>
 </div>
 
 </div>
 <div class="toast" id="toast"></div>
+
 <div class="dialog-overlay" id="changeTypeDialog">
   <div class="dialog-box">
     <div class="dialog-icon">🔄</div>
@@ -457,14 +458,32 @@ const LIFF_ID      = "YOUR_LIFF_ID";
 const MAKE_WEBHOOK = "https://hook.us2.make.com/dekow8wjteotu1zbyi2p4kbxsu5phrrf";
 const WORKER_URL   = "https://diamond-copper-proxy.dcoppertrade.workers.dev";
 const PRODUCT_TYPES = ["ปอกสวย","ปอกช็อต","สะพานไฟ","ท่อใหม่","ท่อเก่า","ทองแดงใหญ่","ทองแดงเล็ก","บดสะอาด","บดผสม","บดชุบ","อื่นๆ (ระบุ)"];
-const DOC_TYPES = {
-  buy:  [{id:'grn',icon:'📋',label:'ใบนำส่งสินค้าเข้า',hasPrice:false},{id:'pb',icon:'🧾',label:'บิลซื้อสินค้า',hasPrice:true}],
-  sell: [{id:'do',icon:'📋',label:'ใบนำส่งสินค้าออก',hasPrice:false},{id:'sb',icon:'💰',label:'บิลขายสินค้า',hasPrice:true}],
+
+// ใบชั่งน้ำหนัก (ทุกประเภท)
+const DOC_NAMES = {
+  buy:     'ใบนำส่งสินค้าเข้า',
+  sell:    'ใบนำส่งสินค้าออก',
+  process: 'ใบชั่งแปรรูป'
 };
-const DOC_NAMES = {grn:'ใบนำส่งสินค้าเข้า',pb:'บิลซื้อสินค้า',do:'ใบนำส่งสินค้าออก',sb:'บิลขายสินค้า'};
-const TARE_DEFAULT = {buy:3.0,sell:2.0};
-const S = {type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,vAiDone:false,gAiDone:false,
-  vImg1:null, vImg2:null}; // เก็บ base64 รูปทะเบียนและตัวรถ
+const TYPE_LABELS = {
+  buy:     '📥 ซื้อ / นำเข้า',
+  sell:    '📤 ขาย / นำออก',
+  process: '🔄 แปรรูป'
+};
+const PARTNER_LABELS = {
+  buy:     'นามผู้ขาย',
+  sell:    'นามผู้ซื้อ',
+  process: 'ชื่อผู้รับ/ส่ง'
+};
+const TARE_DEFAULT = {buy:3.0, sell:2.0, process:3.0};
+
+const S = {
+  type:null, partner:'', vehicle:'', productType:null,
+  bags:[], curGross:null, curTare:3.0,
+  vAiDone:false, gAiDone:false,
+  vImg1:null, vImg2:null,
+  _pendingScaleImg:null, _pendingGoodsImg:null
+};
 
 liff.init({liffId:LIFF_ID}).catch(()=>console.log('LIFF test mode'));
 function fmt(n){return parseFloat(n).toFixed(1);}
@@ -474,17 +493,17 @@ function compressImage(dataUrl, maxSize=1200, quality=0.6){
   return new Promise(resolve=>{
     const img = new Image();
     img.onload = ()=>{
-      let w = img.width, h = img.height;
-      if(w > maxSize || h > maxSize){
-        if(w > h){ h = Math.round(h * maxSize / w); w = maxSize; }
-        else { w = Math.round(w * maxSize / h); h = maxSize; }
+      let w=img.width, h=img.height;
+      if(w>maxSize||h>maxSize){
+        if(w>h){h=Math.round(h*maxSize/w);w=maxSize;}
+        else{w=Math.round(w*maxSize/h);h=maxSize;}
       }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', quality).split(',')[1]);
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg',quality).split(',')[1]);
     };
-    img.src = dataUrl;
+    img.src=dataUrl;
   });
 }
 
@@ -501,35 +520,37 @@ function go(n){
   if(n===4)setupStep4();if(n===5)buildSummary();window.scrollTo(0,0);
 }
 
-function selType(type,el){
-  S.type=type;S.docType=null;
-  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
-  const badge=document.getElementById('hBadge');badge.textContent=type==='buy'?'📥 ซื้อ':'📤 ขาย';badge.className='hdr-badge '+type;
-  document.getElementById('docCard').style.display='block';renderDocs(type);document.getElementById('s1Btn').style.display='none';
+// ---- STEP 1 ----
+function selType(type, el){
+  S.type = type;
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  const badge = document.getElementById('hBadge');
+  const badgeLabels = {buy:'📥 ซื้อ', sell:'📤 ขาย', process:'🔄 แปรรูป'};
+  badge.textContent = badgeLabels[type];
+  badge.className = 'hdr-badge ' + type;
+  const btn = document.getElementById('s1Btn');
+  btn.style.display = 'block';
+  btn.className = 'btn btn-primary ' + type;
 }
-function renderDocs(type){
-  const g=document.getElementById('docGrid');g.innerHTML='';
-  DOC_TYPES[type].forEach(d=>{g.innerHTML+=`<div class="doc-btn ${d.hasPrice?'has-price':'no-price'}" id="d_${d.id}" onclick="selDoc('${d.id}','${type}')"><div class="di">${d.icon}</div><div class="dl">${d.label}</div><div class="dtag">${d.hasPrice?'💰 มีราคา':'📦 ไม่มีราคา'}</div></div>`;});
-}
-function selDoc(id,type){
-  S.docType=id;document.querySelectorAll('.doc-btn').forEach(b=>b.classList.remove('sel'));document.getElementById('d_'+id).classList.add('sel',type);
-  const btn=document.getElementById('s1Btn');btn.style.display='block';btn.className='btn btn-primary'+(type==='sell'?' sell':'');
-}
-document.getElementById('s1Btn').addEventListener('click',()=>{
-  const isBuy=S.type==='buy';
-  document.getElementById('partnerTitle').textContent=isBuy?'นามผู้ขาย':'นามผู้ซื้อ';
-  document.getElementById('partnerName').placeholder=isBuy?'ชื่อผู้ขาย / บริษัท':'ชื่อผู้ซื้อ / บริษัท';
-  document.getElementById('s2Btn').className='btn btn-primary'+(isBuy?'':' sell');
-});
 
+function goStep2(){
+  document.getElementById('partnerTitle').textContent = PARTNER_LABELS[S.type];
+  const phMap = {buy:'ชื่อผู้ขาย / บริษัท', sell:'ชื่อผู้ซื้อ / บริษัท', process:'ชื่อบริษัท / จุดแปรรูป'};
+  document.getElementById('partnerName').placeholder = phMap[S.type];
+  document.getElementById('s2Btn').className = 'btn btn-primary ' + S.type;
+  go(2);
+}
+
+// ---- STEP 2 ----
 async function readVehicle(input){ const file=input.files[0];if(!file)return; await readVehicleFile(file); }
 async function readVehicleFile(file){
   previewInBox(file,'vPrev1','vBox1','vView1');
   show('vLoading');hide('vResult');hideEl('vEditBox');
   try{
     const b64=await toB64(file);
-    const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
-    S.vImg1 = await compressImage(dataUrl);
+    const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
+    S.vImg1=await compressImage(dataUrl);
     const txt=await claude(b64,file.type,'อ่านเลขทะเบียนรถจากรูปนี้ ตอบเฉพาะเลขทะเบียนเท่านั้น เช่น "กข 1234 กรุงเทพ"');
     const plate=txt.trim();document.getElementById('vVal').textContent=plate;S.vehicle=plate;S.vAiDone=true;
     show('vResult');document.getElementById('vManualGroup').style.display='none';document.getElementById('vPlate').value=plate;
@@ -542,39 +563,51 @@ function editVehicle(){document.getElementById('vEditIn').value=document.getElem
 function cancelEditVehicle(){document.getElementById('vEditBox').style.display='none';}
 function confirmEditVehicle(){const val=document.getElementById('vEditIn').value.trim();if(val){S.vehicle=val;document.getElementById('vVal').textContent=val;document.getElementById('vPlate').value=val;chk2();}}
 function chk2(){
-  const name=document.getElementById('partnerName').value.trim();const manual=document.getElementById('vPlate').value.trim();
-  S.partner=name;if(!S.vAiDone)S.vehicle=manual;document.getElementById('s2Btn').disabled=!(name&&S.vehicle);
+  const name=document.getElementById('partnerName').value.trim();
+  const manual=document.getElementById('vPlate').value.trim();
+  S.partner=name;if(!S.vAiDone)S.vehicle=manual;
+  document.getElementById('s2Btn').disabled=!(name&&S.vehicle);
 }
 
 async function previewOnly(input,prevId,boxId,viewId){
   const file=input.files[0];if(!file)return;
   previewInBox(file,prevId,boxId,viewId);
   if(boxId==='vBox2'){
-    const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
-    S.vImg2 = await compressImage(dataUrl);
+    const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
+    S.vImg2=await compressImage(dataUrl);
   }
   chkAddBag();
 }
 
-document.getElementById('s2Btn').addEventListener('click',renderPTypes);
+// ---- STEP 3 ----
+document.getElementById('s2Btn').addEventListener('click', renderPTypes);
 function renderPTypes(){
   const g=document.getElementById('ptypeGrid');g.innerHTML='';
-  PRODUCT_TYPES.forEach(t=>{const safe=t.replace(/'/g,"\\'");g.innerHTML+=`<div class="ptype-btn" onclick="selPType('${safe}',this)">${t}</div>`;});
+  PRODUCT_TYPES.forEach(t=>{
+    const safe=t.replace(/'/g,"\\'");
+    g.innerHTML+=`<div class="ptype-btn" onclick="selPType('${safe}',this)">${t}</div>`;
+  });
   if(S.productType)document.querySelectorAll('.ptype-btn').forEach(b=>{if(b.textContent===S.productType)b.classList.add('sel');});
+  document.getElementById('s3Btn').className = 'btn btn-primary ' + S.type;
 }
 function selPType(t,el){
   document.querySelectorAll('.ptype-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
   if(t==='อื่นๆ (ระบุ)'){show('ptypeCustom');document.getElementById('customType').focus();S.productType=null;}
-  else{hideEl('ptypeCustom');document.getElementById('customType').value='';S.productType=t;}chk3();
+  else{hideEl('ptypeCustom');document.getElementById('customType').value='';S.productType=t;}
+  chk3();
 }
 function chk3(){
   const custom=document.getElementById('customType').value.trim();if(custom)S.productType=custom;
-  document.getElementById('s3Btn').disabled=!S.productType;document.getElementById('s3Btn').className='btn btn-primary'+(S.type==='sell'?' sell':'');
+  document.getElementById('s3Btn').disabled=!S.productType;
 }
+
+// ---- STEP 4 ----
 function setupStep4(){
   if(S.bags.length===0)S.curTare=TARE_DEFAULT[S.type]||3.0;
   document.getElementById('currentTypeDisplay').textContent=S.productType||'-';
   document.getElementById('bagCount').textContent=S.bags.length;
+  document.getElementById('s4Btn').className = 'btn btn-primary ' + S.type;
+  document.getElementById('addBagBtn').className = 'btn btn-primary ' + S.type + ' btn-disabled';
   renderBags();resetAddForm();
 }
 async function readScale(input){ const file=input.files[0];if(!file)return; await readScaleFile(file); }
@@ -583,8 +616,8 @@ async function readScaleFile(file){
   show('sLoading');hide('sResult');hideEl('grossEditBox');hide('netCard');
   try{
     const b64=await toB64(file);
-    const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
-    S._pendingScaleImg = await compressImage(dataUrl);
+    const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
+    S._pendingScaleImg=await compressImage(dataUrl);
     const txt=await claude(b64,file.type,'ในรูปนี้มีหน้าจอตาชั่งดิจิตอลแสดงตัวเลขสีแดง จงอ่านตัวเลขน้ำหนักที่แสดงอยู่ ตอบเป็นตัวเลขอย่างเดียวเท่านั้น ห้ามมีหน่วยหรือข้อความอื่น ถ้าเห็น 679.8 ให้ตอบ 679.8 ถ้าเห็น 802.0 ให้ตอบ 802.0');
     const n=parseFloat(txt.trim());
     if(!isNaN(n)){
@@ -608,17 +641,15 @@ function calcNet(){
   const tRaw=parseFloat(document.getElementById('tareIn').value);const t=!isNaN(tRaw)?tRaw:S.curTare;
   if(!g)return;S.curGross=g;
   const net=parseFloat((g-t).toFixed(1));
-  document.getElementById('dGross').textContent=fmt(g)+' กก.';document.getElementById('dTare').textContent=fmt(t)+' กก.';document.getElementById('dNet').textContent=fmt(net)+' กก.';
+  document.getElementById('dGross').textContent=fmt(g)+' กก.';
+  document.getElementById('dTare').textContent=fmt(t)+' กก.';
+  document.getElementById('dNet').textContent=fmt(net)+' กก.';
   show('netCard');chkAddBag();
 }
-function chkAddBag(){document.getElementById('addBagBtn').disabled=!S.curGross;}
-
-async function previewOnlyGoods(input,prevId,boxId,viewId){
-  const file=input.files[0];if(!file)return;
-  previewInBox(file,prevId,boxId,viewId);
-  const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
-  S._pendingGoodsImg = await compressImage(dataUrl);
-  chkAddBag();
+function chkAddBag(){
+  const btn=document.getElementById('addBagBtn');
+  btn.disabled=!S.curGross;
+  btn.className='btn btn-primary '+(S.type||'');
 }
 
 function addBag(){
@@ -633,9 +664,10 @@ function addBag(){
     scaleImg:S._pendingScaleImg||null,
     goodsImg:S._pendingGoodsImg||null
   });
-  S._pendingScaleImg=null; S._pendingGoodsImg=null;
+  S._pendingScaleImg=null;S._pendingGoodsImg=null;
   toast('✅ เต๊าที่ '+S.bags.length+' บันทึกแล้ว');
-  document.getElementById('bagCount').textContent=S.bags.length;document.getElementById('s4Btn').disabled=false;
+  document.getElementById('bagCount').textContent=S.bags.length;
+  document.getElementById('s4Btn').disabled=false;
   renderBags();resetAddForm();
 }
 function resetAddForm(){
@@ -651,11 +683,11 @@ function resetAddForm(){
   document.getElementById('addForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function confirmChangeType(){
-  if(S.curGross || document.getElementById('grossIn').value){
+  if(S.curGross||document.getElementById('grossIn').value){
     document.getElementById('changeTypeDialog').classList.add('open');
   } else { go(3); }
 }
-let pendingDelIdx = null;
+let pendingDelIdx=null;
 function delBag(i){
   pendingDelIdx=i;
   const b=S.bags[i];
@@ -678,18 +710,20 @@ function renderBags(){
   });
   html+='</div>';el.innerHTML=html;
 }
+
+// ---- STEP 5 ----
 function buildSummary(){
-  const isBuy=S.type==='buy';
   const now=new Date();
-  const dateStr=now.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'})+' '+now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('sumTypeLabel').textContent=isBuy?'📥 ซื้อ / นำเข้า':'📤 ขาย / นำออก';
-  document.getElementById('sumDocMain').textContent=DOC_NAMES[S.docType]||'-';
-  document.getElementById('sumDateSub').textContent=dateStr;
-  document.getElementById('sumPartnerKey').textContent=isBuy?'นามผู้ขาย':'นามผู้ซื้อ';
-  document.getElementById('sumPartner').textContent=S.partner;
-  document.getElementById('sumVehicle').textContent=S.vehicle;
-  document.getElementById('sumBagCount').textContent=S.bags.length+' เต๊า';
-  document.getElementById('confirmBtn').className='btn btn-primary'+(isBuy?'':' sell');
+  const dateStr=now.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Bangkok'})+' '+now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Bangkok'});
+  document.getElementById('sumTypeLabel').textContent = TYPE_LABELS[S.type]||'-';
+  document.getElementById('sumDocMain').textContent = DOC_NAMES[S.type]||'-';
+  document.getElementById('sumDateSub').textContent = dateStr;
+  document.getElementById('sumPartnerKey').textContent = PARTNER_LABELS[S.type]||'คู่ค้า';
+  document.getElementById('sumPartner').textContent = S.partner;
+  document.getElementById('sumVehicle').textContent = S.vehicle;
+  document.getElementById('sumBagCount').textContent = S.bags.length+' เต๊า';
+  document.getElementById('confirmBtn').className = 'btn btn-primary ' + S.type;
+  document.getElementById('backToStep4Btn').className = 'btn btn-outline ' + S.type;
   const groups={};let total=0;
   S.bags.forEach(b=>{
     if(!groups[b.productType])groups[b.productType]={count:0,net:0};
@@ -712,172 +746,117 @@ function buildSummary(){
 }
 
 // ---- BUILD FLEX MESSAGE ----
-function buildFlexMessage(txnId, totalNet, groups, folderLink) {
-  const isBuy = S.type === 'buy';
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'}) + ' ' + now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-  const typeLabel = isBuy ? '📥 ซื้อ / นำเข้า' : '📤 ขาย / นำออก';
-  const docName = DOC_NAMES[S.docType] || '-';
-  const partnerLabel = isBuy ? 'นามผู้ขาย' : 'นามผู้ซื้อ';
+function buildFlexMessage(txnId, totalNet, groups, folderLink){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Bangkok'})+' '+now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Bangkok'});
+  const typeLabel = TYPE_LABELS[S.type]||'-';
+  const docName   = DOC_NAMES[S.type]||'-';
+  const partnerLabel = PARTNER_LABELS[S.type]||'คู่ค้า';
 
-  // rows สรุปตามประเภทสินค้า (เฉพาะที่มีค่า > 0)
-  const typeRows = Object.entries(groups).map(([type, data]) => ({
-    type: 'box', layout: 'horizontal', margin: 'xs',
-    contents: [
-      { type: 'text', text: type, size: 'sm', flex: 4, wrap: true },
-      { type: 'text', text: data.count + ' เต๊า', size: 'sm', color: '#888888', flex: 2, align: 'center' },
-      { type: 'text', text: fmt(data.net) + ' กก.', size: 'sm', weight: 'bold', color: '#1565C0', flex: 3, align: 'end' }
+  const typeRows=Object.entries(groups).map(([type,data])=>({
+    type:'box',layout:'horizontal',margin:'xs',
+    contents:[
+      {type:'text',text:type,size:'sm',flex:4,wrap:true},
+      {type:'text',text:data.count+' เต๊า',size:'sm',color:'#888888',flex:2,align:'center'},
+      {type:'text',text:fmt(data.net)+' กก.',size:'sm',weight:'bold',color:'#1565C0',flex:3,align:'end'}
     ]
   }));
-
-  // rows รายการทุกเต๊า
-  const bagRows = S.bags.map((b, i) => ({
-    type: 'box', layout: 'horizontal', margin: 'xs',
-    contents: [
-      { type: 'text', text: String(i+1), size: 'xs', color: '#888888', flex: 1 },
-      { type: 'text', text: b.productType, size: 'xs', color: '#F97316', flex: 4, wrap: true },
-      { type: 'text', text: 'G' + fmt(b.gross) + '\u2212T' + fmt(b.tare), size: 'xs', color: '#888888', flex: 5 },
-      { type: 'text', text: fmt(b.net) + ' กก.', size: 'xs', weight: 'bold', flex: 3, align: 'end' }
+  const bagRows=S.bags.map((b,i)=>({
+    type:'box',layout:'horizontal',margin:'xs',
+    contents:[
+      {type:'text',text:String(i+1),size:'xs',color:'#888888',flex:1},
+      {type:'text',text:b.productType,size:'xs',color:'#F97316',flex:4,wrap:true},
+      {type:'text',text:'G'+fmt(b.gross)+'\u2212T'+fmt(b.tare),size:'xs',color:'#888888',flex:5},
+      {type:'text',text:fmt(b.net)+' กก.',size:'xs',weight:'bold',flex:3,align:'end'}
     ]
   }));
 
   return {
-    to: 'Ufbb15e7cf2da5d6f7f3f7c75b192be19',
-    messages: [{
-      type: 'flex',
-      altText: 'รายงานการชั่ง [' + txnId + '] สุทธิ ' + fmt(totalNet) + ' กก.',
-      contents: {
-        type: 'bubble',
-        header: {
-          type: 'box', layout: 'vertical',
-          backgroundColor: '#0F172A', paddingAll: '16px',
-          contents: [
-            { type: 'text', text: typeLabel, size: 'xs', color: '#94A3B8', weight: 'bold' },
-            { type: 'text', text: docName, size: 'xl', weight: 'bold', color: '#FFFFFF', margin: 'xs' },
-            { type: 'text', text: txnId + '  \u2022  ' + dateStr, size: 'xs', color: '#64748B', margin: 'xs' }
-          ]
-        },
-        body: {
-          type: 'box', layout: 'vertical', paddingAll: '14px', spacing: 'md',
-          contents: [
-            // คู่ค้า + ทะเบียน
-            {
-              type: 'box', layout: 'horizontal', spacing: 'md',
-              contents: [
-                { type: 'box', layout: 'vertical', flex: 1, contents: [
-                  { type: 'text', text: partnerLabel, size: 'xs', color: '#888888' },
-                  { type: 'text', text: S.partner, size: 'sm', weight: 'bold', wrap: true }
-                ]},
-                { type: 'box', layout: 'vertical', flex: 1, contents: [
-                  { type: 'text', text: 'ทะเบียนรถ', size: 'xs', color: '#888888' },
-                  { type: 'text', text: S.vehicle, size: 'sm', weight: 'bold', wrap: true }
-                ]}
-              ]
-            },
-            // จำนวนเต๊า + รวมน้ำหนัก
-            {
-              type: 'box', layout: 'horizontal', spacing: 'md',
-              contents: [
-                { type: 'box', layout: 'vertical', flex: 1, contents: [
-                  { type: 'text', text: 'จำนวนเต๊า', size: 'xs', color: '#888888' },
-                  { type: 'text', text: S.bags.length + ' เต๊า', size: 'sm', weight: 'bold' }
-                ]},
-                { type: 'box', layout: 'vertical', flex: 1, contents: [
-                  { type: 'text', text: 'รวมน้ำหนัก', size: 'xs', color: '#888888' },
-                  { type: 'text', text: fmt(totalNet) + ' กก.', size: 'sm', weight: 'bold', color: '#1565C0' }
-                ]}
-              ]
-            },
-            { type: 'separator' },
-            // หัวข้อสรุปสินค้า
-            { type: 'text', text: 'สรุปตามประเภทสินค้า', size: 'xs', color: '#888888', weight: 'bold' },
-            ...typeRows,
-            // น้ำหนักสุทธิรวม
-            {
-              type: 'box', layout: 'horizontal', margin: 'sm',
-              backgroundColor: '#EFF6FF', paddingAll: '10px', cornerRadius: '8px',
-              contents: [
-                { type: 'text', text: 'น้ำหนักสุทธิรวม', size: 'sm', weight: 'bold', flex: 1 },
-                { type: 'text', text: fmt(totalNet) + ' กก.', size: 'lg', weight: 'bold', color: '#1565C0', align: 'end' }
-              ]
-            },
-            { type: 'separator' },
-            // หัวข้อรายการเต๊า
-            { type: 'text', text: 'รายการทุกเต๊า', size: 'xs', color: '#888888', weight: 'bold' },
-            ...bagRows,
-            // ปุ่มดูรูป
-            {
-              type: 'button', style: 'secondary', margin: 'md',
-              action: { type: 'uri', label: '\uD83D\uDDBC\uFE0F ดูรูปประกอบ', uri: folderLink }
-            }
-          ]
-        },
-        footer: {
-          type: 'box', layout: 'horizontal', spacing: 'sm', paddingAll: '12px',
-          contents: [
-            {
-              type: 'button', style: 'primary', color: '#22C55E', flex: 1,
-              action: { type: 'uri', label: '\u2705 อนุมัติ', uri: 'https://diamond-copper-proxy.dcoppertrade.workers.dev/approve/' + txnId }
-            },
-            {
-              type: 'button', style: 'primary', color: '#EF4444', flex: 1,
-              action: { type: 'uri', label: '\u274C ไม่อนุมัติ', uri: 'https://diamond-copper-proxy.dcoppertrade.workers.dev/reject/' + txnId }
-            }
-          ]
-        }
+    to:'Ufbb15e7cf2da5d6f7f3f7c75b192be19',
+    messages:[{
+      type:'flex',
+      altText:'รายงานการชั่ง ['+txnId+'] สุทธิ '+fmt(totalNet)+' กก.',
+      contents:{
+        type:'bubble',
+        header:{type:'box',layout:'vertical',backgroundColor:'#0F172A',paddingAll:'16px',contents:[
+          {type:'text',text:typeLabel,size:'xs',color:'#94A3B8',weight:'bold'},
+          {type:'text',text:docName,size:'xl',weight:'bold',color:'#FFFFFF',margin:'xs'},
+          {type:'text',text:txnId+'  \u2022  '+dateStr,size:'xs',color:'#64748B',margin:'xs'}
+        ]},
+        body:{type:'box',layout:'vertical',paddingAll:'14px',spacing:'md',contents:[
+          {type:'box',layout:'horizontal',spacing:'md',contents:[
+            {type:'box',layout:'vertical',flex:1,contents:[
+              {type:'text',text:partnerLabel,size:'xs',color:'#888888'},
+              {type:'text',text:S.partner,size:'sm',weight:'bold',wrap:true}
+            ]},
+            {type:'box',layout:'vertical',flex:1,contents:[
+              {type:'text',text:'ทะเบียนรถ',size:'xs',color:'#888888'},
+              {type:'text',text:S.vehicle,size:'sm',weight:'bold',wrap:true}
+            ]}
+          ]},
+          {type:'box',layout:'horizontal',spacing:'md',contents:[
+            {type:'box',layout:'vertical',flex:1,contents:[
+              {type:'text',text:'จำนวนเต๊า',size:'xs',color:'#888888'},
+              {type:'text',text:S.bags.length+' เต๊า',size:'sm',weight:'bold'}
+            ]},
+            {type:'box',layout:'vertical',flex:1,contents:[
+              {type:'text',text:'รวมน้ำหนัก',size:'xs',color:'#888888'},
+              {type:'text',text:fmt(totalNet)+' กก.',size:'sm',weight:'bold',color:'#1565C0'}
+            ]}
+          ]},
+          {type:'separator'},
+          {type:'text',text:'สรุปตามประเภทสินค้า',size:'xs',color:'#888888',weight:'bold'},
+          ...typeRows,
+          {type:'box',layout:'horizontal',margin:'sm',backgroundColor:'#EFF6FF',paddingAll:'10px',cornerRadius:'8px',contents:[
+            {type:'text',text:'น้ำหนักสุทธิรวม',size:'sm',weight:'bold',flex:1},
+            {type:'text',text:fmt(totalNet)+' กก.',size:'lg',weight:'bold',color:'#1565C0',align:'end'}
+          ]},
+          {type:'separator'},
+          {type:'text',text:'รายการทุกเต๊า',size:'xs',color:'#888888',weight:'bold'},
+          ...bagRows,
+          {type:'button',style:'secondary',margin:'md',
+            action:{type:'uri',label:'\uD83D\uDDBC\uFE0F ดูรูปประกอบ',uri:folderLink}}
+        ]},
+        footer:{type:'box',layout:'horizontal',spacing:'sm',paddingAll:'12px',contents:[
+          {type:'button',style:'primary',color:'#22C55E',flex:1,
+            action:{type:'uri',label:'\u2705 อนุมัติ',uri:'https://diamond-copper-proxy.dcoppertrade.workers.dev/approve/'+txnId}},
+          {type:'button',style:'primary',color:'#EF4444',flex:1,
+            action:{type:'uri',label:'\u274C ไม่อนุมัติ',uri:'https://diamond-copper-proxy.dcoppertrade.workers.dev/reject/'+txnId}}
+        ]}
       }
     }]
   };
 }
 
 // ---- อัพรูปไป Google Drive ----
-async function uploadToDrive(base64Data, fileName, folderId) {
-  if (!base64Data) return null;
-  try {
-    const res = await fetch(WORKER_URL + '/upload-drive', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fileName, mimeType: 'image/jpeg', base64Data, folderId })
-    });
-    const data = await res.json();
-    return data.viewLink || null;
-  } catch(e) {
-    console.log('Drive upload error:', e);
-    return null;
-  }
+async function uploadToDrive(base64Data,fileName,folderId){
+  if(!base64Data)return null;
+  try{
+    const res=await fetch(WORKER_URL+'/upload-drive',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileName,mimeType:'image/jpeg',base64Data,folderId})});
+    const data=await res.json();return data.viewLink||null;
+  }catch(e){return null;}
 }
 
+// ---- SUBMIT ----
 async function submit(){
   const btn=document.getElementById('confirmBtn');
   btn.textContent='⏳ กำลังสร้างโฟลเดอร์...';btn.disabled=true;
   const txnId='TXN-'+Date.now().toString().slice(-6);
+  let folderLink='https://diamond-copper-proxy.dcoppertrade.workers.dev/gallery/'+txnId;
+  try{
+    await fetch(WORKER_URL+'/create-folder',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({folderName:txnId})});
+  }catch(e){}
 
-  // สร้างโฟลเดอร์
-  let folderId = null;
-  let folderLink = `https://diamond-copper-proxy.dcoppertrade.workers.dev/gallery/${txnId}`;
-  try {
-    const res = await fetch(WORKER_URL + '/create-folder', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ folderName: txnId })
-    });
-    const data = await res.json();
-    if (data.folderId) { folderId = data.folderId; }
-  } catch(e) { console.log('create folder error:', e); }
-
-  // อัพรูปทีละใบ
   btn.textContent='⏳ กำลังอัพโหลดรูป...';
-  if (S.vImg1) await uploadToDrive(S.vImg1, 'A1_ทะเบียน.jpg', txnId);
-  if (S.vImg2) await uploadToDrive(S.vImg2, 'A2_ตัวรถ.jpg', txnId);
-  for (let i = 0; i < S.bags.length; i++) {
-    const b = S.bags[i];
-    const n = String(i+1).padStart(2,'0');
-    if (b.scaleImg) await uploadToDrive(b.scaleImg, `B${n}_เต๊า${i+1}_ตาชั่ง.jpg`, txnId);
-    if (b.goodsImg) await uploadToDrive(b.goodsImg, `B${n}_เต๊า${i+1}_ทองแดง.jpg`, txnId);
+  if(S.vImg1)await uploadToDrive(S.vImg1,'A1_ทะเบียน.jpg',txnId);
+  if(S.vImg2)await uploadToDrive(S.vImg2,'A2_ตัวรถ.jpg',txnId);
+  for(let i=0;i<S.bags.length;i++){
+    const b=S.bags[i];const n=String(i+1).padStart(2,'0');
+    if(b.scaleImg)await uploadToDrive(b.scaleImg,`B${n}_เต๊า${i+1}_ตาชั่ง.jpg`,txnId);
+    if(b.goodsImg)await uploadToDrive(b.goodsImg,`B${n}_เต๊า${i+1}_ทองแดง.jpg`,txnId);
   }
   btn.textContent='⏳ กำลังส่งข้อมูล...';
 
-  // คำนวณน้ำหนักแยกตามประเภท
   const productTotals={'ปอกสวย':0,'ปอกช็อต':0,'สะพานไฟ':0,'ท่อใหม่':0,'ท่อเก่า':0,'ทองแดงใหญ่':0,'ทองแดงเล็ก':0,'บดสะอาด':0,'บดผสม':0,'บดชุบ':0,'อื่นๆ':0};
   let totalNet=0;
   S.bags.forEach(b=>{
@@ -885,8 +864,6 @@ async function submit(){
     productTotals[key]=parseFloat((productTotals[key]+b.net).toFixed(1));
     totalNet=parseFloat((totalNet+b.net).toFixed(1));
   });
-
-  // สร้าง groups สำหรับ Flex (เฉพาะสินค้าที่ใช้จริง)
   const groups={};
   S.bags.forEach(b=>{
     if(!groups[b.productType])groups[b.productType]={count:0,net:0};
@@ -894,42 +871,48 @@ async function submit(){
     groups[b.productType].net=parseFloat((groups[b.productType].net+b.net).toFixed(1));
   });
 
-  // สร้าง flexMessage
-  const flexMessage = buildFlexMessage(txnId, totalNet, groups, folderLink);
-
+  const flexMessage=buildFlexMessage(txnId,totalNet,groups,folderLink);
   const payload={
-    txnId, type:S.type, docType:S.docType, partner:S.partner, vehicle:S.vehicle,
-    timestamp: new Date().toISOString(),
-    totalNet,
-    pokSuay:productTotals['ปอกสวย'], pokChot:productTotals['ปอกช็อต'], saPhanFai:productTotals['สะพานไฟ'],
-    thorMai:productTotals['ท่อใหม่'], thorKao:productTotals['ท่อเก่า'], thongDangYai:productTotals['ทองแดงใหญ่'],
-    thongDangLek:productTotals['ทองแดงเล็ก'], bodSaad:productTotals['บดสะอาด'], bodPasom:productTotals['บดผสม'],
-    bodChup:productTotals['บดชุบ'], other:productTotals['อื่นๆ'],
-    bags: S.bags.map(b=>({productType:b.productType, gross:b.gross, tare:b.tare, net:b.net})),
-    driveFolder: folderLink,
-    flexMessage: flexMessage   // <-- Flex Message สำเร็จรูปสำหรับ LINE
+    txnId, type:S.type, partner:S.partner, vehicle:S.vehicle,
+    timestamp:new Date().toISOString(), totalNet,
+    pokSuay:productTotals['ปอกสวย'],pokChot:productTotals['ปอกช็อต'],saPhanFai:productTotals['สะพานไฟ'],
+    thorMai:productTotals['ท่อใหม่'],thorKao:productTotals['ท่อเก่า'],thongDangYai:productTotals['ทองแดงใหญ่'],
+    thongDangLek:productTotals['ทองแดงเล็ก'],bodSaad:productTotals['บดสะอาด'],bodPasom:productTotals['บดผสม'],
+    bodChup:productTotals['บดชุบ'],other:productTotals['อื่นๆ'],
+    bags:S.bags.map(b=>({productType:b.productType,gross:b.gross,tare:b.tare,net:b.net})),
+    driveFolder:folderLink,
+    flexMessage:flexMessage
   };
 
-  // เก็บข้อมูลลง KV สำหรับใบพิมพ์
+  // เก็บลง KV
   try{await fetch(WORKER_URL+'/store-txn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    txnId, type:S.type, docType:S.docType, partner:S.partner, vehicle:S.vehicle,
-    timestamp: new Date().toISOString(), totalNet,
-    bags: S.bags.map(b=>({productType:b.productType, gross:b.gross, tare:b.tare, net:b.net})),
-    driveFolder: folderLink
-  })});}catch(e){console.log('store-txn:',e);}
+    txnId,type:S.type,partner:S.partner,vehicle:S.vehicle,
+    timestamp:new Date().toISOString(),totalNet,
+    bags:S.bags.map(b=>({productType:b.productType,gross:b.gross,tare:b.tare,net:b.net})),
+    driveFolder:folderLink
+  })});}catch(e){}
 
-  try{await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
-  catch(e){console.log('webhook:',e);}
-  document.getElementById('txnChip').textContent=txnId;go(6);
+  try{await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(e){}
+
+  // ข้อความ success ต่างกันตาม type
+  const successMsgs={
+    buy:'ข้อมูลถูกส่งเรียบร้อยแล้ว<br>เจ้าของจะได้รับการแจ้งเตือนทันที<br>รอการอนุมัติและกำหนดราคาจากเจ้าของ',
+    sell:'ข้อมูลถูกส่งเรียบร้อยแล้ว<br>เจ้าของจะได้รับการแจ้งเตือนทันที<br>รอการอนุมัติและกำหนดราคาจากเจ้าของ',
+    process:'ข้อมูลถูกส่งเรียบร้อยแล้ว<br>เจ้าของจะได้รับการแจ้งเตือนทันที'
+  };
+  document.getElementById('successSub').innerHTML=successMsgs[S.type]||successMsgs.buy;
+  document.getElementById('txnChip').textContent=txnId;
+  go(6);
 }
 
 function reset(){
   closeCam();
-  Object.assign(S,{type:null,docType:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,vAiDone:false,gAiDone:false,vImg1:null,vImg2:null,_pendingScaleImg:null,_pendingGoodsImg:null});
+  Object.assign(S,{type:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,
+    vAiDone:false,gAiDone:false,vImg1:null,vImg2:null,_pendingScaleImg:null,_pendingGoodsImg:null});
   document.getElementById('partnerName').value='';document.getElementById('vPlate').value='';
   document.getElementById('vManualGroup').style.display='block';
-  document.querySelectorAll('.type-btn,.doc-btn,.ptype-btn').forEach(b=>b.classList.remove('sel'));
-  document.getElementById('docCard').style.display='none';document.getElementById('s1Btn').style.display='none';
+  document.querySelectorAll('.type-btn,.ptype-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('s1Btn').style.display='none';
   document.getElementById('hBadge').textContent='-';document.getElementById('hBadge').className='hdr-badge';
   ['vP1','vP2','sP1','sP2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['vPrev1','vPrev2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});
@@ -937,6 +920,7 @@ function reset(){
   ['vView1','vView2'].forEach(id=>document.getElementById(id).style.display='none');
   hide('vResult');hide('vLoading');hideEl('vEditBox');go(1);
 }
+
 function openLightbox(src){if(!src||src===window.location.href)return;document.getElementById('lightboxImg').src=src;document.getElementById('lightbox').classList.add('open');}
 function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
 function show(id){const el=document.getElementById(id);if(el)el.style.display='flex';}
@@ -981,32 +965,27 @@ function snapPhoto(){
     const file=new File([blob],'photo.jpg',{type:'image/jpeg'});
     if(camTargetId==='vP1'){previewInBox(file,'vPrev1','vBox1','vView1');readVehicleFile(file);}
     else if(camTargetId==='vP2'){previewInBox(file,'vPrev2','vBox2','vView2');
-      const r=new FileReader();r.onload=async e=>{S.vImg2=await compressImage(e.target.result);};r.readAsDataURL(file);
-      chk2();}
+      const r=new FileReader();r.onload=async e=>{S.vImg2=await compressImage(e.target.result);};r.readAsDataURL(file);}
     else if(camTargetId==='sP1'){readScaleFile(file);}
     else if(camTargetId==='sP2'){previewInBox(file,'sPrev2','sBox2','sView2');
-      const r=new FileReader();r.onload=async e=>{S._pendingGoodsImg=await compressImage(e.target.result);};r.readAsDataURL(file);
-      chkAddBag();}
+      const r=new FileReader();r.onload=async e=>{S._pendingGoodsImg=await compressImage(e.target.result);};r.readAsDataURL(file);}
   },'image/jpeg',0.92);
 }
-
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 </script>
 <script>
-// override sP2
-document.getElementById('sP2').addEventListener('change', async function(){
-  const file = this.files[0]; if(!file) return;
+document.getElementById('sP2').addEventListener('change',async function(){
+  const file=this.files[0];if(!file)return;
   previewInBox(file,'sPrev2','sBox2','sView2');
-  const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
-  S._pendingGoodsImg = await compressImage(dataUrl);
+  const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
+  S._pendingGoodsImg=await compressImage(dataUrl);
   chkAddBag();
 });
-// override vP2
-document.getElementById('vP2').addEventListener('change', async function(){
-  const file = this.files[0]; if(!file) return;
+document.getElementById('vP2').addEventListener('change',async function(){
+  const file=this.files[0];if(!file)return;
   previewInBox(file,'vPrev2','vBox2','vView2');
-  const dataUrl = await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
-  S.vImg2 = await compressImage(dataUrl);
+  const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
+  S.vImg2=await compressImage(dataUrl);
 });
 </script>
 <script>
