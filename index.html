@@ -1004,6 +1004,7 @@ async function openCam(targetId,isScale){
     document.getElementById('camVideo').srcObject=camStream;
     document.getElementById('camOverlay').classList.add('open');
     setupCamGuide();
+    history.pushState({cam:true},'');
   }catch(e){toast('⚠️ ไม่สามารถเปิดกล้องได้ — ลองใช้ปุ่ม คลัง แทน');}
 }
 function setupCamGuide(){
@@ -1019,6 +1020,12 @@ function closeCam(){
   document.getElementById('camOverlay').classList.remove('open');
   document.getElementById('camTip').classList.remove('show');
 }
+// ดัก Android back button ตอนกล้องเปิด
+window.addEventListener('popstate', function(e){
+  if(document.getElementById('camOverlay').classList.contains('open')){
+    closeCam();
+  }
+});
 function snapPhoto(){
   const video=document.getElementById('camVideo');
   const canvas=document.getElementById('camCanvas');
