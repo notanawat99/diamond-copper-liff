@@ -1046,13 +1046,22 @@ let _orientTimer=null;
 function startOrientationWatch(){
   if(!camIsVehicle)return;
   function check(){
-    const isLandscape=window.innerWidth>window.innerHeight;
+    // ใช้ screen.orientation ถ้ามี, fallback window.innerWidth/Height
+    let isLandscape=false;
+    if(screen.orientation){
+      isLandscape=screen.orientation.type.includes('landscape');
+    } else {
+      isLandscape=window.innerWidth>window.innerHeight;
+    }
     document.getElementById('camRotateHint').classList.toggle('show',!isLandscape);
     document.getElementById('camShutter').style.opacity=isLandscape?'1':'0.3';
     document.getElementById('camShutter').style.pointerEvents=isLandscape?'auto':'none';
   }
   check();
+  // ฟัง event ทุกแบบ
   window.addEventListener('resize',check);
+  window.addEventListener('orientationchange',check);
+  if(screen.orientation)screen.orientation.addEventListener('change',check);
   _orientTimer=check;
 }
 function closeCam(){
@@ -1060,7 +1069,12 @@ function closeCam(){
   document.getElementById('camOverlay').classList.remove('open');
   document.getElementById('camGuide').classList.remove('show');
   document.getElementById('camRotateHint').classList.remove('show');
-  if(_orientTimer)window.removeEventListener('resize',_orientTimer);
+  if(_orientTimer){
+    window.removeEventListener('resize',_orientTimer);
+    window.removeEventListener('orientationchange',_orientTimer);
+    if(screen.orientation)screen.orientation.removeEventListener('change',_orientTimer);
+  }
+  _orientTimer=null;
 }
 function snapPhoto(){
   const video=document.getElementById('camVideo');
