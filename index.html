@@ -73,13 +73,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .cam-guide-shade{position:absolute;left:0;right:0;background:rgba(0,0,0,0.55);}
 .cam-guide-frame{position:absolute;left:5%;right:5%;border:3px solid #FFD700;border-radius:10px;}
 .cam-guide-label{position:absolute;left:0;right:0;text-align:center;color:#FFD700;font-size:14px;font-weight:800;font-family:'Sarabun',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,0.9);}
-/* rotate hint — แสดงตอนมือถือยังแนวตั้ง */
-.cam-rotate-hint{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.85);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
-.cam-rotate-hint.show{display:flex;}
-.cam-rotate-icon{font-size:64px;animation:rotateHint 1.2s ease-in-out infinite alternate;}
-@keyframes rotateHint{from{transform:rotate(-15deg);}to{transform:rotate(15deg);}}
-.cam-rotate-txt{color:#fff;font-size:18px;font-weight:800;font-family:'Sarabun',sans-serif;text-align:center;}
-.cam-rotate-sub{color:rgba(255,255,255,0.6);font-size:14px;font-family:'Sarabun',sans-serif;}
+.cam-tip{position:absolute;top:12px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.85);font-size:13px;font-weight:700;font-family:'Sarabun',sans-serif;text-shadow:0 1px 3px rgba(0,0,0,0.9);pointer-events:none;}
 .cam-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#000;flex-shrink:0;}
 .cam-shutter{width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,0.5);cursor:pointer;flex-shrink:0;}
 .cam-cancel{color:#fff;font-size:14px;font-weight:700;cursor:pointer;padding:8px 16px;font-family:'Sarabun',sans-serif;background:transparent;border:none;}
@@ -459,11 +453,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div class="cam-guide-shade" id="camShadeBot"></div>
     <div class="cam-guide-label" id="camGuideLabel"></div>
   </div>
-  <div class="cam-rotate-hint" id="camRotateHint">
-    <div class="cam-rotate-icon">📱↻</div>
-    <div class="cam-rotate-txt">หันมือถือแนวนอน</div>
-    <div class="cam-rotate-sub">เพื่อถ่ายให้ได้ภาพแนวนอน</div>
-  </div>
+  <div class="cam-tip" id="camTip"></div>
   <div class="cam-bar">
     <button class="cam-cancel" onclick="closeCam()">✕ ยกเลิก</button>
     <button class="cam-shutter" id="camShutter" onclick="snapPhoto()"></button>
@@ -1019,7 +1009,6 @@ async function openCam(targetId,isScale){
     document.getElementById('camVideo').srcObject=camStream;
     document.getElementById('camOverlay').classList.add('open');
     setupCamGuide();
-    startOrientationWatch();
   }catch(e){toast('⚠️ ไม่สามารถเปิดกล้องได้ — ลองใช้ปุ่ม คลัง แทน');}
 }
 function setupCamGuide(){
@@ -1028,7 +1017,8 @@ function setupCamGuide(){
   const label=document.getElementById('camGuideLabel');
   const shadeTop=document.getElementById('camShadeTop');
   const shadeBot=document.getElementById('camShadeBot');
-  if(!camIsVehicle){guide.classList.remove('show');return;}
+  const tip=document.getElementById('camTip');
+  if(!camIsVehicle){guide.classList.remove('show');if(tip)tip.textContent='';return;}
   const isPlate=camTargetId==='vP1';
   const vh=window.innerHeight;
   const barH=96;
@@ -1040,41 +1030,14 @@ function setupCamGuide(){
   shadeBot.style.top=(frameTop+frameH)+'px';shadeBot.style.height=(availH-frameTop-frameH)+'px';
   label.style.top=(frameTop+frameH+10)+'px';
   label.textContent=isPlate?'📋 จัดป้ายทะเบียนให้อยู่ในกรอบ':'🚛 จัดตัวรถให้อยู่ในกรอบ';
+  if(tip)tip.textContent=isPlate?'📱 แนะนำ: หันมือถือแนวนอนก่อนถ่าย':'📱 แนะนำ: หันมือถือแนวนอนก่อนถ่าย';
   guide.classList.add('show');
 }
 let _orientTimer=null;
-function startOrientationWatch(){
-  if(!camIsVehicle)return;
-  function check(){
-    // ใช้ screen.orientation ถ้ามี, fallback window.innerWidth/Height
-    let isLandscape=false;
-    if(screen.orientation){
-      isLandscape=screen.orientation.type.includes('landscape');
-    } else {
-      isLandscape=window.innerWidth>window.innerHeight;
-    }
-    document.getElementById('camRotateHint').classList.toggle('show',!isLandscape);
-    document.getElementById('camShutter').style.opacity=isLandscape?'1':'0.3';
-    document.getElementById('camShutter').style.pointerEvents=isLandscape?'auto':'none';
-  }
-  check();
-  // ฟัง event ทุกแบบ
-  window.addEventListener('resize',check);
-  window.addEventListener('orientationchange',check);
-  if(screen.orientation)screen.orientation.addEventListener('change',check);
-  _orientTimer=check;
-}
 function closeCam(){
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
   document.getElementById('camOverlay').classList.remove('open');
   document.getElementById('camGuide').classList.remove('show');
-  document.getElementById('camRotateHint').classList.remove('show');
-  if(_orientTimer){
-    window.removeEventListener('resize',_orientTimer);
-    window.removeEventListener('orientationchange',_orientTimer);
-    if(screen.orientation)screen.orientation.removeEventListener('change',_orientTimer);
-  }
-  _orientTimer=null;
 }
 function snapPhoto(){
   const video=document.getElementById('camVideo');
