@@ -60,7 +60,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .photo-box .ps{font-size:10px;color:var(--muted);margin-top:1px;}
 .photo-box.has-photo{border-style:solid;border-color:var(--green);background:#F0FDF4;}
 .photo-box.has-photo .pl{color:var(--green);}
-.photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;aspect-ratio:16/9;object-fit:cover;background:#1E293B;cursor:pointer;}
+.photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;aspect-ratio:16/9;object-fit:contain;background:#000;cursor:pointer;}
 .photo-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
 .photo-upload-btn{display:block;width:100%;text-align:center;padding:9px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Sarabun',sans-serif;}
 .photo-upload-btn:active{background:var(--bg);}
@@ -68,10 +68,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .cam-overlay{display:none;position:fixed;inset:0;background:#000;z-index:9998;flex-direction:column;}
 .cam-overlay.open{display:flex;}
 .cam-video{width:100%;flex:1;object-fit:cover;}
-.cam-guide{position:absolute;inset:0;pointer-events:none;display:none;}
-.cam-guide.show{display:block;}
-.cam-guide-frame{position:absolute;left:4%;right:4%;border:2px solid rgba(255,255,255,0.7);border-radius:12px;}
-.cam-guide-label{position:absolute;left:0;right:0;text-align:center;color:rgba(255,255,255,0.85);font-size:13px;font-weight:700;font-family:'Sarabun',sans-serif;text-shadow:0 1px 3px rgba(0,0,0,0.9);}
+.cam-tip{position:absolute;bottom:108px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.9);font-size:15px;font-weight:800;font-family:'Sarabun',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,0.9);pointer-events:none;display:none;}
+.cam-tip.show{display:block;}
 .cam-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#000;flex-shrink:0;}
 .cam-shutter{width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,0.5);cursor:pointer;flex-shrink:0;}
 .cam-cancel{color:#fff;font-size:14px;font-weight:700;cursor:pointer;padding:8px 16px;font-family:'Sarabun',sans-serif;background:transparent;border:none;}
@@ -445,10 +443,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 <div class="cam-overlay" id="camOverlay">
   <video class="cam-video" id="camVideo" autoplay playsinline muted></video>
-  <div class="cam-guide" id="camGuide">
-    <div class="cam-guide-frame" id="camGuideFrame"></div>
-    <div class="cam-guide-label" id="camGuideLabel"></div>
-  </div>
+  <div class="cam-tip" id="camTip"></div>
   <div class="cam-bar">
     <button class="cam-cancel" onclick="closeCam()">✕ ยกเลิก</button>
     <button class="cam-shutter" id="camShutter" onclick="snapPhoto()"></button>
@@ -1007,33 +1002,17 @@ async function openCam(targetId,isScale){
   }catch(e){toast('⚠️ ไม่สามารถเปิดกล้องได้ — ลองใช้ปุ่ม คลัง แทน');}
 }
 function setupCamGuide(){
-  const guide=document.getElementById('camGuide');
-  const frame=document.getElementById('camGuideFrame');
-  const label=document.getElementById('camGuideLabel');
-  if(!camIsVehicle){guide.classList.remove('show');return;}
+  const tip=document.getElementById('camTip');
+  if(!camIsVehicle){tip.classList.remove('show');return;}
   const isPlate=camTargetId==='vP1';
-  const vw=window.innerWidth;
-  const vh=window.innerHeight;
-  const barH=96;
-  const availH=vh-barH;
-  // frame กว้าง 92% ของหน้าจอ สูงตามสัดส่วน: ป้าย 35%, รถ 56%
-  const frameW=vw*0.92;
-  const frameH=isPlate?frameW*0.35:frameW*0.56;
-  const frameLeft=(vw-frameW)/2;
-  const frameTop=(availH-frameH)/2;
-  frame.style.left=frameLeft+'px';
-  frame.style.width=frameW+'px';
-  frame.style.top=frameTop+'px';
-  frame.style.height=frameH+'px';
-  label.style.top=(frameTop+frameH+10)+'px';
-  label.textContent=isPlate?'📋 หันแนวนอน · จัดป้ายให้อยู่ในกรอบ':'🚛 หันแนวนอน · จัดรถให้อยู่ในกรอบ';
-  guide.classList.add('show');
+  tip.textContent=isPlate?'📱 หันมือถือแนวนอน แล้วถ่ายป้ายทะเบียน':'📱 หันมือถือแนวนอน แล้วถ่ายรูปรถ';
+  tip.classList.add('show');
 }
 let _orientTimer=null;
 function closeCam(){
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
   document.getElementById('camOverlay').classList.remove('open');
-  document.getElementById('camGuide').classList.remove('show');
+  document.getElementById('camTip').classList.remove('show');
 }
 function snapPhoto(){
   const video=document.getElementById('camVideo');
