@@ -331,7 +331,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <img class="photo-preview" id="sPrev2" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <div class="photo-btn-row">
-          <button type="button" class="photo-upload-btn cam" onclick="openCam('sP2',false)">📷 ถ่าย</button>
+          <button type="button" class="photo-upload-btn cam" onclick="openCam('sP2',true)">📷 ถ่าย</button>
           <button type="button" class="photo-upload-btn" onclick="document.getElementById('sP2').click()">🖼️ คลัง</button>
         </div>
         <input type="file" id="sP2" accept="image/*" onchange="previewOnly(this,'sPrev2','sBox2','sView2')" style="display:none">
