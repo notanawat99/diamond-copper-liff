@@ -1008,7 +1008,7 @@ async function openCam(targetId,isScale){
 }
 function setupCamGuide(){
   const tip=document.getElementById('camTip');
-  if(!camIsVehicle){tip.classList.remove('show');return;}
+  if(!camIsVehicle){tip.classList.remove('show');tip.textContent='';return;}
   const isPlate=camTargetId==='vP1';
   tip.textContent=isPlate?'📱 หันมือถือแนวนอน แล้วถ่ายป้ายทะเบียน':'📱 หันมือถือแนวนอน แล้วถ่ายรูปรถ';
   tip.classList.add('show');
