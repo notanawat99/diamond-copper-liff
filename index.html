@@ -60,19 +60,35 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .photo-box .ps{font-size:10px;color:var(--muted);margin-top:1px;}
 .photo-box.has-photo{border-style:solid;border-color:var(--green);background:#F0FDF4;}
 .photo-box.has-photo .pl{color:var(--green);}
-.photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;aspect-ratio:16/9;object-fit:cover;background:#F1F5F9;cursor:pointer;image-orientation:from-image;}
+.photo-preview{width:100%;border-radius:8px;margin-top:8px;display:none;aspect-ratio:16/9;object-fit:cover;background:#1E293B;cursor:pointer;}
 .photo-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
 .photo-upload-btn{display:block;width:100%;text-align:center;padding:9px 4px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:11px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Sarabun',sans-serif;}
 .photo-upload-btn:active{background:var(--bg);}
 .photo-upload-btn.cam{border-color:var(--buy);color:var(--buy);background:#EFF6FF;}
-.cam-overlay{display:none;position:fixed;inset:0;background:#000;z-index:9998;flex-direction:column;}
+.cam-overlay{display:none;position:fixed;inset:0;background:#000;z-index:9998;flex-direction:column;align-items:center;justify-content:center;}
 .cam-overlay.open{display:flex;}
+/* landscape mode wrapper */
+.cam-landscape{position:relative;width:100%;height:100%;display:flex;flex-direction:column;}
+.cam-overlay.land .cam-landscape{
+  width:100vh;height:100vw;
+  transform:rotate(90deg);
+  transform-origin:center center;
+  position:absolute;
+  top:50%;left:50%;
+  margin-top:-50vw;margin-left:-50vh;
+}
 .cam-video{width:100%;flex:1;object-fit:cover;}
-.cam-guide{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;display:none;}
+/* กรอบ guide */
+.cam-guide{position:absolute;inset:0;pointer-events:none;display:none;}
 .cam-guide.show{display:block;}
-.cam-guide-frame{border:3px solid #FFD700;border-radius:10px;box-shadow:0 0 0 2000px rgba(0,0,0,0.45);}
-.cam-guide-label{color:#FFD700;font-size:13px;font-weight:800;text-align:center;margin-top:8px;font-family:'Sarabun',sans-serif;text-shadow:0 1px 3px rgba(0,0,0,0.8);}
-.cam-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:#000;}
+.cam-guide-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;border:3px solid #FFD700;border-radius:10px;}
+.cam-guide-inner::before,.cam-guide-inner::after{content:'';position:absolute;top:-3px;bottom:-3px;width:3px;background:#FFD700;}
+.cam-guide-inner::before{left:-3px;border-radius:10px 0 0 10px;}
+.cam-guide-inner::after{right:-3px;border-radius:0 10px 10px 0;}
+.cam-guide-shade-top{position:absolute;top:0;left:0;right:0;background:rgba(0,0,0,0.5);}
+.cam-guide-shade-bot{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);}
+.cam-guide-label{position:absolute;color:#FFD700;font-size:13px;font-weight:800;text-align:center;width:100%;font-family:'Sarabun',sans-serif;text-shadow:0 1px 3px rgba(0,0,0,0.8);}
+.cam-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#000;flex-shrink:0;}
 .cam-shutter{width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,0.5);cursor:pointer;flex-shrink:0;}
 .cam-cancel{color:#fff;font-size:14px;font-weight:700;cursor:pointer;padding:8px 16px;font-family:'Sarabun',sans-serif;background:transparent;border:none;}
 .btn-view{width:100%;padding:8px;border:1.5px solid #86EFAC;border-radius:10px;background:#F0FDF4;font-size:12px;font-weight:700;color:#15803D;cursor:pointer;font-family:'Sarabun',sans-serif;display:none;text-align:center;}
@@ -444,15 +460,19 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 <div class="cam-overlay" id="camOverlay">
-  <video class="cam-video" id="camVideo" autoplay playsinline muted></video>
-  <div class="cam-guide" id="camGuide">
-    <div class="cam-guide-frame" id="camGuideFrame"></div>
-    <div class="cam-guide-label" id="camGuideLabel"></div>
-  </div>
-  <div class="cam-bar">
-    <button class="cam-cancel" onclick="closeCam()">✕ ยกเลิก</button>
-    <button class="cam-shutter" id="camShutter" onclick="snapPhoto()"></button>
-    <div style="width:80px"></div>
+  <div class="cam-landscape" id="camLandscape">
+    <video class="cam-video" id="camVideo" autoplay playsinline muted></video>
+    <div class="cam-guide" id="camGuide">
+      <div class="cam-guide-shade-top" id="camShadeTop"></div>
+      <div class="cam-guide-inner" id="camGuideFrame"></div>
+      <div class="cam-guide-shade-bot" id="camShadeBot"></div>
+      <div class="cam-guide-label" id="camGuideLabel"></div>
+    </div>
+    <div class="cam-bar">
+      <button class="cam-cancel" onclick="closeCam()">✕ ยกเลิก</button>
+      <button class="cam-shutter" id="camShutter" onclick="snapPhoto()"></button>
+      <div style="width:80px"></div>
+    </div>
   </div>
 </div>
 <canvas id="camCanvas" style="display:none"></canvas>
@@ -997,36 +1017,63 @@ async function claude(b64,mediaType,prompt){
 let camStream=null,camTargetId=null,camIsScale=false;
 async function openCam(targetId,isScale){
   camTargetId=targetId;camIsScale=isScale;
+  const overlay=document.getElementById('camOverlay');
+  const guide=document.getElementById('camGuide');
+  const frame=document.getElementById('camGuideFrame');
+  const label=document.getElementById('camGuideLabel');
+  const shadeTop=document.getElementById('camShadeTop');
+  const shadeBot=document.getElementById('camShadeBot');
   try{
     camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
     document.getElementById('camVideo').srcObject=camStream;
-    document.getElementById('camOverlay').classList.add('open');
-    // แสดง guide frame เฉพาะทะเบียนและรูปรถ (ไม่ใช่ตาชั่ง)
-    const guide=document.getElementById('camGuide');
-    const frame=document.getElementById('camGuideFrame');
-    const label=document.getElementById('camGuideLabel');
+
     if(!isScale){
+      // บังคับ landscape โดย rotate CSS
+      overlay.classList.add('open','land');
+      // คำนวณขนาดกรอบ: ใช้ viewport ที่ rotate แล้ว (กว้าง=vh, สูง=vw)
+      const vw=window.innerWidth;
+      const vh=window.innerHeight;
+      const lw=vh; // landscape width = portrait height
+      const lh=vw; // landscape height = portrait width
       const isPlate=targetId==='vP1';
-      const sw=window.innerWidth*0.82;
-      const sh=isPlate?sw*0.28:sw*0.56; // ทะเบียน 3.5:1, รถ 16:9
-      frame.style.width=sw+'px';
-      frame.style.height=sh+'px';
+      const frameW=lw*0.88;
+      const frameH=isPlate?frameW*0.30:frameW*0.56;
+      const frameTop=(lh-frameH)/2;
+      frame.style.width=frameW+'px';
+      frame.style.height=frameH+'px';
+      shadeTop.style.height=frameTop+'px';
+      shadeBot.style.height=frameTop+'px';
+      label.style.top=(frameTop+frameH+8)+'px';
       label.textContent=isPlate?'📋 จัดป้ายทะเบียนให้อยู่ในกรอบ':'🚛 จัดตัวรถให้อยู่ในกรอบ';
       guide.classList.add('show');
     } else {
+      overlay.classList.add('open');
+      overlay.classList.remove('land');
       guide.classList.remove('show');
     }
   }catch(e){toast('⚠️ ไม่สามารถเปิดกล้องได้ — ลองใช้ปุ่ม คลัง แทน');}
 }
 function closeCam(){
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
-  document.getElementById('camOverlay').classList.remove('open');
+  const overlay=document.getElementById('camOverlay');
+  overlay.classList.remove('open','land');
+  document.getElementById('camGuide').classList.remove('show');
 }
 function snapPhoto(){
   const video=document.getElementById('camVideo');
   const canvas=document.getElementById('camCanvas');
-  canvas.width=video.videoWidth;canvas.height=video.videoHeight;
-  canvas.getContext('2d').drawImage(video,0,0);
+  const isLand=document.getElementById('camOverlay').classList.contains('land');
+  if(isLand){
+    // rotate 90° CW เพื่อให้ได้ภาพแนวนอนจริง
+    canvas.width=video.videoHeight;canvas.height=video.videoWidth;
+    const ctx=canvas.getContext('2d');
+    ctx.translate(canvas.width/2,canvas.height/2);
+    ctx.rotate(Math.PI/2);
+    ctx.drawImage(video,-video.videoWidth/2,-video.videoHeight/2);
+  } else {
+    canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+    canvas.getContext('2d').drawImage(video,0,0);
+  }
   closeCam();
   canvas.toBlob(blob=>{
     const file=new File([blob],'photo.jpg',{type:'image/jpeg'});
