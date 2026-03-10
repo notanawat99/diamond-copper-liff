@@ -969,8 +969,11 @@ function hide(id){const el=document.getElementById(id);if(el)el.style.display='n
 function hideEl(id){const el=document.getElementById(id);if(el)el.style.display='none';}
 function previewInBox(file,imgId,boxId,viewId){
   const r=new FileReader();
-  r.onload=e=>{
-    const img=document.getElementById(imgId);img.src=e.target.result;img.style.display='block';
+  r.onload=async e=>{
+    const rotated=await compressImage(e.target.result,1200,0.85);
+    const img=document.getElementById(imgId);
+    img.src='data:image/jpeg;base64,'+rotated;
+    img.style.display='block';
     document.getElementById(boxId).classList.add('has-photo');
     if(viewId){const v=document.getElementById(viewId);if(v)v.style.display='block';}
   };
