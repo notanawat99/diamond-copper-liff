@@ -920,7 +920,7 @@ async function submit(){
     groups[b.productType].net=parseFloat((groups[b.productType].net+b.net).toFixed(1));
   });
 
-  const flexMessage=buildFlexMessage(txnId,totalNet,groups,folderLink);
+  const flexMessage=JSON.stringify(buildFlexMessage(txnId,totalNet,groups,folderLink));
   const payload={
     txnId, type:S.type, partner:S.partner, vehicle:S.vehicle,
     timestamp:new Date().toISOString(), totalNet,
