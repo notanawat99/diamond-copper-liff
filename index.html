@@ -980,9 +980,49 @@ function closeCam(){
   document.getElementById('camTip').classList.remove('show');
 }
 // ดัก Android back button ตอนกล้องเปิด
-window.addEventListener('popstate', function(e){
+let _exitResolve=null;
+function showExitConfirm(){
+  return new Promise(res=>{
+    _exitResolve=res;
+    const d=document.getElementById('exitConfirm');
+    d.style.display='flex';
+  });
+}
+function cancelExit(){
+  document.getElementById('exitConfirm').style.display='none';
+  if(_exitResolve)_exitResolve(false);
+  _exitResolve=null;
+  // push state กลับเพื่อกัน back ครั้งต่อไป
+  history.pushState({app:true},'');
+}
+function confirmExit(){
+  document.getElementById('exitConfirm').style.display='none';
+  if(_exitResolve)_exitResolve(true);
+  _exitResolve=null;
+}
+
+// push initial state ตอนโหลดแอป
+history.pushState({app:true},'');
+
+window.addEventListener('popstate', async function(e){
+  // ถ้ากล้องเปิดอยู่ — ปิดกล้องแทน
   if(document.getElementById('camOverlay').classList.contains('open')){
     closeCam();
+    history.pushState({app:true},'');
+    return;
+  }
+  // ถ้ามีข้อมูลในระบบ (step 2 ขึ้นไป) — แสดง confirm
+  const currentSection = document.querySelector('.section.active');
+  const sId = currentSection ? currentSection.id : 's1';
+  const stepNum = parseInt(sId.replace('s',''))||1;
+  if(stepNum >= 2 || S.bags.length > 0 || S.partner || S.vehicle){
+    const ok = await showExitConfirm();
+    if(!ok) return; // อยู่ต่อ
+    // ยืนยันออก — ไม่ push กลับ ปล่อยให้ browser จัดการ
+    history.back();
+  } else {
+    // step 1 ยังไม่มีข้อมูล — ออกได้เลย
+    history.back();
   }
 });
 function snapPhoto(){
@@ -1042,5 +1082,16 @@ document.addEventListener('touchmove',e=>{
   lastTouchY=y;
 },{passive:false,capture:true});
 </script>
+<!-- confirm exit dialog -->
+<div id="exitConfirm" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:24px;margin:20px;max-width:320px;width:100%;">
+    <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:8px;font-family:'Sarabun',sans-serif;">⚠️ ออกจากหน้านี้?</div>
+    <div style="font-size:14px;color:#475569;margin-bottom:20px;font-family:'Sarabun',sans-serif;">ข้อมูลที่กรอกไว้ทั้งหมดจะหายไป ยืนยันออกหรือไม่?</div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="cancelExit()" style="flex:1;padding:12px;border:1.5px solid #CBD5E1;border-radius:10px;background:#fff;font-size:14px;font-weight:700;color:#475569;font-family:'Sarabun',sans-serif;cursor:pointer;">✕ อยู่ต่อ</button>
+      <button onclick="confirmExit()" style="flex:1;padding:12px;border:none;border-radius:10px;background:#EF4444;font-size:14px;font-weight:700;color:#fff;font-family:'Sarabun',sans-serif;cursor:pointer;">ออกจากระบบ</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
