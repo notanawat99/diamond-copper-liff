@@ -301,15 +301,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 <!-- STEP 4 -->
 <div class="section" id="s4">
-  <div class="card" style="margin-bottom:12px;background:#FFF7ED;border:1.5px solid #FB923C;">
-    <div style="font-size:13px;font-weight:800;color:#C2410C;margin-bottom:8px;">📂 นำเข้ารูปจากคลังทีเดียว</div>
-    <div style="font-size:12px;color:#78350F;margin-bottom:10px;">เลือกรูปทั้งหมด (ตาชั่ง+ทองแดงสลับกัน) แอปจะจับคู่ให้อัตโนมัติ</div>
-    <label style="display:block;width:100%;text-align:center;padding:10px;border:1.5px solid #FB923C;border-radius:10px;background:#fff;font-size:13px;font-weight:700;color:#C2410C;cursor:pointer;font-family:'Sarabun',sans-serif;">
-      🖼️ เลือกหลายรูปพร้อมกัน
-      <input type="file" id="bulkImport" accept="image/*" multiple style="display:none" onchange="handleBulkImport(this)">
-    </label>
-    <div id="bulkStatus" style="margin-top:8px;font-size:12px;color:#92400E;display:none;"></div>
-  </div>
   <div class="counter-bar">
     <div><div class="counter-info">เต๊าที่บันทึกแล้ว</div><div class="counter-num" id="bagCount">0</div></div>
     <div style="text-align:right"><div class="counter-info">ประเภทปัจจุบัน</div><div class="counter-type" id="currentTypeDisplay">-</div></div>
@@ -522,49 +513,6 @@ function compressImage(dataUrl, maxSize=1200, quality=0.6){
     };
     img.src=dataUrl;
   });
-}
-
-async function handleBulkImport(input){
-  const files = Array.from(input.files);
-  if(!files.length) return;
-  // เรียงตาม lastModified (เวลาถ่าย)
-  files.sort((a,b)=>a.lastModified-b.lastModified);
-  const statusEl = document.getElementById('bulkStatus');
-  statusEl.style.display='block';
-  statusEl.textContent='⏳ กำลังประมวลผล '+files.length+' รูป...';
-
-  // จับคู่ทีละ 2: คี่=ตาชั่ง, คู่=ทองแดง
-  const pairs=[];
-  for(let i=0;i<files.length;i+=2){
-    pairs.push({scale:files[i], goods:files[i+1]||null});
-  }
-
-  let done=0;
-  for(const pair of pairs){
-    // set ตาชั่ง
-    if(pair.scale){
-      await readScaleFile(pair.scale);
-    }
-    // set ทองแดง
-    if(pair.goods){
-      previewInBox(pair.goods,'sPrev2','sBox2','sView2');
-      const r=new FileReader();
-      await new Promise(res=>{
-        r.onload=async e=>{S._pendingGoodsImg=await compressImage(e.target.result);res();};
-        r.readAsDataURL(pair.goods);
-      });
-    }
-    // รอให้ AI อ่านเสร็จก่อน save
-    await new Promise(res=>setTimeout(res,2500));
-    // auto-save เต๊า (กด save อัตโนมัติ)
-    const saveBtn=document.getElementById('saveBtn');
-    if(saveBtn&&!saveBtn.disabled) saveBtn.click();
-    await new Promise(res=>setTimeout(res,500));
-    done++;
-    statusEl.textContent='✅ นำเข้าแล้ว '+done+'/'+pairs.length+' เต๊า';
-  }
-  statusEl.textContent='✅ นำเข้าครบแล้ว '+done+' เต๊า';
-  input.value='';
 }
 
 function go(n){
