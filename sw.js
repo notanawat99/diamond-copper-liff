@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dct-v53';
+const CACHE_NAME = 'dct-v54';
 const urlsToCache = [
   '/diamond-copper-liff/',
   '/diamond-copper-liff/index.html',
