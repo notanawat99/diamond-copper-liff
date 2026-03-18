@@ -495,9 +495,11 @@ const TYPE_LABELS = {
   process: '🔄 แปรรูป'
 };
 const PARTNER_LABELS = {
-  buy:     'นามผู้ขาย',
-  sell:    'นามผู้ซื้อ',
-  process: 'ชื่อผู้รับ/ส่ง'
+  buy:          'นามผู้ขาย',
+  sell:         'นามผู้ซื้อ',
+  'process-in': 'นามผู้ส่ง',
+  'process-out':'นามผู้รับ',
+  process:      'นามผู้ส่ง/รับ'
 };
 const TARE_DEFAULT = {buy:3.0, sell:2.0, process:3.0};
 
@@ -591,7 +593,7 @@ function selType(type, el){
 
 function goStep2(){
   document.getElementById('partnerTitle').textContent = PARTNER_LABELS[S.type];
-  const phMap = {buy:'ชื่อผู้ขาย / บริษัท', sell:'ชื่อผู้ซื้อ / บริษัท', process:'ชื่อบริษัท / จุดแปรรูป'};
+  const phMap = {buy:'ชื่อผู้ขาย / บริษัท', sell:'ชื่อผู้ซื้อ / บริษัท', 'process-in':'นามผู้ส่ง / บริษัท', 'process-out':'นามผู้รับ / บริษัท', process:'นามผู้ส่ง / บริษัท'};
   document.getElementById('partnerName').placeholder = phMap[S.type];
   document.getElementById('s2Btn').className = 'btn btn-primary ' + S.type;
   go(2);
