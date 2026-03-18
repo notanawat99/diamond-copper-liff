@@ -17,7 +17,7 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap');
-:root{--buy:#1565C0;--sell:#15803D;--process:#92400E;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
+:root{--buy:#1565C0;--sell:#15803D;--process:#64748B;--dark:#0F172A;--card:#FFFFFF;--bg:#F1F5F9;--text:#1E293B;--muted:#94A3B8;--border:#E2E8F0;--green:#22C55E;--red:#EF4444;--orange:#F97316;--shadow:0 1px 12px rgba(0,0,0,0.08);--r:16px;--accent:#1565C0;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{overscroll-behavior-y:none;}
 body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:48px;overscroll-behavior-y:none;}
@@ -29,7 +29,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .hdr-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);}
 .hdr-badge.buy{background:rgba(21,101,192,0.4);color:#90CAF9;}
 .hdr-badge.sell{background:rgba(21,128,61,0.4);color:#A5D6A7;}
-.hdr-badge.process{background:rgba(146,64,14,0.4);color:#FCD34D;}
+.hdr-badge.process{background:rgba(100,116,139,0.4);color:#E2E8F0;}
 .progress-bar{display:flex;gap:4px;margin-top:14px;}
 .pb-seg{height:3px;border-radius:2px;background:rgba(255,255,255,0.15);flex:1;transition:background .3s;}
 .pb-seg.done{background:rgba(255,255,255,0.5);}
@@ -47,7 +47,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .type-btn .td{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3;}
 .type-btn.buy.sel{border-color:var(--buy);background:#EFF6FF;}
 .type-btn.sell.sel{border-color:var(--sell);background:#F0FDF4;}
-.type-btn.process.sel{border-color:var(--process);background:#FEF3C7;}
+.type-btn.process.sel{border-color:#64748B;background:#F8FAFC;}
+.type-btn.process-in.sel{border-color:#7C3AED;background:#F5F3FF;}
+.type-btn.process-out.sel{border-color:#92400E;background:#FEF3C7;}
+.process-sub{display:none;margin-top:8px;}
+.process-sub.show{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .igroup{margin-bottom:14px;}
 .ilabel{font-size:13px;font-weight:700;color:var(--text);margin-bottom:7px;display:block;}
 .ifield{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-size:16px;font-family:'Sarabun',sans-serif;color:var(--text);background:#fff;outline:none;-webkit-appearance:none;transition:border-color .2s;}
@@ -152,12 +156,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .btn:active{transform:scale(0.98);}
 .btn-primary{background:var(--buy);color:#fff;box-shadow:0 4px 12px rgba(21,101,192,0.25);}
 .btn-primary.sell{background:var(--sell);box-shadow:0 4px 12px rgba(21,128,61,0.25);}
-.btn-primary.process{background:var(--process);box-shadow:0 4px 12px rgba(146,64,14,0.25);}
+.btn-primary.process{background:#64748B;box-shadow:0 4px 12px rgba(100,116,139,0.25);}
 .btn-primary:disabled{background:#CBD5E1;box-shadow:none;color:#94A3B8;}
 .btn-secondary{background:#fff;color:var(--text);border:2px solid #94A3B8;font-weight:700;}
 .btn-outline{background:#fff;color:var(--buy);border:1.5px solid var(--buy);}
 .btn-outline.sell{color:var(--sell);border-color:var(--sell);}
-.btn-outline.process{color:var(--process);border-color:var(--process);}
+.btn-outline.process{color:#64748B;border-color:#64748B;}
 .btn-orange{background:#FFF7ED;color:var(--orange);border:1.5px solid #FED7AA;}
 .btn-row{display:flex;gap:10px;}
 .btn-row .btn{margin-bottom:0;}
@@ -213,10 +217,22 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
         <div class="tl">ขาย</div>
         <div class="td">ส่งออก<br>มีราคา</div>
       </div>
-      <div class="type-btn process" onclick="selType('process',this)">
+      <div class="type-btn process" onclick="toggleProcessSub(this)">
         <div class="ti">🔄</div>
         <div class="tl">แปรรูป</div>
         <div class="td">ชั่งอย่างเดียว<br>ไม่มีราคา</div>
+      </div>
+    </div>
+    <div class="process-sub" id="processSub">
+      <div class="type-btn process-in" onclick="selProcessType('process-in',this)">
+        <div class="ti">📥</div>
+        <div class="tl" style="color:#7C3AED">นำเข้า</div>
+        <div class="td">แปรรูปนำเข้า</div>
+      </div>
+      <div class="type-btn process-out" onclick="selProcessType('process-out',this)">
+        <div class="ti">📤</div>
+        <div class="tl" style="color:#92400E">ส่งออก</div>
+        <div class="td">แปรรูปส่งออก</div>
       </div>
     </div>
   </div>
@@ -529,8 +545,39 @@ function go(n){
 }
 
 // ---- STEP 1 ----
+function toggleProcessSub(el){
+  const sub = document.getElementById('processSub');
+  const isOpen = sub.classList.contains('show');
+  // ถ้ายังไม่ได้เลือก in/out อยู่ให้ toggle
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('sel'));
+  if(!isOpen){
+    el.classList.add('sel');
+    sub.classList.add('show');
+  } else {
+    sub.classList.remove('show');
+    // reset process sub selection
+    document.querySelectorAll('.type-btn.process-in,.type-btn.process-out').forEach(b=>b.classList.remove('sel'));
+    document.getElementById('s1Btn').style.display='none';
+  }
+}
+function selProcessType(type, el){
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('sel'));
+  // ยัง highlight ปุ่ม process หลัก
+  document.querySelector('.type-btn.process').classList.add('sel');
+  el.classList.add('sel');
+  S.type = type;
+  const badgeLabels = {'process-in':'📥 แปรรูป นำเข้า','process-out':'📤 แปรรูป ส่งออก'};
+  const badge = document.getElementById('hBadge');
+  badge.textContent = badgeLabels[type]||type;
+  badge.className = 'hdr-badge process';
+  document.getElementById('s1Btn').style.display='block';
+  document.getElementById('s1Btn').className='btn btn-primary process';
+}
 function selType(type, el){
   S.type = type;
+  // ซ่อน process sub
+  const sub = document.getElementById('processSub');
+  if(sub) sub.classList.remove('show');
   document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
   const badge = document.getElementById('hBadge');
