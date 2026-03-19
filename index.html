@@ -709,7 +709,10 @@ function cancelEditGross(){document.getElementById('grossEditBox').style.display
 function confirmEditGross(){const val=parseFloat(document.getElementById('grossEditIn').value);if(!isNaN(val)){S.curGross=val;document.getElementById('grossVal').textContent=fmt(val)+' กก.';document.getElementById('grossIn').value=fmt(val);calcNet();}}
 function calcNet(){
   const gRaw=parseFloat(document.getElementById('grossIn').value);const g=!isNaN(gRaw)?gRaw:S.curGross;
-  const tRaw=parseFloat(document.getElementById('tareIn').value);const t=!isNaN(tRaw)?tRaw:S.curTare;
+  const tRaw=parseFloat(document.getElementById('tareIn').value);
+  const t=(!isNaN(tRaw)&&tRaw>=0)?tRaw:S.curTare;
+  // อัพเดท curTare ทันทีที่แก้ไข
+  if(!isNaN(tRaw)&&tRaw>=0) S.curTare=t;
   if(!g)return;S.curGross=g;
   const net=parseFloat((g-t).toFixed(1));
   document.getElementById('dGross').textContent=fmt(g)+' กก.';
