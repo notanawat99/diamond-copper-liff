@@ -441,6 +441,10 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <div class="sum-meta-key">รวมน้ำหนัก</div>
       <div class="sum-meta-val" id="sumTotalSmall" style="color:var(--buy)">-</div>
     </div>
+    <div class="sum-meta-item" id="sumProjectWrap" style="display:none;grid-column:1/-1">
+      <div class="sum-meta-key">โปรเจค / งาน</div>
+      <div class="sum-meta-val" id="sumProject">-</div>
+    </div>
   </div>
   <div class="card">
     <div class="card-title">สรุปตามประเภทสินค้า</div>
@@ -747,7 +751,12 @@ function selPType(t,el){
   chk3();
 }
 function chk3(){
-  const custom=document.getElementById('customType').value.trim();if(custom)S.productType=custom;
+  const customBox=document.getElementById('ptypeCustom');
+  const isCustomOpen = customBox && customBox.style.display !== 'none';
+  if(isCustomOpen){
+    const custom=document.getElementById('customType').value.trim();
+    if(custom) S.productType=custom;
+  }
   document.getElementById('s3Btn').disabled=!S.productType;
 }
 
@@ -873,6 +882,14 @@ function buildSummary(){
   document.getElementById('sumPartner').textContent = S.partner;
   document.getElementById('sumVehicle').textContent = S.vehicle;
   document.getElementById('sumBagCount').textContent = S.bags.length+' เต๊า';
+  // แสดงโปรเจคถ้ามี
+  const projWrap = document.getElementById('sumProjectWrap');
+  if(S.projectName){
+    document.getElementById('sumProject').textContent = S.projectName;
+    projWrap.style.display = 'block';
+  } else {
+    projWrap.style.display = 'none';
+  }
   document.getElementById('confirmBtn').className = 'btn btn-primary ' + S.type;
   document.getElementById('backToStep4Btn').className = 'btn btn-outline ' + S.type;
   const groups={};let total=0;
