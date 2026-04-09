@@ -581,12 +581,11 @@ function go(n){
   document.getElementById('hStep').textContent=n<=5?`ขั้นตอนที่ ${n} จาก 5`:'เสร็จสิ้น';
   document.getElementById('hTitle').textContent=n<=5?steps[n-1]:'บันทึกสำเร็จ';
   window.scrollTo(0,0);
-  // ใช้ requestAnimationFrame เพื่อให้ browser repaint section ก่อนค่อย render content
-  requestAnimationFrame(()=>{
+  setTimeout(()=>{
     if(n===3)renderPTypes();
     if(n===4)setupStep4();
     if(n===5)buildSummary();
-  });
+  }, 50);
 }
 
 function formatTxnDate(val){
@@ -722,6 +721,7 @@ async function previewOnly(input,prevId,boxId,viewId){
 // ---- STEP 3 ----
 function renderPTypes(){
   const g=document.getElementById('ptypeGrid');
+  console.log('renderPTypes called, g=',g, 's3 active=', document.getElementById('s3').classList.contains('active'));
   if(!g)return;
   g.innerHTML='';
   PRODUCT_TYPES.forEach(t=>{
