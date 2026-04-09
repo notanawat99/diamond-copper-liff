@@ -898,7 +898,7 @@ function buildSummary(){
 
 // ---- BUILD FLEX MESSAGE ----
 function buildFlexMessage(txnId, totalNet, groups, folderLink){
-  const now=new Date();
+  const now=S.txnDate ? new Date(S.txnDate) : new Date();
   const dateStr=now.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Bangkok'})+' '+now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Bangkok'});
   const typeLabel = TYPE_LABELS[S.type]||'-';
   const docName   = DOC_NAMES[S.type]||'-';
