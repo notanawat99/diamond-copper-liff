@@ -247,8 +247,34 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <div class="section" id="s2">
   <div class="card">
     <div class="card-title" id="partnerTitle">นามผู้ขาย</div>
-    <div class="igroup" style="margin-bottom:0">
+    <div class="igroup" style="margin-bottom:12px">
       <input class="ifield" id="partnerName" type="text" placeholder="ชื่อ / บริษัท" oninput="chk2()">
+    </div>
+    <div class="igroup" style="margin-bottom:12px">
+      <label class="ilabel">ชื่อโปรเจค / งาน <span style="font-weight:400;color:var(--muted)">— ไม่บังคับ</span></label>
+      <input class="ifield" id="projectName" type="text" placeholder="เช่น ทองแดงสาย A, งานปตท." oninput="S.projectName=this.value">
+    </div>
+    <div class="igroup" style="margin-bottom:0">
+      <label class="ilabel">วันที่และเวลา</label>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="txnDateDisplay" style="flex:1;padding:13px 15px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:'Sarabun',sans-serif;color:var(--text);background:#F8FAFC"></div>
+        <button type="button" onclick="toggleDateEdit()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;font-family:'Sarabun',sans-serif;" id="dateEditBtn">✏️ คีย์ย้อนหลัง</button>
+      </div>
+      <div id="txnDateInputs" style="display:none;margin-top:8px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input class="ifield" id="txnDatePart" type="date" oninput="onDateChange()">
+          <div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px">
+              <span style="font-size:11px;font-weight:700;color:var(--muted);text-align:center">โมง</span>
+              <span style="font-size:11px;font-weight:700;color:var(--muted);text-align:center">นาที</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+            <select class="ifield" id="txnHourPart" onchange="onDateChange()" style="flex:1;padding:13px 8px;text-align:center"><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+            <span style="font-weight:700;font-size:18px">:</span>
+            <select class="ifield" id="txnMinPart" onchange="onDateChange()" style="flex:1;padding:13px 8px;text-align:center"><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option></select>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="card">
@@ -426,6 +452,10 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div class="card-title">รายการทุกเต๊า</div>
     <div id="sumBags"></div>
   </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">หมายเหตุ <span style="font-weight:400;color:var(--muted);text-transform:none">— ไม่บังคับ</span></div>
+    <textarea class="ifield" id="remarkIn" rows="3" placeholder="กรอกหมายเหตุเพิ่มเติม..." style="resize:none;line-height:1.6" oninput="S.remark=this.value"></textarea>
+  </div>
   <button class="btn btn-primary" id="confirmBtn" onclick="submit()">✅ ยืนยันส่งข้อมูล</button>
   <button class="btn btn-outline" id="backToStep4Btn" onclick="go(4)">↩️ กลับเพิ่ม / แก้ไขเต๊า</button>
 </div>
@@ -512,7 +542,7 @@ const PARTNER_LABELS = {
 const TARE_DEFAULT = {buy:3.0, sell:2.0, 'process-in':3.0, 'process-out':2.0, process:3.0};
 
 const S = {
-  type:null, partner:'', vehicle:'', productType:null,
+  type:null, partner:'', vehicle:'', projectName:'', txnDate:'', remark:'', productType:null,
   bags:[], curGross:null, curTare:3.0,
   vAiDone:false, gAiDone:false,
   vImg1:null, vImg2:null,
@@ -549,12 +579,69 @@ function go(n){
     if(i+1<n)el.classList.add('done');if(i+1===n)el.classList.add('active');
   });
   const steps=['เลือกประเภท','ข้อมูลคู่ค้า','ประเภทสินค้า','ชั่งสินค้า','สรุปยืนยัน'];
+  // set default datetime เมื่อเข้า step 2
+  if(n===2){
+    const dtEl=document.getElementById('txnDate');
+    const dispEl=document.getElementById('txnDateDisplay');
+    const now=new Date();
+    if(!S.txnDate){
+      now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+      S.txnDate=now.toISOString().slice(0,16);
+    }
+    // set date/time parts
+    // date parts set in toggleDateEdit
+    const hp=document.getElementById('txnHourPart');const mp=document.getElementById('txnMinPart');
+    // values set when user opens date editor
+    if(dispEl) dispEl.textContent=formatTxnDate(S.txnDate);
+  }
   document.getElementById('hStep').textContent=n<=5?`ขั้นตอนที่ ${n} จาก 5`:'เสร็จสิ้น';
   document.getElementById('hTitle').textContent=n<=5?steps[n-1]:'บันทึกสำเร็จ';
   if(n===4)setupStep4();if(n===5)buildSummary();window.scrollTo(0,0);
 }
 
 // ---- STEP 1 ----
+function formatTxnDate(val){
+  if(!val) return '';
+  const d=new Date(val);
+  return d.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'})+' เวลา '+d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',hour12:false})+' น.';
+}
+function toggleDateEdit(){
+  const inputs=document.getElementById('txnDateInputs');
+  const disp=document.getElementById('txnDateDisplay');
+  const btn=document.getElementById('dateEditBtn');
+  if(inputs.style.display==='none'||!inputs.style.display){
+    disp.style.display='none';
+    inputs.style.display='block';
+    // set default values
+    const now=new Date();
+    const pad=n=>String(n).padStart(2,'0');
+    document.getElementById('txnDatePart').value=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    document.getElementById('txnHourPart').value=pad(now.getHours());
+    document.getElementById('txnMinPart').value=pad(now.getMinutes());
+    btn.textContent='✕ ยกเลิก';
+    btn.style.color='var(--red)';
+    btn.style.borderColor='var(--red)';
+  } else {
+    inputs.style.display='none';
+    disp.style.display='block';
+    btn.textContent='✏️ คีย์ย้อนหลัง';
+    btn.style.color='var(--muted)';
+    btn.style.borderColor='var(--border)';
+    const now=new Date();
+    now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+    S.txnDate=now.toISOString().slice(0,16);
+    disp.textContent=formatTxnDate(S.txnDate);
+  }
+}
+function onDateChange(){
+  const d=document.getElementById('txnDatePart').value;
+  const h=document.getElementById('txnHourPart').value||'00';
+  const m=document.getElementById('txnMinPart').value||'00';
+  if(d){
+    S.txnDate=d+'T'+h+':'+m;
+    document.getElementById('txnDateDisplay').textContent=formatTxnDate(S.txnDate);
+  }
+}
 function toggleProcessSub(el){
   const sub = document.getElementById('processSub');
   const isOpen = sub.classList.contains('show');
@@ -957,10 +1044,12 @@ async function submit(){
     groups[b.productType].net=parseFloat((groups[b.productType].net+b.net).toFixed(1));
   });
 
+  // ใช้ txnDate ที่เลือก หรือ current time
+  const txnTimestamp = S.txnDate ? new Date(S.txnDate).toISOString() : new Date().toISOString();
   const flexMessage=JSON.stringify(buildFlexMessage(txnId,totalNet,groups,folderLink));
   const payload={
-    txnId, type:S.type, partner:S.partner, vehicle:S.vehicle,
-    timestamp:new Date().toISOString(), totalNet,
+    txnId, type:S.type, partner:S.partner, vehicle:S.vehicle, projectName:S.projectName||'', remark:S.remark||'',
+    timestamp:txnTimestamp, totalNet,
     pokSuay:productTotals['ปอกสวย'],pokChot:productTotals['ปอกช็อต'],saPhanFai:productTotals['สะพานไฟ'],
     thorMai:productTotals['ท่อใหม่'],thorKao:productTotals['ท่อเก่า'],thongDangYai:productTotals['ทองแดงใหญ่'],
     thongDangLek:productTotals['ทองแดงเล็ก'],bodSaad:productTotals['บดสะอาด'],bodPasom:productTotals['บดผสม'],
@@ -972,8 +1061,8 @@ async function submit(){
 
   // เก็บลง KV
   try{await fetch(WORKER_URL+'/store-txn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    txnId,type:S.type,partner:S.partner,vehicle:S.vehicle,
-    timestamp:new Date().toISOString(),totalNet,
+    txnId,type:S.type,partner:S.partner,vehicle:S.vehicle,projectName:S.projectName||'',remark:S.remark||'',
+    timestamp:txnTimestamp,totalNet,
     bags:S.bags.map(b=>({productType:b.productType,gross:b.gross,tare:b.tare,net:b.net})),
     driveFolder:folderLink
   })});}catch(e){}
@@ -993,9 +1082,10 @@ async function submit(){
 
 function reset(){
   closeCam();
-  Object.assign(S,{type:null,partner:'',vehicle:'',productType:null,bags:[],curGross:null,curTare:3.0,
+  Object.assign(S,{type:null,partner:'',vehicle:'',projectName:'',txnDate:'',remark:'',productType:null,bags:[],curGross:null,curTare:3.0,
     vAiDone:false,gAiDone:false,vImg1:null,vImg2:null,_pendingScaleImg:null,_pendingGoodsImg:null});
   document.getElementById('partnerName').value='';document.getElementById('vPlate').value='';
+  document.getElementById('projectName').value='';document.getElementById('txnDatePart').value='';document.getElementById('txnHourPart').value='00';document.getElementById('txnMinPart').value='00';document.getElementById('txnDateInputs').style.display='none';document.getElementById('txnDateDisplay').style.display='block';document.getElementById('txnDateDisplay').textContent='';document.getElementById('dateEditBtn').textContent='✏️ คีย์ย้อนหลัง';document.getElementById('remarkIn').value='';
   document.getElementById('vManualGroup').style.display='block';
   document.querySelectorAll('.type-btn,.ptype-btn').forEach(b=>b.classList.remove('sel'));
   document.getElementById('s1Btn').style.display='none';
