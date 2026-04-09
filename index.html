@@ -581,17 +581,12 @@ function go(n){
   const steps=['เลือกประเภท','ข้อมูลคู่ค้า','ประเภทสินค้า','ชั่งสินค้า','สรุปยืนยัน'];
   // set default datetime เมื่อเข้า step 2
   if(n===2){
-    const dtEl=document.getElementById('txnDate');
     const dispEl=document.getElementById('txnDateDisplay');
     const now=new Date();
     if(!S.txnDate){
       now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
       S.txnDate=now.toISOString().slice(0,16);
     }
-    // set date/time parts
-    // date parts set in toggleDateEdit
-    const hp=document.getElementById('txnHourPart');const mp=document.getElementById('txnMinPart');
-    // values set when user opens date editor
     if(dispEl) dispEl.textContent=formatTxnDate(S.txnDate);
   }
   document.getElementById('hStep').textContent=n<=5?`ขั้นตอนที่ ${n} จาก 5`:'เสร็จสิ้น';
