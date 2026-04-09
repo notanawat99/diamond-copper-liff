@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dct-v64';
+const CACHE_NAME = 'dct-v65;
 const urlsToCache = ['/diamond-copper-liff/','/diamond-copper-liff/index.html','/diamond-copper-liff/manifest.json','/diamond-copper-liff/icon-192.png','/diamond-copper-liff/icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(urlsToCache)));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
