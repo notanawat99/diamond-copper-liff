@@ -734,15 +734,22 @@ async function previewOnly(input,prevId,boxId,viewId){
 // ---- STEP 3 ----
 function renderPTypes(){
   const g=document.getElementById('ptypeGrid');
-  console.log('renderPTypes called, g=',g, 's3 active=', document.getElementById('s3').classList.contains('active'));
   if(!g)return;
   g.innerHTML='';
+  // ล้าง customType และซ่อนช่องกรอกทุกครั้งที่กลับมาเลือกใหม่
+  document.getElementById('customType').value='';
+  hideEl('ptypeCustom');
+  // ถ้า productType เดิมไม่อยู่ใน PRODUCT_TYPES (เป็นค่าที่พิมพ์เอง) ให้ reset
+  if(S.productType && !PRODUCT_TYPES.includes(S.productType)){
+    S.productType=null;
+  }
   PRODUCT_TYPES.forEach(t=>{
     const safe=t.replace(/'/g,"\\'");
     g.innerHTML+=`<div class="ptype-btn" onclick="selPType('${safe}',this)">${t}</div>`;
   });
   if(S.productType)document.querySelectorAll('.ptype-btn').forEach(b=>{if(b.textContent===S.productType)b.classList.add('sel');});
   document.getElementById('s3Btn').className = 'btn btn-primary ' + S.type;
+  document.getElementById('s3Btn').disabled = !S.productType;
 }
 function selPType(t,el){
   document.querySelectorAll('.ptype-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
@@ -873,7 +880,7 @@ function renderBags(){
 
 // ---- STEP 5 ----
 function buildSummary(){
-  const now=new Date();
+  const now=S.txnDate ? new Date(S.txnDate) : new Date();
   const dateStr=now.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Bangkok'})+' '+now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Bangkok'});
   document.getElementById('sumTypeLabel').textContent = TYPE_LABELS[S.type]||'-';
   document.getElementById('sumDocMain').textContent = DOC_NAMES[S.type]||'-';
